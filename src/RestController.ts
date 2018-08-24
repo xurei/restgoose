@@ -43,7 +43,8 @@ export function allWithin<T extends Typegoose>(
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
                 });
-            } else {
+            }
+            else {
                 const refs = parentResult[property];
                 const result = await submodelType.find(Object.assign({}, req.filter || {}, {
                     _id: { $in: refs },
@@ -71,7 +72,8 @@ export function one<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
                 });
-            } else {
+            }
+            else {
                 return res.status(200).json(result);
             }
         });
@@ -109,7 +111,8 @@ export function createWithin<T extends Typegoose>(
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
                 });
-            } else {
+            }
+            else {
                 const payload = buildPayload(req, submodelType);
                 const submodel = new submodelType(payload);
                 const saved = await submodel.save();
@@ -132,12 +135,11 @@ export function update<T extends Typegoose>(
             await prefetchHooks(req, res, methodConfig);
             const result = await getOne(modelType, methodConfig, req);
             if (!result) {
-                // FIXME http code should be settable somehow, not hard coded
-                // FIXME also, it should be useful to send some error message defined outside the framework
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
                 });
-            } else {
+            }
+            else {
                 const payload = buildPayload(req, modelType);
                 let updatedEntity = Object.assign(result, payload);
                 updatedEntity = await updatedEntity.save();
@@ -155,12 +157,11 @@ export function remove<T extends Typegoose>(
             const result = await modelType.findById(req.params.id);
             const filteredResult = await postFetchHooks(req, result, methodConfig);
             if (!filteredResult) {
-                // FIXME http code should be settable somehow, not hard coded
-                // FIXME also, it should be useful to send some error message defined outside the framework
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
                 });
-            } else {
+            }
+            else {
                 await modelType.remove({ _id: req.params.id });
                 return res.status(204).end();
             }
@@ -184,13 +185,16 @@ function buildPayload<T extends Typegoose, R extends RestRequest>(req: R, modelT
 async function wrapException<R extends RestRequest, P extends Response>(req: R, res: P, fn: (req: R, res: P) => void) {
     try {
         await fn.bind(this)(req, res);
-    } catch (error) {
+    }
+    catch (error) {
         if (error instanceof RestError) {
             const restError = error as RestError;
             return res.status(restError.httpCode).send(restError.errorData);
-        } else if (error.name === ERROR_VALIDATION_NAME) {
+        }
+        else if (error.name === ERROR_VALIDATION_NAME) {
             return res.status(400).send({ code: ERROR_VALIDATION_CODE, errors: error.errors });
-        } else {
+        }
+        else {
             console.error(error);
             return res.status(500).end();
         }

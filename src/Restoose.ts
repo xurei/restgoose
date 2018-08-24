@@ -3,9 +3,7 @@ import { Typegoose } from 'typegoose';
 import { all, allWithin, create, createWithin, one, remove, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 
-export class RouterFactory {
-    public router: Router;
-
+export class Restoose {
     private static ROUTES = {
         all: { httpMethod: 'get', path: '/', fn: all },
         one: { httpMethod: 'get', path: '/:id', fn: one },
@@ -24,7 +22,7 @@ export class RouterFactory {
         remove: { httpMethod: 'delete', path: '/:id', fn: RestController.remove },*/
     };
 
-    static initialize(app) {
+    public static initialize(app) {
         const models = RestRegistry.listModels();
         for (const model of models) {
             app.use(model.config.route, this.createRestRoot(model));

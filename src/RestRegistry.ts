@@ -39,7 +39,8 @@ const RestRegistry = {
         const map = submodelsRegistryMap.get(modelName);
         if (map) {
             return submodelsRegistryMap.get(modelName).values();
-        } else {
+        }
+        else {
             return [];
         }
     },

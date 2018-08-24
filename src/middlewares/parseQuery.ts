@@ -3,10 +3,12 @@ export function parseQuery(req, res, next) {
         try {
             req.filter = JSON.parse(req.query.q);
             next();
-        } catch (e) {
+        }
+        catch (e) {
             next(e);
         }
-    } else {
+    }
+    else {
         next();
     }
 }
