@@ -1,13 +1,14 @@
 {
   "name": "restoose",
   "version": "0.0.1",
-  "description": "Decorator-driven REST API creation with typegoose",
+  "description": "Model-driven REST API framework",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "rimraf lib && npm run tslint && npm run build-ts",
     "build-ts": "tsc",
-    "tslint": "tslint -p tsconfig.json",
+    "build-examples": "tsc -p examples",
+    "tslint": "tslint",
     "test": "bash scripts/rest_test.sh"
   },
   "keywords": [

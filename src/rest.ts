@@ -30,7 +30,7 @@ function defaultMethod<T extends Typegoose>(name: string, path: string, preFetch
 }
 
 export function all<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('all', '/', [parseQuery].concat(preFetch), postFetch);
+    return defaultMethod('all', '/', [parseQuery].concat(preFetch || []), postFetch);
 }
 
 export function one<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {

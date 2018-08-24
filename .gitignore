@@ -2,6 +2,8 @@
 
 # compiled output
 /lib
+/examples/**/*.js
+/examples/**/*.js.map
 
 # dependencies
 /node_modules
