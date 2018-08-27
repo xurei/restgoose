@@ -26,9 +26,32 @@ describe('Simple todos API', function() {
             .then(() => restTester.get('/todos'))
             .then(({ code, body, headers }) => {
                 expect(code).to.eq(200);
-                expect(body).to.eq('[]');
+                expect(body).to.deep.eq([]);
                 return true;
             });
+        });
+
+        it('Add one', function () {
+            let newId = null;
+            return restTester.post('/todos', {
+                title: 'First todo'
+            })
+            .then(({ code,body,headers }) => {
+                expect(code).to.eq(201);
+                newId = body._id;
+                delete body._id;
+                delete body.__v;
+                expect(body).to.deep.eq({
+                    title: 'First todo'
+                });
+                return true;
+            })
+            .then(() => restTester.get('/todos/'+newId))
+            .then(({ code,body,headers }) => {
+                expect(code).to.eq(200);
+                expect(body.title).to.eq('First todo');
+                return true;
+            })
         });
     });
 });
