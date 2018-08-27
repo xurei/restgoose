@@ -3,6 +3,8 @@
 # compiled output
 /lib
 /examples-build
+.nyc-output
+coverage
 
 # dependencies
 /node_modules
