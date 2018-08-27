@@ -1,4 +1,4 @@
-[index](./index)
+[Index](./)
 
 # Rest endpoint lifecycle
 

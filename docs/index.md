@@ -1,23 +1,20 @@
-# Restgoose
-Model-driven REST API framework
-
-MongoDB + Typegoose + Restgoose = ❤️️
+### MongoDB + Typegoose + Restgoose = ❤️️
 
 Restgoose exposes your MongoDB database through a REST API with ease. 
 It is driven by the model itself, which reduces the boilerplate code necessary to write simple endpoints.
 It is open for extension, so you can add complex logic easily too.
 
-## Installation
+# Installation
 ```
 npm install @xureilab/restgoose
 ```
 
-## Documentation
+# Documentation
 
 - [API Reference](./API.md)
 - [Rest endpoint lifecycle](./rest-lifecycle.md)
 
-## The Philosophy behind Restgoose
+# The Philosophy behind Restgoose
 RESToose takes its inspiration from Typegoose and Loopback.
 We also had some objectives in mind while writing RESToose :
 - Simple, common behaviors should be really easy to write,

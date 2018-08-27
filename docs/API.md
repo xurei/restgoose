@@ -1,6 +1,6 @@
-[index](./index)
+[Index](./)
 
-# API documentation
+# API reference
 
 ### @rest(config)
 #### config: object
@@ -138,7 +138,7 @@
            }
        ```
        
-#### Using `@rest` on submodels
+#### Using `@rest()` on submodels
 TODO
 
 ### asFilter(postFetchFn)
