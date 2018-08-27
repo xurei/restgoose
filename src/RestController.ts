@@ -162,7 +162,7 @@ export function remove<T extends Typegoose>(
                 });
             }
             else {
-                await modelType.remove({ _id: req.params.id });
+                await modelType.deleteOne({ _id: req.params.id });
                 return res.status(204).end();
             }
         });
@@ -180,7 +180,7 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
                 return postFetchHooks(req, entity, methodConfig);
             }));
             out.filter(e => !!e);
-            await modelType.remove({ _id: { $in: out.map(e => e._id) }});
+            await modelType.deleteMany({ _id: { $in: out.map(e => e._id) }});
             return res.status(204).end();
         });
     };
