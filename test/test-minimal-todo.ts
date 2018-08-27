@@ -75,6 +75,33 @@ describe('Minimal TODO API', function() {
             });
         });
 
+        describe('delete()', function () {
+            it('works', function () {
+                let newId = null;
+                return Promise.resolve()
+                .then(() => restTester.post('/todos', {
+                    title: 'blah'
+                }))
+                .then(({ code,body,headers }) => {
+                    expect(code).to.eq(201);
+                    newId = body._id;
+                    return true;
+                })
+                .then(() => restTester.delete('/todos/'+newId))
+                .then(({ code,body,headers }) => {
+                    expect(code).to.eq(204);
+                    expect(body).to.eq(undefined);
+                    return true;
+                })
+                .then(() => restTester.get('/todos/'+newId))
+                .then(({ code,body,headers }) => {
+                    expect(code).to.eq(404);
+                    expect(body).to.deep.eq({code: 'NOT_FOUND'});
+                    return true;
+                })
+            });
+        });
+
         describe('patch()', function () {
             it('200', function () {
                 let newId = null;
