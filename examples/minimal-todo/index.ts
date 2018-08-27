@@ -47,8 +47,10 @@ server = server.listen(3000, function () {
 });
 
 function openDatabase() {
+    const mongoHost = process.env.MONGO_HOST || 'mongodb://localhost/todo-backend';
+    console.log('Mongo Host:', mongoHost);
     // Business as usual - connect to your database with mongoose
-    mongoose.connect(process.env.MONGO_HOST || 'mongodb://localhost/todo-backend')
+    mongoose.connect(mongoHost)
     .catch(e => {
         console.error('MongoDB Connection Error:');
         console.error(JSON.stringify(e, null, '  '));
