@@ -17,9 +17,13 @@ build:
         name: npm run build
         code: |
           npm run build
-          npm run build-examples
 
     - script:
         name: npm tests
         code: |
-          MONGO_HOST=$MONGO_PORT_27017_TCP_ADDR npm run rest_test -- --no-docker
+          MONGO_HOST=$MONGO_PORT_27017_TCP_ADDR npm run test
+    
+    - script:
+        name: Code coverage
+        code: |
+          npm run coverage

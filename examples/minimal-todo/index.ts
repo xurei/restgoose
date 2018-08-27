@@ -41,13 +41,14 @@ app.use(cors({
 
 openDatabase();
 Restgoose.initialize(app);
-app.listen(3000, function () {
+let server = require('http').createServer(app);
+server = server.listen(3000, function () {
     console.log('Example app listening on port 3000!')
 });
 
 function openDatabase() {
     // Business as usual - connect to your database with mongoose
-    mongoose.connect('mongodb://localhost/todo-backend')
+    mongoose.connect(process.env.MONGO_HOST || 'mongodb://localhost/todo-backend')
     .catch(e => {
         console.error('MongoDB Connection Error:');
         console.error(JSON.stringify(e, null, '  '));
@@ -60,4 +61,4 @@ function openDatabase() {
     });
 }
 
-export { app };
+export { app, server };

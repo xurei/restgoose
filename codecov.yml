@@ -1,0 +1,2 @@
+ignore:
+  - ".wercker"  # ignore folders and all its contents

@@ -1,6 +1,8 @@
 # Restgoose
 Model-driven REST API framework
 
+[![codecov](https://codecov.io/gh/xurei/restgoose/branch/master/graph/badge.svg)](https://codecov.io/gh/xurei/restgoose)
+
 MongoDB + Typegoose + Restgoose = ❤️️
 
 Restgoose exposes your MongoDB database through a REST API with ease. 

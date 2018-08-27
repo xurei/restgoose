@@ -9,12 +9,13 @@
     "build-ts": "tsc -p .",
     "build-examples": "tsc -p examples",
     "tslint": "tslint -p .",
-    "test": "mocha --opts ./mocha.opts test/**/*.ts"
+    "test": "nyc mocha --opts ./mocha.opts test/*.ts",
+    "coverage": "nyc report --reporter=json && codecov -f coverage/*.json"
   },
   "keywords": [
     "REST",
     "mongodb",
-    "annotation",
+    "decorators",
     "framework"
   ],
   "author": "Olivier Bourdoux",
@@ -26,7 +27,7 @@
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
-    "@types/express": "4.11.0",
+    "@types/express": "^4.11.0",
     "@types/mocha": "^2.2.48",
     "@types/moment": "^2.13.0",
     "@types/mongoose": "5.0.7",
@@ -34,12 +35,15 @@
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "chai-match-pattern": "^1.1.0",
+    "codecov": "^3.0.4",
     "cors": "^2.8.4",
     "dirty-chai": "^2.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
     "mocha": "^5.2.0",
     "mongoose": "^5.2.9",
+    "nyc": "^13.0.1",
+    "promise": "^8.0.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "run-middleware": "^0.9.10",

@@ -3,17 +3,34 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import * as MinimalTodo from '../examples/minimal-todo/index';
+import { app, server } from '../examples/minimal-todo';
 
 chai.use(dirtyChai);
 
 const expect = chai.expect;
 
 const restTester = new RestTester({
-    baseUrl: 'http://localhost:4000',
+    app: app
 });
 
 describe('Simple todos API', function() {
-    console.log(MinimalTodo);
-    require('run-middleware')(MinimalTodo.app)
+    it('plop', function () {
+        expect(42).to.eq(42);
+    });
+
+    describe('/todos', function() {
+        it('Reset todos', function () {
+            return restTester.delete('/todos')
+            .then(({ code,body,headers }) => {
+                expect(code).to.eq(204);
+                return true;
+            })
+            .then(() => restTester.get('/todos'))
+            .then(({ code, body, headers }) => {
+                expect(code).to.eq(200);
+                expect(body).to.eq('[]');
+                return true;
+            });
+        });
+    });
 });
