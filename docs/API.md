@@ -2,8 +2,8 @@
 
 # API reference
 
-### @rest(config)
-#### config: object
+## @rest(config)
+- ### config: object
   ```typescript
   { 
     route: '/path/to/entity', 
@@ -138,47 +138,47 @@
            }
        ```
        
-#### Using `@rest()` on submodels
-TODO
+- ### Using `@rest()` on submodels
+  TODO
 
-### asFilter(postFetchFn)
+## asFilter(postFetchFn)
 Converts a postFetch function throwing errors to a filtering one. 
 It returns the entity if the function didn't throw, or null if the function has thrown an error.
 This is typically used for the 'all' methods.
 You only need to write you middleware once, always throw an error instead of null, 
 then wrap it around with `asFilter()`. 
 
-#### postFetchFn
-A postFetch middleware function. Signature: `(req, entity:E) => E | Promise<E>`
+- ### postFetchFn
+  A postFetch middleware function. Signature: `(req, entity:E) => E | Promise<E>`
 
-#### Return
-A function with the same signature, but that will never throw an error or call the 
-`catch()` method of the returned Promise, but `null` instead.
+- ### Return
+  A function with the same signature, but that will never throw an error or call the 
+  `catch()` method of the returned Promise, but `null` instead.
 
-Example: 
-```typescript
-function myPostFetchFn(req, item) {
-    if (/* some check */) {
-        return item;
-    }
-    else {
-        throw new RestError(403, 'Cannot access item'); 
-    }
-}
-// asFilter(myPostFetchFn) will return a function with the same signature, 
-// but will return null if an error is thrown
-@rest({
-   route: '/items',
-   methods: [
-       all({
-           postFetch: [ asFilter(myPostFetchFn) ]
-       }),
-       one({
-           postFetch: [ myPostFetchFn ]
-       })
-   ]
-})
-export class Item extends Typegoose {
-   /* ... */
-}
-```
+- ### Example: 
+  ```typescript
+  function myPostFetchFn(req, item) {
+      if (/* some check */) {
+          return item;
+      }
+      else {
+          throw new RestError(403, 'Cannot access item'); 
+      }
+  }
+  // asFilter(myPostFetchFn) will return a function with the same signature, 
+  // but will return null if an error is thrown
+  @rest({
+     route: '/items',
+     methods: [
+         all({
+             postFetch: [ asFilter(myPostFetchFn) ]
+         }),
+         one({
+             postFetch: [ myPostFetchFn ]
+         })
+     ]
+  })
+  export class Item extends Typegoose {
+     /* ... */
+  }
+  ```
