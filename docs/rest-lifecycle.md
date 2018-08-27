@@ -1,3 +1,5 @@
+[index](./index)
+
 # Rest endpoint lifecycle
 
 ## Overview

@@ -1,7 +1,9 @@
+[index](./index)
+
 # API documentation
 
 ### @rest(config)
-config: object
+#### config: object
   ```typescript
   { 
     route: '/path/to/entity', 
@@ -136,12 +138,23 @@ config: object
            }
        ```
        
+#### Using `@rest` on submodels
+TODO
+
 ### asFilter(postFetchFn)
 Converts a postFetch function throwing errors to a filtering one. 
 It returns the entity if the function didn't throw, or null if the function has thrown an error.
 This is typically used for the 'all' methods.
 You only need to write you middleware once, always throw an error instead of null, 
 then wrap it around with `asFilter()`. 
+
+#### postFetchFn
+A postFetch middleware function. Signature: `(req, entity:E) => E | Promise<E>`
+
+#### Return
+A function with the same signature, but that will never throw an error or call the 
+`catch()` method of the returned Promise, but `null` instead.
+
 Example: 
 ```typescript
 function myPostFetchFn(req, item) {
