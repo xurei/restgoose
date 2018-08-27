@@ -1,0 +1,25 @@
+box: xurei/docker-node-mongo
+
+services:
+    - mongo:3.7.2
+
+build:
+  steps:
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+          
+    - npm-install
+          
+    - script:
+        name: npm run build
+        code: |
+          npm run build
+          npm run build-examples
+
+    - script:
+        name: npm tests
+        code: |
+          MONGO_HOST=$MONGO_PORT_27017_TCP_ADDR npm run rest_test -- --no-docker

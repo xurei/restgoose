@@ -9,7 +9,7 @@
     "build-ts": "tsc -p .",
     "build-examples": "tsc -p examples",
     "tslint": "tslint -p .",
-    "test": "bash scripts/rest_test.sh"
+    "test": "mocha --opts ./mocha.opts test/**/*.ts"
   },
   "keywords": [
     "REST",
@@ -37,10 +37,12 @@
     "cors": "^2.8.4",
     "dirty-chai": "^2.0.1",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "mocha": "^5.2.0",
     "mongoose": "^5.2.9",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
+    "run-middleware": "^0.9.10",
     "ts-node": "^3.3.0",
     "tslint": "5.9.1",
     "typegoose": "^5.2.1",
