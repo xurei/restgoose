@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Model } from 'mongoose';
+import { CastError, Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { RestConfigurationMethod, RestError } from './rest';
 
@@ -207,6 +207,13 @@ async function wrapException<R extends RestRequest, P extends Response>(req: R, 
         if (error instanceof RestError) {
             const restError = error as RestError;
             return res.status(restError.httpCode).send(restError.errorData);
+        }
+        else if (error instanceof CastError) {
+            if (error['path'] === '_id') {
+                return res.status(404).json({
+                    code: ERROR_NOT_FOUND_CODE,
+                });
+            }
         }
         else if (error.name === ERROR_VALIDATION_NAME) {
             return res.status(400).send({ code: ERROR_VALIDATION_CODE, errors: error.errors });

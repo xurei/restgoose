@@ -36,7 +36,7 @@ export class RestTester {
             this.app.runMiddleware(route, options,
                 (code, body, headers) => {
                     try {
-                        if (body) {
+                        if (body && !(body instanceof Object)) {
                             body = JSON.parse(body);
                         }
                         resolve({ code,body,headers });
