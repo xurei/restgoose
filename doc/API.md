@@ -2,7 +2,7 @@
 
 ### @rest(config)
 - config: object
-  ```
+  ```javascript
   { 
     route: '/path/to/entity', 
     methods: [
