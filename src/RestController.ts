@@ -209,6 +209,7 @@ async function wrapException<R extends RestRequest, P extends Response>(req: R, 
             return res.status(restError.httpCode).send(restError.errorData);
         }
         else if (error instanceof CastError) {
+            // tslint:disable-next-line:no-string-literal
             if (error['path'] === '_id') {
                 return res.status(404).json({
                     code: ERROR_NOT_FOUND_CODE,
