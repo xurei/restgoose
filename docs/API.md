@@ -15,7 +15,7 @@
   }
   ```
   
-  - **`route`** is the path where the model will ve served
+  - **`route`** is the path where the model will be served
   - **`method`** is the type of RESTful method :
     - all : GET `/path/to/entity/`
     - one : GET `/path/to/entity/:id`
@@ -46,7 +46,7 @@
     A typical example would be removing the `password` field of a User entity, or
     checking some access rules.
     
-    `postFetch` methods are called on each entity fetched.
+    **`postFetch`** methods are called on each entity fetched.
     They must return the entity, a promise containing the entity, null, or throw an
     Error (typically a RestError).
     

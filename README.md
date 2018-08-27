@@ -38,7 +38,7 @@ export const TodoModel = new Todo().getModelForClass(Todo);
 ```
 See the full example (with express/mongoose boilerplates) [in the examples directory](./examples)
 
-Check out [the doc](./doc/index.md) for details. 
+Check out [the docs](docs/index.md) for details. 
 
 ## The Philosophy behind Restgoose
 RESToose takes its inspiration from Typegoose and Loopback.
