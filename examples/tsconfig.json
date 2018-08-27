@@ -4,7 +4,8 @@
     "module": "commonjs",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "sourceMap": true     
+    "sourceMap": true,
+    "outDir": "../examples-build"
   },
   "include": [
     "**/*.ts"
