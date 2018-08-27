@@ -59,7 +59,7 @@ export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod
 
 /**
  * Converts a MiddlewarePostFetch function to a filtering one. It returns the entity if the function didn't throw, or
- * null if the function as thrown an error.
+ * null if the function has thrown an error.
  * This is typically used for the 'all' method, allowing to use one function for both getting all the items
  * (with asFilter) and getting only one (without it, throwing errors)
  */
