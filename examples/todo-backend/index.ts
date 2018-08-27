@@ -11,7 +11,7 @@ import { Restgoose, all, create, one, remove, removeAll, rest, update } from '..
 import * as cors from 'cors';
 
 async function addUrl(req, todo) {
-    todo.url = `http://${req.headers.host}/todos/${todo._id}`;
+    todo.url = `https://${req.headers.host}/todos/${todo._id}`;
     todo = await todo.save();
     return todo;
 }
@@ -58,13 +58,13 @@ app.use(cors({
 
 openDatabase();
 app.use(Restgoose.initialize());
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!')
+app.listen(process.env.PORT, function () {
+    console.log(`Example app listening on port ${process.env.PORT}!`)
 });
 
 function openDatabase() {
     // Business as usual - connect to your database with mongoose
-    mongoose.connect('mongodb://localhost/restgoose-example')
+    mongoose.connect(process.env.MONGODB_URI)
         .catch(e => {
             console.error('MongoDB Connection Error:');
             console.error(JSON.stringify(e, null, '  '));

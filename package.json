@@ -6,11 +6,13 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "rimraf lib && npm run tslint && npm run build-ts",
-    "build-ts": "tsc -p .",
-    "build-examples": "tsc -p examples",
+    "build-ts": "node_modules/.bin/tsc -p .",
+    "build-examples": "node_modules/.bin/tsc -p examples",
+    "serve-doc": "bash scripts/serve-doc.sh",
     "tslint": "tslint -p .",
     "test": "nyc mocha --opts ./mocha.opts test/*.ts",
-    "coverage": "nyc report --reporter=json && codecov -f coverage/*.json"
+    "coverage": "nyc report --reporter=json && codecov -f coverage/*.json",
+    "start": "npm i && npm run build-ts && npm run build-examples && node examples-build/todo-backend"
   },
   "keywords": [
     "REST",
