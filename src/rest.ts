@@ -19,7 +19,7 @@ export function rest<T extends Typegoose, E extends TypegooseConstructor<T>>(con
     };
 }
 
-function defaultMethod<T extends Typegoose>(name: string, path: string, preFetch?: MiddlewarePreFetch[],
+function defaultMethod<T extends Typegoose>(name: MethodName, path: string, preFetch?: MiddlewarePreFetch[],
                                             postFetch?: MiddlewarePostFetch<T>[]) {
     return {
         method: name,
@@ -82,10 +82,12 @@ export declare type MiddlewarePreFetch = (<R extends Request, P extends Response
 export declare type MiddlewarePostFetch<T extends Typegoose> = (<R extends Request>(req: R, entity: T) => Promise<T> | T);
 
 export interface RestConfigurationMethod<T extends Typegoose> {
-    method: string;
+    method: MethodName;
     preFetch?: MiddlewarePreFetch[];
     postFetch?: MiddlewarePostFetch<T>[];
 }
+
+export type MethodName = 'all' | 'one' | 'create' | 'update' | 'remove' | 'removeAll' | 'custom';
 
 export class RestError extends Error {
     constructor(public httpCode: number, public errorData: any = {}) {

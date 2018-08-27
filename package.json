@@ -6,9 +6,9 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "rimraf lib && npm run tslint && npm run build-ts",
-    "build-ts": "tsc",
+    "build-ts": "tsc -p .",
     "build-examples": "tsc -p examples",
-    "tslint": "tslint",
+    "tslint": "tslint -p .",
     "test": "bash scripts/rest_test.sh"
   },
   "keywords": [

@@ -176,7 +176,7 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
 
             const result = await modelType.find(req.filter) || [];
 
-            let out = await Promise.all(result.map(async entity => {
+            const out = await Promise.all(result.map(async entity => {
                 return postFetchHooks(req, entity, methodConfig);
             }));
             out.filter(e => !!e);

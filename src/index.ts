@@ -1,2 +1,2 @@
-export * from './rest'
-export * from './Restoose'
+export * from './rest';
+export * from './Restoose';
