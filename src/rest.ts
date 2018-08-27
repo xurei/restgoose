@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { MongooseDocument } from 'mongoose';
+import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 import { parseQuery } from './middlewares/parseQuery';
 import { RestRegistry } from './RestRegistry';
+import { HttpMethod, MiddlewarePostFetch, MiddlewarePreFetch, RestMethodName } from './types';
 
 export declare interface TypegooseConstructor<T extends Typegoose> {
     new(...args: any[]): T;
@@ -19,8 +19,8 @@ export function rest<T extends Typegoose, E extends TypegooseConstructor<T>>(con
     };
 }
 
-function defaultMethod<T extends Typegoose>(name: MethodName, path: string, preFetch?: MiddlewarePreFetch[],
-                                            postFetch?: MiddlewarePostFetch<T>[]) {
+function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, preFetch?: MiddlewarePreFetch[],
+                                            postFetch?: MiddlewarePostFetch<T>[]): RestConfigurationMethodWithPath<T> {
     return {
         method: name,
         path: path,
@@ -29,39 +29,39 @@ function defaultMethod<T extends Typegoose>(name: MethodName, path: string, preF
     };
 }
 
-export function all<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('all', '/', [parseQuery].concat(preFetch || []), postFetch);
+export function all<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('all', '/', [parseQuery].concat(config.preFetch || []), config.postFetch || []);
 }
 
-export function one<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('one', '/:id', preFetch, postFetch);
+export function one<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('one', '/:id', config.preFetch || [], config.postFetch || []);
 }
 
-export function create<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('create', '/', preFetch, postFetch);
+export function create<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('create', '/', config.preFetch || [], config.postFetch || []);
 }
 
-export function update<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('update', '/:id', preFetch, postFetch);
+export function update<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('update', '/:id', config.preFetch || [], config.postFetch || []);
 }
 
-export function remove<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('remove', '/:id', preFetch, postFetch);
+export function remove<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('remove', '/:id', config.preFetch || [], config.postFetch || []);
 }
 
-export function removeAll<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('removeAll', '/', preFetch, postFetch);
+export function removeAll<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('removeAll', '/', config.preFetch || [], config.postFetch || []);
 }
 
-export function custom<T extends Typegoose>(path: string, preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
-    return defaultMethod('custom', path, preFetch, postFetch);
+export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod, config: RestConfigurationMethod<T> = {}) {
+    return defaultMethod('custom', path, config.preFetch || [], config.postFetch || []);
 }
 
 /**
  * Converts a MiddlewarePostFetch function to a filtering one. It returns the entity if the function didn't throw, or
  * null if the function as thrown an error.
- * This is typically used for the 'all' method, allowing to filter the fetched entities instead of returning an error
- * on the http
+ * This is typically used for the 'all' method, allowing to use one function for both getting all the items
+ * (with asFilter) and getting only one (without it, throwing errors)
  */
 export function asFilter<T extends Typegoose>(fn: MiddlewarePostFetch<T>): MiddlewarePostFetch<T> {
     return <R extends Request>(req: R, entity: T): Promise<T> => {
@@ -75,19 +75,18 @@ export function asFilter<T extends Typegoose>(fn: MiddlewarePostFetch<T>): Middl
 
 export interface RestConfiguration<T extends Typegoose> {
     route: string;
-    methods?: RestConfigurationMethod<T>[];
+    methods?: RestConfigurationMethodWithPath<T>[];
 }
 
-export declare type MiddlewarePreFetch = (<R extends Request, P extends Response>(req: R, res: P, next: () => void) => void);
-export declare type MiddlewarePostFetch<T extends Typegoose> = (<R extends Request>(req: R, entity: T) => Promise<T> | T);
-
 export interface RestConfigurationMethod<T extends Typegoose> {
-    method: MethodName;
     preFetch?: MiddlewarePreFetch[];
     postFetch?: MiddlewarePostFetch<T>[];
 }
 
-export type MethodName = 'all' | 'one' | 'create' | 'update' | 'remove' | 'removeAll' | 'custom';
+export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {
+    path: string;
+    method: RestMethodName;
+}
 
 export class RestError extends Error {
     constructor(public httpCode: number, public errorData: any = {}) {

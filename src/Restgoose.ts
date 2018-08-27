@@ -3,7 +3,7 @@ import { Typegoose } from 'typegoose';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 
-export class Restoose {
+export class Restgoose {
     private static ROUTES = {
         all: { httpMethod: 'get', path: '/', fn: all },
         one: { httpMethod: 'get', path: '/:id', fn: one },

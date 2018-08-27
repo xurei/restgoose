@@ -7,7 +7,7 @@ import * as express from 'express';
 import { prop, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import { Restoose, all, create, one, remove, removeAll, rest, update } from '../../lib';
+import { Restgoose, all, create, one, remove, removeAll, rest, update } from '../../lib';
 import * as cors from 'cors';
 
 async function addUrl(req, todo) {
@@ -21,7 +21,9 @@ async function addUrl(req, todo) {
     methods: [
         all(), // GET /todos
         one(), // GET /todos/:id
-        create([], [ addUrl] ), // POST /todos
+        create({
+            postFetch: [ addUrl ],
+        }), // POST /todos
         update(), // PUT /todos/:id
         remove(), // DELETE /todos/:id
         removeAll(), // DELETE /todos
@@ -55,7 +57,7 @@ app.use(cors({
 }));
 
 openDatabase();
-Restoose.initialize(app);
+Restgoose.initialize(app);
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!')
 });
