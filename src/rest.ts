@@ -49,6 +49,10 @@ export function remove<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], pos
     return defaultMethod('remove', '/:id', preFetch, postFetch);
 }
 
+export function removeAll<T extends Typegoose>(preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
+    return defaultMethod('removeAll', '/', preFetch, postFetch);
+}
+
 export function custom<T extends Typegoose>(path: string, preFetch?: MiddlewarePreFetch[], postFetch?: MiddlewarePostFetch<T>[]) {
     return defaultMethod('custom', path, preFetch, postFetch);
 }
@@ -75,7 +79,6 @@ export interface RestConfiguration<T extends Typegoose> {
 }
 
 export declare type MiddlewarePreFetch = (<R extends Request, P extends Response>(req: R, res: P, next: () => void) => void);
-// TODO entity: any for now, as it's apparently complicated to make typescript understand the right type with interfaces
 export declare type MiddlewarePostFetch<T extends Typegoose> = (<R extends Request>(req: R, entity: T) => Promise<T> | T);
 
 export interface RestConfigurationMethod<T extends Typegoose> {

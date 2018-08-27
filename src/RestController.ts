@@ -11,12 +11,17 @@ export const ERROR_READONLY_CODE: string = 'READ_ONLY';
 export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
 export const ERROR_VALIDATION_NAME: string = 'ValidationError';
 
+async function getOne<T extends Typegoose, R extends RestRequest>(
+    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: R): Promise<InstanceType<T>> {
+    const result = await modelType.findById(req.params.id);
+    return await postFetchHooks(req, result, methodConfig);
+}
+
 export function all<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
     return async <R extends RestRequest, P extends Response>(req: R, res: P) => {
         await wrapException(req, res, async <R extends RestRequest, P extends Response>(req: R, res: P) => {
             await prefetchHooks(req, res, methodConfig);
 
-            // TODO filter
             const result = await modelType.find(req.filter) || [];
 
             // TODO migrate to async/await
@@ -80,12 +85,6 @@ export function one<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
     };
 }
 
-async function getOne<T extends Typegoose, R extends RestRequest>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: R): Promise<InstanceType<T>> {
-    const result = await modelType.findById(req.params.id);
-    return await postFetchHooks(req, result, methodConfig);
-}
-
 export function create<T extends Typegoose>(
     modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
     return async <R extends RestRequest, P extends Response>(req: R, res: P) => {
@@ -94,7 +93,8 @@ export function create<T extends Typegoose>(
             const payload = buildPayload(req, modelType);
             const model = new modelType(payload);
             const saved = await model.save();
-            res.status(201).json(saved);
+            const out = await postFetchHooks(req, saved, methodConfig);
+            res.status(201).json(out);
         });
     };
 }
@@ -165,6 +165,23 @@ export function remove<T extends Typegoose>(
                 await modelType.remove({ _id: req.params.id });
                 return res.status(204).end();
             }
+        });
+    };
+}
+
+export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+    return async <R extends RestRequest, P extends Response>(req: R, res: P) => {
+        await wrapException(req, res, async <R extends RestRequest, P extends Response>(req: R, res: P) => {
+            await prefetchHooks(req, res, methodConfig);
+
+            const result = await modelType.find(req.filter) || [];
+
+            let out = await Promise.all(result.map(async entity => {
+                return postFetchHooks(req, entity, methodConfig);
+            }));
+            out.filter(e => !!e);
+            await modelType.remove({ _id: { $in: out.map(e => e._id) }});
+            return res.status(204).end();
         });
     };
 }

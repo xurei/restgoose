@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Typegoose } from 'typegoose';
-import { all, allWithin, create, createWithin, one, remove, update } from './RestController';
+import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 
 export class Restoose {
@@ -8,8 +8,9 @@ export class Restoose {
         all: { httpMethod: 'get', path: '/', fn: all },
         one: { httpMethod: 'get', path: '/:id', fn: one },
         create: { httpMethod: 'post', path: '/', fn: create },
-        update: { httpMethod: 'put', path: '/:id', fn: update },
+        update: { httpMethod: 'patch', path: '/:id', fn: update },
         remove: { httpMethod: 'delete', path: '/:id', fn: remove },
+        removeAll: { httpMethod: 'delete', path: '/', fn: removeAll },
         custom: { httpMethod: 'delete', path: '/:id', fn: remove },
     };
     private static ROUTES_EMBED = {
