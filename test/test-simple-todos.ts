@@ -14,9 +14,7 @@ const restTester = new RestTester({
 });
 
 describe('Simple todos API', function() {
-    it('plop', function () {
-        expect(42).to.eq(42);
-    });
+    this.timeout(20000); //20s timeout
 
     describe('/todos', function() {
         it('Reset todos', function () {
