@@ -104,6 +104,7 @@
     1. Create the routes GET `/items/` and GET `/items/:id`. 
        - `/items/` will filter items that are not accessible with the use the `asFilter()` helper.
        - `items/:id` will return a 403 error if the item is not accessible
+       
        ```typescript
            function checkAccessRule(req, item) 
            {
