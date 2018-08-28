@@ -3,7 +3,9 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { app, server } from '../examples/minimal-todo';
+import { app, Todo } from '../examples/minimal-todo';
+import { Restgoose } from '../lib';
+import * as MockReq from 'mock-req';
 
 chai.use(dirtyChai);
 
@@ -126,6 +128,61 @@ describe('Minimal TODO API', function() {
                     return true;
                 });
             });
+        });
+
+        describe('getAll()', function() {
+            it('should contain the same data as all()', function() {
+                let fromAll = null;
+                let fromGetAll = null;
+
+                return Promise.resolve()
+                .then(() => restTester.get('/todos')) // all()
+                .then(({ code, body, headers }) => {
+                    expect(code).to.eq(200);
+                    fromAll = body;
+                    return Restgoose.getAll(Todo, new MockReq());
+                })
+                .then((data) => {
+                    fromGetAll = data.map(item => JSON.parse(JSON.stringify(item)));
+                    expect(fromGetAll).to.deep.eq(fromAll);
+                    return true;
+                })
+            });
+
+            //TODO check all() presence
+        });
+
+        describe('getOne()', function() {
+            it('should contain the same data as one()', function() {
+                let fromOne = null;
+                let fromGetOne = null;
+                let newId = null;
+
+                return Promise.resolve()
+                .then(() => restTester.post('/todos', {
+                    title: 'blah'
+                }))
+                .then(({ code, body, headers }) => {
+                    newId = body._id;
+                })
+                .then(() => restTester.get('/todos/'+newId)) // one()
+                .then(({ code, body, headers }) => {
+                    expect(code).to.eq(200);
+                    fromOne = body;
+                    const req = new MockReq();
+                    req.params = {
+                        id: `${newId}`
+                    };
+                    return Restgoose.getOne(Todo, req);
+                })
+                .then((item) => {
+                    fromGetOne = JSON.parse(JSON.stringify(item));
+                    expect(fromGetOne).to.deep.eq(fromOne);
+                    return true;
+                })
+            });
+
+            //TODO check one() presence
         });
     });
 });

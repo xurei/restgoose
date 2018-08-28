@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { Typegoose } from 'typegoose';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
+import { RestRequest } from './types';
+import { getOne, getAll } from './RestController';
+import { TypegooseConstructor } from './rest';
 
 export class Restgoose {
     private static ROUTES = {
@@ -28,6 +31,32 @@ export class Restgoose {
         for (const model of models) {
             app.use(model.config.route, this.createRestRoot(model));
         }
+    }
+
+    /**
+     * Simulates a REST call on the method one() and passes the result through the
+     * postFetch middlewares
+     */
+    public static async getOne<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
+        const model = RestRegistry.getModel(modelType);
+        const method = model.config.methods.find(m => m.method === 'one');
+        if (!method) {
+            throw new Error(`On model ${modelType.name}: method one() is not specified. Cannot use getOne()`);
+        }
+        return getOne(model.type.prototype.getModelForClass(), method, req);
+    }
+
+    /**
+     * Simulates a REST call on the method all() and passes the result through the
+     * postFetch middlewares
+     */
+    public static async getAll<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
+        const model = RestRegistry.getModel(modelType);
+        const method = model.config.methods.find(m => m.method === 'all');
+        if (!method) {
+            throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
+        }
+        return getAll(model.type.prototype.getModelForClass(), method, req);
     }
 
     private static createRestRoot<T extends Typegoose>(model: RestModelEntry<T>): Router {

@@ -11,25 +11,30 @@ export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
 export const ERROR_VALIDATION_NAME: string = 'ValidationError';
 
 export async function getOne<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<InstanceType<T>> {
+    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<InstanceType<T>> {
+
     const result = await modelType.findById(req.params.id);
     return await postFetchHooks(req, result, methodConfig);
+}
+
+export async function getAll<T extends Typegoose>(
+    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<InstanceType<T>[]> {
+
+    const result = await modelType.find(req.filter) || [];
+    // TODO migrate to async/await
+    const out = await Promise.all(result.map(async entity => {
+        return postFetchHooks(req, entity, methodConfig);
+    }));
+    return out.filter(e => !!e);
 }
 
 export function all<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         await prefetchHooks(req, res, methodConfig);
-
-        const result = await modelType.find(req.filter) || [];
-
-        // TODO migrate to async/await
-        Promise.all(result.map(async entity => {
-            return postFetchHooks(req, entity, methodConfig);
-        }))
-        .then(out => out.filter(e => !!e))
-        .then(out => {
-            return res.status(200).json(out);
-        });
+        const result = await getAll(modelType, methodConfig, req);
+        return res.status(200).json(result);
     });
 }
 
@@ -158,8 +163,7 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
     return wrapException(async (req: RestRequest, res: Response) => {
         await prefetchHooks(req, res, methodConfig);
 
-        const result = await modelType.find(req.filter) || [];
-
+        const result = await getAll(modelType, methodConfig, req);
         const out = await Promise.all(result.map(async entity => {
             return postFetchHooks(req, entity, methodConfig);
         }));

@@ -3,6 +3,7 @@ import { RestConfiguration, TypegooseConstructor } from './rest';
 
 export declare interface RestModelEntry<T extends Typegoose> {
     type: TypegooseConstructor<T>;
+    //mongooseModel: Model<InstanceType<T>>,
     config: RestConfiguration<T>;
     property?: string;
 }
@@ -15,6 +16,7 @@ const RestRegistry = {
     registerModel<T extends Typegoose>(modelType: TypegooseConstructor<T>, config: RestConfiguration<T>) {
         modelsRegistryMap.set(modelType.name, {
             type: modelType,
+            //mongooseModel: modelType.prototype.getModelForClass(),
             config,
         });
     },
@@ -29,6 +31,10 @@ const RestRegistry = {
             property: propertyKey,
             config,
         });
+    },
+
+    getModel<T extends Typegoose>(modelType: TypegooseConstructor<T>):RestModelEntry<Typegoose> {
+        return modelsRegistryMap.get(modelType.name);
     },
 
     listModels(): Iterable<RestModelEntry<Typegoose>> {
