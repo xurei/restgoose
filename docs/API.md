@@ -2,7 +2,18 @@
 
 # API reference
 
+## Restgoose.initialize(app | router)
+  This is the enrty point of Restgoose. 
+  It creates all the routes in the given context.
+  Example:
+  ```typescript
+  const app = express();
+  Restgoose.initialize(app);
+  ```
+    
 ## @rest(config)
+The main decorator of Restgoose. It can be placed on top of a class extending Typegoose, 
+or a property in such a class (see [Using @rest() on submodels](#using-rest-on-submodels)).
 - ### config: object
   ```typescript
   { 
@@ -163,14 +174,14 @@
 - ### Using `@rest()` on submodels
   TODO
 
-## asFilter(postFetchFn)
-Converts a postFetch function throwing errors to a filtering one. 
+## asFilter(fn)
+Converts a `postFetch` or `preSend` function throwing errors to a filtering one. 
 It returns the entity if the function didn't throw, or null if the function has thrown an error.
 This is typically used for the 'all' methods.
 You only need to write you middleware once, always throw an error instead of null, 
 then wrap it around with `asFilter()`. 
 
-- ### postFetchFn
+- ### fn
   A postFetch middleware function. Signature: `(req, entity:E) => E | Promise<E>`
 
 - ### Return
