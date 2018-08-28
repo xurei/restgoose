@@ -23,7 +23,6 @@ export async function getAll<T extends Typegoose>(
     Promise<InstanceType<T>[]> {
 
     const result = await modelType.find(req.filter) || [];
-    // TODO migrate to async/await
     const out = await Promise.all(result.map(async entity => {
         return postFetchHooks(req, entity, methodConfig);
     }));
@@ -52,18 +51,14 @@ export function allWithin<T extends Typegoose>(
         }
         else {
             const refs = parentResult[property];
-            const result = await submodelType.find(Object.assign({}, req.filter || {}, {
-                _id: { $in: refs },
-            }));
 
-            // TODO migrate to async/await
-            Promise.all(result.map(async entity => {
-                return postFetchHooks(req, entity, submethodConfig);
-            }))
-            .then(out => out.filter(e => !!e))
-            .then(out => {
-                return res.status(200).json(out);
+            req = Object.assign({}, req);
+            req.filter = Object.assign({}, req.filter || {}, {
+                _id: { $in: refs },
             });
+
+            const result = getAll(submodelType, submethodConfig, req);
+            return res.status(200).json(result);
         }
     });
 }
