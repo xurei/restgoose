@@ -49,14 +49,16 @@ export class Restgoose {
                 const route = this.ROUTES_EMBED[method.method];
                 const routerFn = router[route.httpMethod].bind(router);
                 const routePath = `/:id${submodel.config.route}${route.path}`;
-                routerFn(routePath, route.fn(targetModel, methodOne, submodel.property, targetSubModel, method));
+                const controllerFn = route.fn(targetModel, methodOne, submodel.property, targetSubModel, method);
+                routerFn(routePath, controllerFn);
             });
         }
 
         model.config.methods.forEach(method => {
             const route = this.ROUTES[method.method];
             const routerFn = router[route.httpMethod].bind(router);
-            routerFn(route.path, route.fn(targetModel, method));
+            const controllerFn = route.fn(targetModel, method);
+            routerFn(route.path, controllerFn);
         });
         return router;
     }
