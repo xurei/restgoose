@@ -30,18 +30,10 @@ This step is typically used for pagination or filtering.
 
 ### fetch
 This step is the actual call to the database. 
+It executes the query returned by the [buildQuery](#buildquery) step, or uses the default behaviour 
+(see the [reference table](#reference-table) below).
+ 
 This step does not have a lifecycle hook.
-
-The following table shows the mongoose function that are called for each pre-defined method:
-
-| method        | function                        |
-|---------------|---------------------------------|
-| `all()`       | `Model.find()`                  |
-| `one()`       | `Model.findById()`              |
-| `create()`    | `new Model().save()`            | 
-| `update()`    | `Model.findById().save()`       | 
-| `remove()`    | `Model.findById().deleteOne()`  | 
-| `removeAll()` | `Model.findById().deleteMany()` | 
 
 ### postFetch
 This step is responsible of any post-treatment that requires the fetched entity/entities.
@@ -69,14 +61,29 @@ The following table shows the mongoose function that are called for each pre-def
 ### preSend
 This step is responsible of any post-treatment before sending the output, and after the entity has been persisted (if required).
  
-Also, it is not being called in the fetchParent step (see below), while the postFetch step is. 
+Also, it is not being called in the [fetchParent](#fetchparent-submodels-only) step, while the [postFetch](#postfetch) step is. 
 This is useful if you want to alter the returned JSON but don't want it to happen internally in the backend 
 (e.g. filtering hidden fields).
+
+preSend is not called on `remove()` and `removeAll()` methods. 
 
 ### fetchParent (submodels only)
 This step only happens on submodels endpoint (e.g. `/entities/:id/subentities`). 
 It is a minimal version of a normal lifecycle on the parent entity (e.g. `/entities/:id`). 
 
 It is only composed of three steps: **buildQuery**, **fetch** and **postFetch**. 
-They works exactly as described above, but on the parent model instead of the 
-submodel that the enpoint points to. 
+They work exactly as described in their respective sections, but on the parent model instead of the 
+submodel that the enpoint points to.
+
+### Reference table
+The following table shows the mongoose functions that are called at fetch and persist step, 
+and indicates if hooks are called or not.
+
+| method        | preFetch | buildQuery | fetch              | postFetch | persist              | preSend |
+|---------------|----------|------------|--------------------|-----------|----------------------|---------|
+| `all()`       | ✓        | ✓          | `Model.find()`     | ✓         |                      | ✓       |
+| `one()`       | ✓        | ✓          | `Model.findById()` | ✓         |                      | ✓       |
+| `create()`    | ✓        |            | `new Model()`      | ✓         | `entity.save()`      | ✓       |
+| `update()`    | ✓        | ✓          | `Model.findById()` | ✓         | `entity.save()`      | ✓       |
+| `remove()`    | ✓        | ✓          | `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
+| `removeAll()` | ✓        | ✓          | `Model.findById()` | ✓         | `Model.deleteMany()` |         |
