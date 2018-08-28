@@ -9,8 +9,10 @@
     route: '/path/to/entity', 
     methods: [
       method({
-        preFetch: Array< (req,res,next)=>void >, 
-        postFetch: Array< (req,entity)=>Entity >, 
+        preFetch?: Array< (req,res,next)=>void | (req)=>Promise<any> >, 
+        postFetch?: Array< (req,entity)=>Entity >, 
+        buildQuery?: (req)=>Query;
+        preSend?: MiddlewarePostFetch<T>[];
       }),
     ] 
   }
@@ -27,7 +29,8 @@
     - removeAll() : DELETE `/path/to/entity/`
     - custom() : custom path, ***TODO***
     
-  - **preFetch** an array of express-compatible middlewares. 
+  - **preFetch** an array of express-compatible middlewares or async functions. 
+  
     Those methods are called **before** any call to MongoDB. This is where you can
     alter the request or check something (e.g. authentication) before fetching the data.
     
@@ -60,7 +63,17 @@
         } 
     ```
     
+  - **buildQuery** a function returning a query.
+  
+    This optional method allows to define the query that will be sent to the database in the `fetch` step.
+    
+    See also the [Rest endpoint lifecycle](./rest-lifecycle.md) page for more details.
+    
+    TODO add example
+    
+    
   - **postFetch** an array of middlewares. 
+  
     Those methods are called **after** the entities have been fetched. This is
     useful if you need to check or remove some fields before returning the data.
     
@@ -74,33 +87,6 @@
     See also the [Rest endpoint lifecycle](./rest-lifecycle.md) page for more details.
     
     Examples:
-    1. Create the routes GET `/users/` and GET `/users/:id`. 
-       Both will remove the `password` field from the returned object(s).
-       ```typescript
-           function removePassword(req, user) 
-           { 
-               user.password = null;
-               return user;
-           }
-           
-           @rest({
-               route: '/users',
-               methods: [
-                   all({
-                       postFetch: [ removePassword ]
-                   }),
-                   one({
-                       postFetch: [ removePassword ]
-                   })
-               ]
-           })
-           export class User extends Typegoose {
-               @prop({required: true})
-               password: string;
-               /* ... */
-           }
-       ``` 
-    
     1. Create the routes GET `/items/` and GET `/items/:id`. 
        - `/items/` will filter items that are not accessible with the use the `asFilter()` helper.
        - `items/:id` will return a 403 error if the item is not accessible
@@ -138,6 +124,41 @@
                /* ... */
            }
        ```
+       
+  - **preSend** an array of middlewares.
+  
+    These methods work the same way as the `postFetch` methods. The differs from them as they are
+    called after an optional save() in the database, and before the result get sent through the network.
+    
+    See also the [Rest endpoint lifecycle](./rest-lifecycle.md) page for more details.
+    
+    Examples:
+    1. Create the routes GET `/users/` and GET `/users/:id`. 
+       Both will remove the `password` field from the returned object(s).
+       ```typescript
+           function removePassword(req, user) 
+           { 
+               user.password = null;
+               return user;
+           }
+           
+           @rest({
+               route: '/users',
+               methods: [
+                   all({
+                       preSend: [ removePassword ]
+                   }),
+                   one({
+                       preSend: [ removePassword ]
+                   })
+               ]
+           })
+           export class User extends Typegoose {
+               @prop({required: true})
+               password: string;
+               /* ... */
+           }
+       ``` 
        
 - ### Using `@rest()` on submodels
   TODO

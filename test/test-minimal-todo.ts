@@ -149,7 +149,7 @@ describe('Minimal TODO API', function() {
                 })
             });
 
-            //TODO check all() presence
+            //TODO check all() defined
         });
 
         describe('getOne()', function() {
@@ -182,7 +182,7 @@ describe('Minimal TODO API', function() {
                 })
             });
 
-            //TODO check one() presence
+            //TODO check one() defined
         });
     });
 });
