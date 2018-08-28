@@ -5,6 +5,7 @@ Model-driven REST API framework
 [![codecov](https://codecov.io/gh/xurei/restgoose/branch/master/graph/badge.svg)](https://codecov.io/gh/xurei/restgoose)
 
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/m/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
+[![NPM](https://nodei.co/npm/@xureilab/restgoose.png?compact=true)](https://www.npmjs.com/package/@xureilab/restgoose)
 
 #### MongoDB + Typegoose + Restgoose = ❤️️
 
