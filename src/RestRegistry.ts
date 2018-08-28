@@ -16,7 +16,7 @@ const RestRegistry = {
     registerModel<T extends Typegoose>(modelType: TypegooseConstructor<T>, config: RestConfiguration<T>) {
         modelsRegistryMap.set(modelType.name, {
             type: modelType,
-            //mongooseModel: modelType.prototype.getModelForClass(),
+            // mongooseModel: modelType.prototype.getModelForClass(),
             config,
         });
     },
@@ -33,7 +33,7 @@ const RestRegistry = {
         });
     },
 
-    getModel<T extends Typegoose>(modelType: TypegooseConstructor<T>):RestModelEntry<Typegoose> {
+    getModel<T extends Typegoose>(modelType: TypegooseConstructor<T>): RestModelEntry<Typegoose> {
         return modelsRegistryMap.get(modelType.name);
     },
 
