@@ -31,7 +31,7 @@ import { all, create, one, remove, rest, update } from '@xureilab/restgoose';
         all(), // GET /todos
         one(), // GET /todos/:id
         create(), // POST /todos
-        update(), // PUT /todos/:id
+        update(), // PATCH /todos/:id
         remove(), // DELETE /todos/:id
     ],
 })
