@@ -1,9 +1,9 @@
 import { Typegoose } from 'typegoose';
-import { RestConfiguration, TypegooseConstructor } from './rest';
+import { RestConfiguration } from './rest';
+import { Constructor } from './types';
 
 export declare interface RestModelEntry<T extends Typegoose> {
-    type: TypegooseConstructor<T>;
-    //mongooseModel: Model<InstanceType<T>>,
+    type: Constructor<T>;
     config: RestConfiguration<T>;
     property?: string;
 }
@@ -13,16 +13,15 @@ const submodelsRegistryMap: Map<string, Map<string, RestModelEntry<Typegoose>>> 
     new Map<string, Map<string, RestModelEntry<Typegoose>>>();
 
 const RestRegistry = {
-    registerModel<T extends Typegoose>(modelType: TypegooseConstructor<T>, config: RestConfiguration<T>) {
+    registerModel<T extends Typegoose>(modelType: Constructor<T>, config: RestConfiguration<T>) {
         modelsRegistryMap.set(modelType.name, {
             type: modelType,
-            // mongooseModel: modelType.prototype.getModelForClass(),
             config,
         });
     },
 
     registerSubModel<T extends Typegoose>(
-        modelType: TypegooseConstructor<T>, propertyKey: string, config: RestConfiguration<T>) {
+        modelType: Constructor<T>, propertyKey: string, config: RestConfiguration<T>) {
         if (!submodelsRegistryMap.has(modelType.name)) {
             submodelsRegistryMap.set(modelType.name, new Map<string, RestModelEntry<Typegoose>>());
         }
@@ -33,7 +32,7 @@ const RestRegistry = {
         });
     },
 
-    getModel<T extends Typegoose>(modelType: TypegooseConstructor<T>): RestModelEntry<Typegoose> {
+    getModel<T extends Typegoose>(modelType: Constructor<T>): RestModelEntry<Typegoose> {
         return modelsRegistryMap.get(modelType.name);
     },
 

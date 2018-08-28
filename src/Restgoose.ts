@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { Typegoose } from 'typegoose';
-import { TypegooseConstructor } from './rest';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { getAll, getOne } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
-import { RestRequest } from './types';
+import { Constructor, RestRequest } from './types';
 
 export class Restgoose {
     private static ROUTES = {
@@ -38,7 +37,7 @@ export class Restgoose {
      * postFetch middlewares.
      * NOTE : preFetch middlewares are NOT called
      */
-    public static async getOne<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
+    public static async getOne<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
         const method = model.config.methods.find(m => m.method === 'one');
         if (!method) {
@@ -52,7 +51,7 @@ export class Restgoose {
      * postFetch middlewares.
      * NOTE : preFetch middlewares are NOT called
      */
-    public static async getAll<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
+    public static async getAll<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
         const method = model.config.methods.find(m => m.method === 'all');
         if (!method) {

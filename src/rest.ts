@@ -2,19 +2,22 @@ import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 import { parseQuery } from './middlewares/parseQuery';
 import { RestRegistry } from './RestRegistry';
-import { HttpMethod, MiddlewarePostFetch, MiddlewarePreFetch, RestMethodName } from './types';
+import {
+    Constructor,
+    HttpMethod,
+    MiddlewareBuildQuery,
+    MiddlewarePostFetch,
+    MiddlewarePreFetch,
+    RestMethodName,
+} from './types';
 
-export declare interface TypegooseConstructor<T extends Typegoose> {
-    new(...args: any[]): T;
-}
-
-export function rest<T extends Typegoose, E extends TypegooseConstructor<T>>(config: RestConfiguration<T>) {
+export function rest<T extends Typegoose, E extends Constructor<T>>(config: RestConfiguration<T>) {
     return (target: E | T, propertyKey?: string) => {
         if (!propertyKey) {
-            RestRegistry.registerModel((target as E), config);
+            RestRegistry.registerModel(target as E, config);
         }
         else {
-            RestRegistry.registerSubModel((target.constructor) as TypegooseConstructor<T>, propertyKey, config);
+            RestRegistry.registerSubModel(target.constructor as Constructor<T>, propertyKey, config);
         }
     };
 }
@@ -80,7 +83,9 @@ export interface RestConfiguration<T extends Typegoose> {
 
 export interface RestConfigurationMethod<T extends Typegoose> {
     preFetch?: MiddlewarePreFetch[];
+    buildQuery?: MiddlewareBuildQuery<T>;
     postFetch?: MiddlewarePostFetch<T>[];
+    preSend?: MiddlewarePostFetch<T>[];
 }
 
 export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {

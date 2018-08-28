@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import { CastError, Model } from 'mongoose';
+import { CastError, Model, Query } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { RestConfigurationMethod, RestError } from './rest';
-import { RestRequest } from './types';
+import { MiddlewarePostFetch, RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -14,8 +14,12 @@ export async function getOne<T extends Typegoose>(
     modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
     Promise<InstanceType<T>> {
 
-    const result = await modelType.findById(req.params.id);
-    return await postFetchHooks(req, result, methodConfig);
+    const query: Query<InstanceType<T>> = (
+        methodConfig.buildQuery ? await methodConfig.buildQuery(req) : modelType.findById(req.params.id)
+    ) as Query<InstanceType<T>>;
+
+    const result: InstanceType<T> = await query.exec();
+    return await postFetchHooks(req, result, methodConfig.postFetch);
 }
 
 export async function getAll<T extends Typegoose>(
@@ -23,9 +27,7 @@ export async function getAll<T extends Typegoose>(
     Promise<InstanceType<T>[]> {
 
     const result = await modelType.find(req.filter) || [];
-    const out = await Promise.all(result.map(async entity => {
-        return postFetchHooks(req, entity, methodConfig);
-    }));
+    const out = await postFetchHooksAll(req, result, methodConfig.postFetch);
     return out.filter(e => !!e);
 }
 
@@ -33,7 +35,8 @@ export function all<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
     return wrapException(async (req: RestRequest, res: Response) => {
         await prefetchHooks(req, res, methodConfig);
         const result = await getAll(modelType, methodConfig, req);
-        return res.status(200).json(result);
+        const out = await postFetchHooksAll(req, result, methodConfig.preSend);
+        return res.status(200).json(out);
     });
 }
 
@@ -57,8 +60,9 @@ export function allWithin<T extends Typegoose>(
                 _id: { $in: refs },
             });
 
-            const result = getAll(submodelType, submethodConfig, req);
-            return res.status(200).json(result);
+            const result = await getAll(submodelType, submethodConfig, req);
+            const out = await postFetchHooksAll(req, result, methodConfig.preSend);
+            return res.status(200).json(out);
         }
     });
 }
@@ -73,7 +77,8 @@ export function one<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
             });
         }
         else {
-            return res.status(200).json(result);
+            const out = await postFetchHooks(req, result, methodConfig.preSend);
+            return res.status(200).json(out);
         }
     });
 }
@@ -85,7 +90,8 @@ export function create<T extends Typegoose>(
         const payload = buildPayload(req, modelType);
         const model = new modelType(payload);
         const saved = await model.save();
-        const out = await postFetchHooks(req, saved, methodConfig);
+        const result = await postFetchHooks(req, saved, methodConfig.postFetch);
+        const out = await postFetchHooks(req, result, methodConfig.preSend);
         res.status(201).json(out);
     });
 }
@@ -104,14 +110,12 @@ export function createWithin<T extends Typegoose>(
         }
         else {
             const payload = buildPayload(req, submodelType);
-            const submodel = new submodelType(payload);
+            const submodel = await postFetchHooks(req, new submodelType(payload), submethodConfig.postFetch);
             const saved = await submodel.save();
 
             parentResult[property].push(saved._id);
             await parentResult.save();
-
-            // TODO migrate to async/await
-            const out = await postFetchHooks(req, saved, submethodConfig);
+            const out = await postFetchHooks(req, submodel, methodConfig.preSend);
             return res.status(201).json(out);
         }
     });
@@ -129,9 +133,10 @@ export function update<T extends Typegoose>(
         }
         else {
             const payload = buildPayload(req, modelType);
-            let updatedEntity = Object.assign(result, payload);
-            updatedEntity = await updatedEntity.save();
-            return res.status(200).json(updatedEntity);
+            const updatedEntity = Object.assign(result, payload);
+            const saved = await updatedEntity.save();
+            const out = await postFetchHooks(req, saved, methodConfig.preSend);
+            return res.status(200).json(out);
         }
     });
 }
@@ -141,7 +146,7 @@ export function remove<T extends Typegoose>(
     return wrapException(async (req: RestRequest, res: Response) => {
         await prefetchHooks(req, res, methodConfig);
         const result = await modelType.findById(req.params.id);
-        const filteredResult = await postFetchHooks(req, result, methodConfig);
+        const filteredResult = await postFetchHooks(req, result, methodConfig.postFetch);
         if (!filteredResult) {
             return res.status(404).json({
                 code: ERROR_NOT_FOUND_CODE,
@@ -159,9 +164,7 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
         await prefetchHooks(req, res, methodConfig);
 
         const result = await getAll(modelType, methodConfig, req);
-        const out = await Promise.all(result.map(async entity => {
-            return postFetchHooks(req, entity, methodConfig);
-        }));
+        const out = await postFetchHooksAll(req, result, methodConfig.postFetch);
         out.filter(e => !!e);
         await modelType.deleteMany({ _id: { $in: out.map(e => e._id) }});
         return res.status(204).end();
@@ -214,18 +217,26 @@ function prefetchHooks<T extends Typegoose>(
     req: RestRequest, res: Response, methodConfig: RestConfigurationMethod<T>): Promise<any> {
     let promises: Promise<any> = Promise.resolve();
     (methodConfig.preFetch || []).forEach(m => {
-        promises = promises.then(() => new Promise(resolve => {
-            m(req, res, resolve);
+        promises = promises.then(() => new Promise((resolve, reject) => {
+            const out = (m as any)(req, res, resolve);
+            if (out instanceof Promise) {
+                out.then(resolve).catch(reject);
+            }
         }));
     });
     return promises;
 }
 
 function postFetchHooks<T extends Typegoose>(
-    req: RestRequest, entity: T, methodConfig: RestConfigurationMethod<T>): Promise<InstanceType<T>> {
+    req: RestRequest, entity: T, postFetch: MiddlewarePostFetch<T>[]): Promise<InstanceType<T>> {
     let promises: Promise<any> = Promise.resolve(entity);
-    (methodConfig.postFetch || []).forEach(m => {
+    (postFetch || []).forEach(m => {
         promises = promises.then(entity => entity && m(req, entity));
     });
     return promises;
+}
+
+function postFetchHooksAll<T extends Typegoose>(
+    req: RestRequest, entities: T[], postFetch: MiddlewarePostFetch<T>[]): Promise<InstanceType<T>[]> {
+    return Promise.all(entities.map(async entity => postFetchHooks(req, entity, postFetch)));
 }

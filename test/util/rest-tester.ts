@@ -50,7 +50,7 @@ export class RestTester {
     }
 
     public post(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options, options);
+        options = this.applyOptions(options);
 
         return this.runMiddleware(route,
             Object.assign({}, options, {
@@ -61,7 +61,7 @@ export class RestTester {
     }
 
     public get(route: string, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options, options);
+        options = this.applyOptions(options);
 
         return this.runMiddleware(route,
             Object.assign({}, options, {
@@ -71,7 +71,7 @@ export class RestTester {
     }
 
     public put(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options, options);
+        options = this.applyOptions(options);
 
         return this.runMiddleware(route,
             Object.assign({}, options, {
@@ -82,7 +82,7 @@ export class RestTester {
     }
 
     public patch(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options, options);
+        options = this.applyOptions(options);
 
         return this.runMiddleware(route,
             Object.assign({}, options, {
@@ -93,7 +93,7 @@ export class RestTester {
     }
 
     public delete(route: string, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options, options);
+        options = this.applyOptions(options);
 
         return this.runMiddleware(route,
             Object.assign({}, options, {
@@ -102,17 +102,11 @@ export class RestTester {
         );
     }
 
-    private applyOptions(out: object, options?: IRestTesterOptions) {
+    private applyOptions(options: IRestTesterOptions) {
+        options = Object.assign({headers:{}}, options);
         if (this.config.authToken) {
-            out['Authorization'] = `Bearer ${this.config.authToken}`;
+            options.headers['authorization'] = this.config.authToken;
         }
-
-        if (options && options.headers) {
-            Object.keys(options.headers).forEach(header => {
-                out = out[header] = options.headers[header];
-            });
-        }
-
-        return out;
+        return options;
     }
 }
