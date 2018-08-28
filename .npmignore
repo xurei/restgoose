@@ -2,6 +2,12 @@ tsconfig.json
 .editorconfig
 *.iml
 tslint.json
+node_modules
+examples-build
+docs
+coverage
+.nyc_output
+
 
 src
 examples

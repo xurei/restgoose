@@ -22,7 +22,6 @@
   "license": "MIT",
   "peerDependencies": {
     "express": "^4.0.0",
-    "mongoose": "^5.0.0",
     "typegoose": "^5.0.0"
   },
   "devDependencies": {
