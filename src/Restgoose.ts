@@ -35,7 +35,8 @@ export class Restgoose {
 
     /**
      * Simulates a REST call on the method one() and passes the result through the
-     * postFetch middlewares
+     * postFetch middlewares.
+     * NOTE : preFetch middlewares are NOT called
      */
     public static async getOne<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
@@ -48,7 +49,8 @@ export class Restgoose {
 
     /**
      * Simulates a REST call on the method all() and passes the result through the
-     * postFetch middlewares
+     * postFetch middlewares.
+     * NOTE : preFetch middlewares are NOT called
      */
     public static async getAll<T extends Typegoose>(modelType: TypegooseConstructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
