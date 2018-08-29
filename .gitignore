@@ -3,7 +3,7 @@
 # compiled output
 /lib
 /examples-build
-.nyc-output
+.nyc_output
 coverage
 
 # dependencies
