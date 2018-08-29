@@ -4,6 +4,7 @@ import { all, allWithin, create, createWithin, one, remove, removeAll, update } 
 import { getAll, getOne } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 import { Constructor, RestRequest } from './types';
+import { debug } from './debug';
 
 export class Restgoose {
     private static ROUTES = {
@@ -67,6 +68,16 @@ export class Restgoose {
         const submodels = RestRegistry.listSubModelsOf(model.type.name);
         const methodOne = model.config.methods.find(m => m.method.toLowerCase() === 'one');
 
+        debug(`Building routes for model ${model.type.name}`);
+
+        model.config.methods.forEach(method => {
+            const route = this.ROUTES[method.method];
+            const routerFn = router[route.httpMethod].bind(router);
+            const controllerFn = route.fn(targetModel, method);
+            debug(`  ${route.httpMethod.toUpperCase()} ${route.path}`);
+            routerFn(route.path, controllerFn);
+        });
+
         for (const submodel of submodels) {
             if (!methodOne) {
                 throw new Error(`In model '${model.type.name}' : a nested REST route cannot be defined ` +
@@ -80,16 +91,11 @@ export class Restgoose {
                 const routerFn = router[route.httpMethod].bind(router);
                 const routePath = `/:id${submodel.config.route}${route.path}`;
                 const controllerFn = route.fn(targetModel, methodOne, submodel.property, targetSubModel, method);
+                debug(`  ${route.httpMethod.toUpperCase()} ${routePath}`);
                 routerFn(routePath, controllerFn);
             });
         }
 
-        model.config.methods.forEach(method => {
-            const route = this.ROUTES[method.method];
-            const routerFn = router[route.httpMethod].bind(router);
-            const controllerFn = route.fn(targetModel, method);
-            routerFn(route.path, controllerFn);
-        });
         return router;
     }
 }
