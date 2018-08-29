@@ -5,7 +5,7 @@ import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
     HttpMethod,
-    MiddlewareBuildQuery,
+    MiddlewareFetch,
     MiddlewarePostFetch,
     MiddlewarePreFetch,
     RestMethodName,
@@ -22,42 +22,48 @@ export function rest<T extends Typegoose, E extends Constructor<T>>(config: Rest
     };
 }
 
-function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, preFetch?: MiddlewarePreFetch[],
-                                            postFetch?: MiddlewarePostFetch<T>[]): RestConfigurationMethodWithPath<T> {
-    return {
-        method: name,
+function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, config: RestConfigurationMethod<T>):
+    RestConfigurationMethodWithPath<T> {
+
+    return Object.assign({
+        prefetch: [],
+        postFetch: [],
+        preSend: [],
+    }, config, {
         path: path,
-        preFetch: preFetch,
-        postFetch: postFetch,
-    };
+        method: name,
+    }) as RestConfigurationMethodWithPath<T>;
 }
 
 export function all<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('all', '/', [parseQuery].concat(config.preFetch || []), config.postFetch || []);
+    config = Object.assign({}, config, {
+        prefetch: [parseQuery].concat(config.preFetch || []),
+    });
+    return defaultMethod('all', '/', config);
 }
 
 export function one<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('one', '/:id', config.preFetch || [], config.postFetch || []);
+    return defaultMethod('one', '/:id', config);
 }
 
 export function create<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('create', '/', config.preFetch || [], config.postFetch || []);
+    return defaultMethod('create', '/', config);
 }
 
 export function update<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('update', '/:id', config.preFetch || [], config.postFetch || []);
+    return defaultMethod('update', '/:id', config);
 }
 
 export function remove<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('remove', '/:id', config.preFetch || [], config.postFetch || []);
+    return defaultMethod('remove', '/:id', config);
 }
 
 export function removeAll<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('removeAll', '/', config.preFetch || [], config.postFetch || []);
+    return defaultMethod('removeAll', '/', config);
 }
 
 export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod, config: RestConfigurationMethod<T> = {}) {
-    return defaultMethod('custom', path, config.preFetch || [], config.postFetch || []);
+    return defaultMethod('custom', path, config);
 }
 
 /**
@@ -83,7 +89,7 @@ export interface RestConfiguration<T extends Typegoose> {
 
 export interface RestConfigurationMethod<T extends Typegoose> {
     preFetch?: MiddlewarePreFetch[];
-    buildQuery?: MiddlewareBuildQuery<T>;
+    fetch?: MiddlewareFetch<T>;
     postFetch?: MiddlewarePostFetch<T>[];
     preSend?: MiddlewarePostFetch<T>[];
 }

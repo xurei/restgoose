@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CastError, Model, Query } from 'mongoose';
+import { CastError, Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { RestConfigurationMethod, RestError } from './rest';
 import { MiddlewarePostFetch, RestRequest } from './types';
@@ -14,11 +14,11 @@ export async function getOne<T extends Typegoose>(
     modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
     Promise<InstanceType<T>> {
 
-    const query: Query<InstanceType<T>> = (
-        methodConfig.buildQuery ? await methodConfig.buildQuery(req) : modelType.findById(req.params.id)
-    ) as Query<InstanceType<T>>;
+    const query = (
+        methodConfig.fetch ? methodConfig.fetch(req) : modelType.findById(req.params.id)
+    ) as Promise<InstanceType<T>>;
 
-    const result: InstanceType<T> = await query.exec();
+    const result: InstanceType<T> = await query;
     return await postFetchHooks(req, result, methodConfig.postFetch);
 }
 
@@ -26,7 +26,12 @@ export async function getAll<T extends Typegoose>(
     modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
     Promise<InstanceType<T>[]> {
 
-    const result = await modelType.find(req.filter) || [];
+    //TODO getAll() remove req.filter from the default behaviour ?
+    const query = (
+        methodConfig.fetch ? methodConfig.fetch(req) : modelType.find(req.filter)
+    ) as Promise<InstanceType<T>[]>;
+
+    const result: InstanceType<T>[] = await query || [];
     const out = await postFetchHooksAll(req, result, methodConfig.postFetch);
     return out.filter(e => !!e);
 }

@@ -3,9 +3,7 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { app, Item } from '../examples/complex-api';
-import { Restgoose } from '../lib';
-import * as MockReq from 'mock-req';
+import { app } from '../examples/complex-api';
 
 chai.use(dirtyChai);
 

@@ -8,10 +8,8 @@ The `@rest` decorator provides lifecycle hooks to most of the steps.
 
 1. [preFetch](#prefetch)
 1. (submodels only) [fetchParent](#fetchparent-submodels-only)
-   1. buildQuery
    1. fetch
    1. postFetch
-1. [buildQuery](#buildquery)
 1. [fetch](#fetch)
 1. [postFetch](#postfetch)
 1. [persist](#persist)
@@ -23,17 +21,12 @@ This step is responsible of the alteration or rejection of the request before an
 
 This is usually where the authentication check is done.
 
-### buildQuery
-This step is responsible of the creation of the MongoDB query using [mongoose](https://mongoosejs.com/).
-
-This step is typically used for pagination or filtering.
-
 ### fetch
 This step is the actual call to the database. 
-It executes the query returned by the [buildQuery](#buildquery) step, or uses the default behaviour 
+It is responsible of the creation of the MongoDB query using [mongoose](https://mongoosejs.com/).
+
+It executes the query returned by the `fetch` hook, or uses the default behaviour 
 (see the [reference table](#reference-table) below).
- 
-This step does not have a lifecycle hook.
 
 ### postFetch
 This step is responsible of any post-treatment that requires the fetched entity/entities.
@@ -71,7 +64,7 @@ preSend is not called on `remove()` and `removeAll()` methods.
 This step only happens on submodels endpoint (e.g. `/entities/:id/subentities`). 
 It is a minimal version of a normal lifecycle on the parent entity (e.g. `/entities/:id`). 
 
-It is only composed of three steps: **buildQuery**, **fetch** and **postFetch**. 
+It is only composed of two steps: **fetch** and **postFetch**. 
 They work exactly as described in their respective sections, but on the parent model instead of the 
 submodel that the enpoint points to.
 
@@ -79,11 +72,11 @@ submodel that the enpoint points to.
 The following table shows the mongoose functions that are called at fetch and persist step, 
 and indicates if hooks are called or not.
 
-| method        | preFetch | buildQuery | fetch              | postFetch | persist              | preSend |
-|---------------|----------|------------|--------------------|-----------|----------------------|---------|
-| `all()`       | ✓        | ✓          | `Model.find()`     | ✓         |                      | ✓       |
-| `one()`       | ✓        | ✓          | `Model.findById()` | ✓         |                      | ✓       |
-| `create()`    | ✓        |            | `new Model()`      | ✓         | `entity.save()`      | ✓       |
-| `update()`    | ✓        | ✓          | `Model.findById()` | ✓         | `entity.save()`      | ✓       |
-| `remove()`    | ✓        | ✓          | `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
-| `removeAll()` | ✓        | ✓          | `Model.findById()` | ✓         | `Model.deleteMany()` |         |
+| method        | preFetch |   fetch                          | postFetch | persist              | preSend |
+|---------------|----------|----------------------------------|-----------|----------------------|---------|
+| `all()`       | ✓        | ✓ default: `Model.find()`        | ✓         |                      | ✓       |
+| `one()`       | ✓        | ✓ default: `Model.findById()`    | ✓         |                      | ✓       |
+| `create()`    | ✓        | TODO default: `new Model()`      | ✓         | `entity.save()`      | ✓       |
+| `update()`    | ✓        | TODO default: `Model.findById()` | ✓         | `entity.save()`      | ✓       |
+| `remove()`    | ✓        | TODO default: `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
+| `removeAll()` | ✓        | TODO default: `Model.findById()` | ✓         | `Model.deleteMany()` |         |

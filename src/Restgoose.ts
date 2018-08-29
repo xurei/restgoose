@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { Typegoose } from 'typegoose';
+import { debug } from './debug';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { getAll, getOne } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 import { Constructor, RestRequest } from './types';
-import { debug } from './debug';
 
 export class Restgoose {
     private static ROUTES = {
