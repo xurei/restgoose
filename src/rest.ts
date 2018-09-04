@@ -25,11 +25,7 @@ export function rest<T extends Typegoose, E extends Constructor<T>>(config: Rest
 function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, config: RestConfigurationMethod<T>):
     RestConfigurationMethodWithPath<T> {
 
-    return Object.assign({
-        prefetch: [],
-        postFetch: [],
-        preSend: [],
-    }, config, {
+    return Object.assign({}, config, {
         path: path,
         method: name,
     }) as RestConfigurationMethodWithPath<T>;
@@ -66,32 +62,16 @@ export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod
     return defaultMethod('custom', path, config);
 }
 
-/**
- * Converts a MiddlewarePostFetch function to a filtering one. It returns the entity if the function didn't throw, or
- * null if the function has thrown an error.
- * This is typically used for the 'all' method, allowing to use one function for both getting all the items
- * (with asFilter) and getting only one (without it, throwing errors)
- */
-export function asFilter<T extends Typegoose>(fn: MiddlewarePostFetch<T>): MiddlewarePostFetch<T> {
-    return <R extends Request>(req: R, entity: T): Promise<T> => {
-        return Promise.resolve()
-            .then(() => fn(req, entity))
-            .catch(e => {
-                return null;
-            });
-    };
-}
-
 export interface RestConfiguration<T extends Typegoose> {
     route: string;
     methods?: RestConfigurationMethodWithPath<T>[];
 }
 
 export interface RestConfigurationMethod<T extends Typegoose> {
-    preFetch?: MiddlewarePreFetch[];
+    preFetch?: MiddlewarePreFetch;
     fetch?: MiddlewareFetch<T>;
-    postFetch?: MiddlewarePostFetch<T>[];
-    preSend?: MiddlewarePostFetch<T>[];
+    postFetch?: MiddlewarePostFetch<T>;
+    preSend?: MiddlewarePostFetch<T>;
 }
 
 export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {

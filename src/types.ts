@@ -7,15 +7,18 @@ export interface Constructor<T> {
 
 export type Promisable<T> = T | Promise<T>;
 
-export type MiddlewarePreFetchExpress = ((req: Request, res: Response, next: () => void) => void);
-export type MiddlewarePreFetchPromise = ((req: Request) => Promise<void>);
-export type MiddlewarePreFetch = MiddlewarePreFetchExpress | MiddlewarePreFetchPromise;
+export type Middleware = (req: Request, entity?: any) => Promisable<any> | Promise<void>;
+export interface MiddlewarePreFetch extends Middleware {
+    (req: Request): Promise<void>;
+}
 
 export type MiddlewareFetchOne<T extends Typegoose> = (req: Request) => Promise<InstanceType<T>>;
 export type MiddlewareFetchAll<T extends Typegoose> = (req: Request) => Promise<InstanceType<T>[]>;
 export type MiddlewareFetch<T extends Typegoose> = MiddlewareFetchOne<T> | MiddlewareFetchAll<T>;
 
-export type MiddlewarePostFetch<T extends Typegoose> = (req: Request, entity: T) => Promisable<T>;
+export interface MiddlewarePostFetch<T extends Typegoose> extends Middleware {
+    (req: Request, entity: T): Promisable<T>;
+}
 
 export type HttpMethod = 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT' | 'PATCH';
 

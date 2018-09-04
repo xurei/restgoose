@@ -22,7 +22,7 @@ async function addUrl(req, todo) {
         all(), // GET /todos
         one(), // GET /todos/:id
         create({
-            postFetch: [ addUrl ],
+            postFetch: addUrl,
         }), // POST /todos
         update(), // PATCH /todos/:id
         remove(), // DELETE /todos/:id

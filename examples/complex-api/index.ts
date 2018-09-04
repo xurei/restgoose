@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, RestError } from '../../lib';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, RestError, and, or } from '../../lib';
 import * as cors from 'cors';
 
 @rest({
     route: '/subitems',
     methods: [
-        one({ preFetch: [ verifyToken ] }), // GET /subitems/:id
+        one({ preFetch: and(verifyToken) }), // GET /subitems/:id
     ],
 })
 export class SubItem extends Typegoose {
@@ -38,8 +38,8 @@ export class Item extends Typegoose {
     @rest({
         route: '/subitems',
         methods: [
-            all({ preFetch: [ verifyToken ], preSend: [ ] }),
-            create({ preFetch: [ verifyToken ], preSend: [ ] }),
+            all({ preFetch: verifyToken }),
+            create({ preFetch: verifyToken }),
         ],
     })
     @arrayProp({itemsRef: {name: SubItem}})

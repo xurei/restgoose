@@ -72,11 +72,11 @@ submodel that the enpoint points to.
 The following table shows the mongoose functions that are called at fetch and persist step, 
 and indicates if hooks are called or not.
 
-| method        | preFetch |   fetch                          | postFetch | persist              | preSend |
-|---------------|----------|----------------------------------|-----------|----------------------|---------|
-| `all()`       | ✓        | ✓ default: `Model.find()`        | ✓         |                      | ✓       |
-| `one()`       | ✓        | ✓ default: `Model.findById()`    | ✓         |                      | ✓       |
-| `create()`    | ✓        | TODO default: `new Model()`      | ✓         | `entity.save()`      | ✓       |
-| `update()`    | ✓        | TODO default: `Model.findById()` | ✓         | `entity.save()`      | ✓       |
-| `remove()`    | ✓        | TODO default: `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
-| `removeAll()` | ✓        | TODO default: `Model.findById()` | ✓         | `Model.deleteMany()` |         |
+| method        | preFetch |   fetch                       | postFetch | persist              | preSend |
+|---------------|----------|-------------------------------|-----------|----------------------|---------|
+| `all()`       | ✓        | ✓ default: `Model.find()`     | ✓         |                      | ✓       |
+| `one()`       | ✓        | ✓ default: `Model.findById()` | ✓         |                      | ✓       |
+| `create()`    | ✓        | ✓ default: `new Model()`      | ✓         | `entity.save()`      | ✓       |
+| `update()`    | ✓        | ✓ default: `Model.findById()` | ✓         | `entity.save()`      | ✓       |
+| `remove()`    | ✓        | ✓ default: `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
+| `removeAll()` | ✓        | ✓ default: `Model.findById()` | ✓         | `Model.deleteMany()` |         |
