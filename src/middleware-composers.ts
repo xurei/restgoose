@@ -25,10 +25,12 @@ export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
  * If any middleware is rejected, the error thrown is passed through.
  */
 export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
-    return ((req: Request, entity: T): Promise<T> => {
+    return ((req: Request, entity: T | boolean = true): Promise<T> => {
         let promises: Promise<any> = Promise.resolve(entity);
         fns.forEach(m => {
-            promises = promises.then(entity => entity && m(req, entity));
+            promises = promises.then(entity => {
+                return entity && m(req, entity);
+            });
         });
         return promises;
     }) as F;
