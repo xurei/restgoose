@@ -21,9 +21,8 @@ export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
 
 /**
  * Compose several middlewares with a logical AND operation.
- * In case of a success (i.e. a returned value) from the previous middleware, the next is executed.
- * Otherwise, the returned value is passed through.
- * If all the middlewares are rejected, the error thrown from the last one will be passed through.
+ * All middlewares must pass for the entity to be returned.
+ * If any middleware is rejected, the error thrown is passed through.
  */
 export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
     return ((req: Request, entity: T): Promise<T> => {

@@ -28,13 +28,11 @@ export class OtherItem extends Typegoose {
 
 export const OtherItemModel = new OtherItem().getModelForClass(OtherItem);
 
-function otherItemFetchAll(req: Request): Promise<InstanceType<OtherItem>[]> {
-    return Promise.resolve(() => {})
-    .then(() => OtherItemModel.find({ public: true }));
+async function otherItemFetchAll(req: Request) {
+    return OtherItemModel.find({ public: true });
 }
-function otherItemFetchOne(req: Request): Promise<InstanceType<OtherItem>> {
-    return Promise.resolve(() => {})
-    .then(() => OtherItemModel.findOne({ public: true, _id: req.params.id }));
+async function otherItemFetchOne(req: Request) {
+    return OtherItemModel.findOne({ public: true, _id: req.params.id });
 }
 
 // Create the minimal express with CORS and bodyParser.json
