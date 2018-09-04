@@ -7,9 +7,9 @@ export interface Constructor<T> {
 
 export type Promisable<T> = T | Promise<T>;
 
-export type Middleware = (req: Request, entity?: any) => Promisable<any> | Promise<void>;
+export type Middleware = (req: Request, entity?: any) => Promisable<any>;
 export interface MiddlewarePreFetch extends Middleware {
-    (req: Request): Promise<void>;
+    (req: Request): Promise<void | boolean>;
 }
 
 export type MiddlewareFetchOne<T extends Typegoose> = (req: Request) => Promise<InstanceType<T>>;
