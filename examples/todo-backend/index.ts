@@ -64,7 +64,7 @@ app.listen(3000, function () {
 
 function openDatabase() {
     // Business as usual - connect to your database with mongoose
-    mongoose.connect('mongodb://localhost/todo-backend')
+    mongoose.connect('mongodb://localhost/restgoose-example')
         .catch(e => {
             console.error('MongoDB Connection Error:');
             console.error(JSON.stringify(e, null, '  '));

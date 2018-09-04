@@ -55,7 +55,7 @@ describe('Fetch hook', function() {
             .then(({ code, body, headers }) => {
                 expect(code).to.eq(200);
                 expect(body).to.have.length(4);
-                expect(body.map(i => i.value)).to.deep.eq([ 1, 3, 4, 6 ]);
+                expect(body.map(i => i.value).sort()).to.deep.eq([ 1, 3, 4, 6 ]);
                 return true;
             });
         });
