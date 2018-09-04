@@ -20,7 +20,7 @@ or a property in such a class (see [Using @rest() on submodels](#using-rest-on-s
     route: '/path/to/entity', 
     methods: [
       method({
-        preFetch?: (req)=>Promise<void | boolean>, 
+        preFetch?: (req)=>Promise<boolean>, 
         postFetch?: (req,entity)=>Entity | Promise<Entity>, 
         fetch?: (req)=>Promise<Entity>;
         preSend?: (req,entity)=>Entity | Promise<Entity>;
@@ -49,13 +49,14 @@ or a property in such a class (see [Using @rest() on submodels](#using-rest-on-s
     
     Example:
     ```typescript
-        function somePreFetchMethod(req, res, next) 
+        function somePreFetchMethod(req) 
         { 
             if (/* some check */) {
-                res.send(403);
+                throw new RestError(403, 'Unauthorized');
             }
             else {
-                next();
+                //In case of success, you MUST return true in a preFetch hook.
+                return true;
             }
         }
         @rest({

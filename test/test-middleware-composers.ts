@@ -3,8 +3,7 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import * as sinon from 'ts-sinon';
 import * as sinonChai from 'sinon-chai';
-import { and, or } from '../lib';
-import { asFilter, RestError } from '../src';
+import { and, or, asFilter, RestError } from '../lib';
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -14,6 +13,9 @@ const spy = sinon.default.spy;
 
 async function preSuccess(req: Request) {
     return true;
+}
+async function preFalse(req: Request) {
+    return false;
 }
 async function preFail(req: Request) {
     throw new RestError(418, "I'm a teapot");
@@ -104,6 +106,23 @@ describe('or()', function() {
                 });
             });
         });
+
+        describe('first middlewares fail, next returns false', () => {
+            it('should call those before, not those after the first success, and return true', function () {
+                const spy1 = spy(preFail);
+                const spy2 = spy(preFalse);
+                const spy3 = spy(preSuccess);
+                const spy4 = spy(preSuccess);
+                return or(spy1, spy2, spy3, spy4)(null)
+                .then((result) => {
+                    expect(spy1).to.have.been.calledOnce();
+                    expect(spy2).to.have.been.calledOnce();
+                    expect(spy3).to.have.been.calledOnce();
+                    expect(result).to.eq(true);
+                    expect(spy4).to.have.not.been.called();
+                });
+            });
+        });
     });
 
     describe('postFetch', () => {
@@ -113,20 +132,22 @@ describe('or()', function() {
 
 describe('asFilter()', function() {
     describe('with middleware success', () => {
-        it('should return the same value', async function () {
+        it('should return the same value', function () {
             const entity = { plop: 'plup' };
-            const expected = await postSuccess(null, entity);
             const spy1 = spy(postSuccess);
-            return asFilter(spy1)(null, entity)
-            .then(returned => {
-                expect(spy1).to.have.been.calledOnce();
-                expect(returned).to.deep.eq(expected);
+            return postSuccess(null, entity)
+            .then(expected => {
+                return asFilter(spy1)(null, entity)
+                .then(returned => {
+                    expect(spy1).to.have.been.calledOnce();
+                    expect(returned).to.deep.eq(expected);
+                });
             });
         });
     });
 
     describe('with middleware failure', () => {
-        it('should return null', async function () {
+        it('should return null', function () {
             const entity = { plop: 'plup' };
             const spy1 = spy(postFail);
             return asFilter(spy1)(null, entity)

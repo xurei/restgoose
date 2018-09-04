@@ -12,8 +12,10 @@ export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
     return ((req: Request, entity: T): Promise<T> => {
         let promises: Promise<T> = Promise.reject(null);
         fns.forEach(fn => {
-            promises = promises.catch(() => fn(req, entity));
-            promises = promises.then(v => v ? v : fn(req, entity));
+            promises = promises.then(
+                v => v ? v : fn(req, entity),
+                () => fn(req, entity),
+            );
         });
         return promises;
     }) as F;
