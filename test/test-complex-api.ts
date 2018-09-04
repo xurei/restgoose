@@ -55,13 +55,14 @@ describe('Complex API', function() {
     });
 
     describe('/items', function() {
-        describe('all() within item', function() {
+        describe('all()/one() within item', function() {
             describe('without Autorization', function() {
                 it('401', function () {
                     return Promise.resolve()
                     .then(() => restTester.post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
                     .then(({ code, body, headers }) => {
                         expect(code).to.eq(401);
+                        return true;
                     });
                 });
             });
@@ -76,9 +77,17 @@ describe('Complex API', function() {
                     .then(() => restTester.as('admin').get('/items/'+itemIds[0]))
                     .then(({ code, body, headers }) => {
                         expect(code).to.eq(200);
-                        console.log(body);
                         expect(body.subItems).to.have.length(1);
                         subItemId = body.subItems[0];
+                    })
+                    .then(() => restTester.as('admin').get('/items/'+itemIds[0]+'/subitems'))
+                    .then(({ code, body, headers }) => {
+                        expect(code).to.eq(200);
+                        expect(body).to.be.an('array');
+                        expect(body).to.have.length(1);
+                        expect(body[0].name).to.eq('val1');
+                        expect(body[0].value).to.eq(1);
+                        return true;
                     })
                     .then(() => restTester.as('admin').get('/subitems/'+subItemId))
                     .then(({ code, body, headers }) => {
@@ -86,7 +95,8 @@ describe('Complex API', function() {
                         console.log(body);
                         expect(body.name).to.eq('val1');
                         expect(body.value).to.eq(1);
-                    })
+                        return true;
+                    });
                 });
             });
         })
