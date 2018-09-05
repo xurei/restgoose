@@ -4,9 +4,25 @@ Restgoose exposes your MongoDB database through a REST API with ease.
 It is driven by the model itself, which reduces the boilerplate code necessary to write simple endpoints.
 It is open for extension, so you can add complex logic easily too.
 
-# Installation
+# Installation & basic usage
 ```
 npm install @xureilab/restgoose
+```
+
+```typescript
+@rest({
+    route: '/todos',
+    methods: [
+        all(), // GET /todos
+        one(), // GET /todos/:id
+        create(), // POST /todos
+        update(), // PATCH /todos/:id
+        remove(), // DELETE /todos/:id
+    ],
+})
+export class Todo extends Typegoose {
+    /* ... */
+}
 ```
 
 # Documentation
