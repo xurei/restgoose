@@ -79,4 +79,4 @@ and indicates if hooks are called or not.
 | `create()`    | ✓        | ✓ default: `new Model()`      | ✓         | `entity.save()`      | ✓       |
 | `update()`    | ✓        | ✓ default: `Model.findById()` | ✓         | `entity.save()`      | ✓       |
 | `remove()`    | ✓        | ✓ default: `Model.findById()` | ✓         | `Model.deleteOne()`  |         |
-| `removeAll()` | ✓        | ✓ default: `Model.findById()` | ✓         | `Model.deleteMany()` |         |
+| `removeAll()` | ✓        | ✓ default: `Model.find()`     | ✓         | `Model.deleteMany()` |         |
