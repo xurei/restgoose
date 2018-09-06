@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { Typegoose } from 'typegoose';
 import { debug } from './debug';
+import { fetchAll, fetchOne, postFetch, postFetchAll } from './Hooks';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
-import { getAll, getOne } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 import { Constructor, RestRequest } from './types';
 
@@ -44,7 +44,9 @@ export class Restgoose {
         if (!method) {
             throw new Error(`On model ${modelType.name}: method one() is not specified. Cannot use getOne()`);
         }
-        return getOne(model.type.prototype.getModelForClass(), method, req);
+
+        const result = await fetchOne(model.type.prototype.getModelForClass(), method, req);
+        return postFetch(method, req, result);
     }
 
     /**
@@ -58,7 +60,9 @@ export class Restgoose {
         if (!method) {
             throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
         }
-        return getAll(model.type.prototype.getModelForClass(), method, req);
+
+        const result = await fetchAll(model.type.prototype.getModelForClass(), method, req);
+        return postFetchAll(method, req, result);
     }
 
     private static createRestRoot<T extends Typegoose>(model: RestModelEntry<T>): Router {

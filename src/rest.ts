@@ -6,8 +6,11 @@ import {
     Constructor,
     HttpMethod,
     MiddlewareFetch,
+    MiddlewarePersist,
     MiddlewarePostFetch,
     MiddlewarePreFetch,
+    MiddlewarePreSave,
+    MiddlewarePreSend,
     RestMethodName,
 } from './types';
 
@@ -71,7 +74,9 @@ export interface RestConfigurationMethod<T extends Typegoose> {
     preFetch?: MiddlewarePreFetch;
     fetch?: MiddlewareFetch<T>;
     postFetch?: MiddlewarePostFetch<T>;
-    preSend?: MiddlewarePostFetch<T>;
+    preSave?: MiddlewarePreSave<T>;
+    persist?: MiddlewarePersist<T>;
+    preSend?: MiddlewarePreSend<T>;
 }
 
 export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {
