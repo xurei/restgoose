@@ -1,6 +1,4 @@
-import { Request } from 'express';
 import { Typegoose } from 'typegoose';
-import { parseQuery } from './middlewares/parseQuery';
 import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
@@ -35,9 +33,6 @@ function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, 
 }
 
 export function all<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    config = Object.assign({}, config, {
-        prefetch: [parseQuery].concat(config.preFetch || []),
-    });
     return defaultMethod('all', '/', config);
 }
 
