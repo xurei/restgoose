@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { InstanceType, Typegoose } from 'typegoose';
 
 export interface Constructor<T> {
@@ -6,18 +6,32 @@ export interface Constructor<T> {
 }
 
 export type Promisable<T> = T | Promise<T>;
+export type Middleware = (req: Request, ...args: any[]) => Promisable<any>;
+export type Doc<T> = T | InstanceType<T>;
 
-export type Middleware = (req: Request, entity?: any) => Promisable<any>;
 export interface MiddlewarePreFetch extends Middleware {
     (req: Request): Promise<boolean>;
 }
 
-export type MiddlewareFetchOne<T extends Typegoose> = (req: Request) => Promise<InstanceType<T>>;
-export type MiddlewareFetchAll<T extends Typegoose> = (req: Request) => Promise<InstanceType<T>[]>;
+export type MiddlewareFetchOne<T extends Typegoose> = (req: Request) => Promise<Doc<T>>;
+export type MiddlewareFetchAll<T extends Typegoose> = (req: Request) => Promise<Doc<T>[]>;
 export type MiddlewareFetch<T extends Typegoose> = MiddlewareFetchOne<T> | MiddlewareFetchAll<T>;
 
 export interface MiddlewarePostFetch<T extends Typegoose> extends Middleware {
-    (req: Request, entity: T): Promisable<T>;
+    (req: Request, entity: Doc<T>): Promisable<Doc<T>>;
+}
+
+export interface MiddlewarePreSave<T extends Typegoose> extends Middleware {
+    (req: Request, oldEntity: Doc<T>, newEntity: Doc<T>): Promisable<Doc<T>>;
+}
+
+export type MiddlewarePersistDeleteAll<T extends Typegoose> = (entities: Doc<T>[]) => Promise<boolean>;
+export type MiddlewarePersistDeleteOne<T extends Typegoose> = (entity: Doc<T>) => Promise<boolean>;
+export type MiddlewarePersistSave<T extends Typegoose> = (entity: Doc<T>) => Promise<Doc<T>>;
+export type MiddlewarePersist<T extends Typegoose> = MiddlewarePersistDeleteAll<T> | MiddlewarePersistDeleteOne<T> | MiddlewarePersistSave<T>;
+
+export interface MiddlewarePreSend<T extends Typegoose> extends Middleware {
+    (req: Request, entity: Doc<T>): Promisable<Doc<T>>;
 }
 
 export type HttpMethod = 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT' | 'PATCH';

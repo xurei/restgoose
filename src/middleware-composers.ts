@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Typegoose } from 'typegoose';
+import { InstanceType, Typegoose } from 'typegoose';
 import { Middleware, MiddlewarePostFetch } from './types';
 
 /**
@@ -9,8 +9,8 @@ import { Middleware, MiddlewarePostFetch } from './types';
  * If all the middlewares are rejected, the error thrown from the last one will be passed through.
  */
 export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
-    return ((req: Request, entity: T): Promise<T> => {
-        let promises: Promise<T> = Promise.reject(null);
+    return ((req: Request, entity: T): Promise<InstanceType<T>> => {
+        let promises: Promise<InstanceType<T>> = Promise.reject(null);
         fns.forEach(fn => {
             promises = promises.then(
                 v => v ? v : fn(req, entity),
@@ -27,7 +27,7 @@ export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
  * If any middleware is rejected, the error thrown is passed through.
  */
 export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
-    return ((req: Request, entity: T | boolean = true): Promise<T> => {
+    return ((req: Request, entity: T | boolean = true): Promise<InstanceType<T>> => {
         let promises: Promise<any> = Promise.resolve(entity);
         fns.forEach(m => {
             promises = promises.then(entity => {
@@ -45,7 +45,7 @@ export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
  * (with asFilter) and getting only one (without it, throwing errors).
  */
 export function asFilter<T extends Typegoose>(fn: MiddlewarePostFetch<T>): MiddlewarePostFetch<T> {
-    return (req: Request, entity: T): Promise<T> => {
+    return (req: Request, entity: T): Promise<InstanceType<T>> => {
         return Promise.resolve()
         .then(() => fn(req, entity))
         .catch(() => {

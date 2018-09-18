@@ -1,13 +1,14 @@
-import { Request } from 'express';
 import { Typegoose } from 'typegoose';
-import { parseQuery } from './middlewares/parseQuery';
 import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
     HttpMethod,
     MiddlewareFetch,
+    MiddlewarePersist,
     MiddlewarePostFetch,
     MiddlewarePreFetch,
+    MiddlewarePreSave,
+    MiddlewarePreSend,
     RestMethodName,
 } from './types';
 
@@ -32,9 +33,6 @@ function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, 
 }
 
 export function all<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
-    config = Object.assign({}, config, {
-        prefetch: [parseQuery].concat(config.preFetch || []),
-    });
     return defaultMethod('all', '/', config);
 }
 
@@ -71,7 +69,9 @@ export interface RestConfigurationMethod<T extends Typegoose> {
     preFetch?: MiddlewarePreFetch;
     fetch?: MiddlewareFetch<T>;
     postFetch?: MiddlewarePostFetch<T>;
-    preSend?: MiddlewarePostFetch<T>;
+    preSave?: MiddlewarePreSave<T>;
+    persist?: MiddlewarePersist<T>;
+    preSend?: MiddlewarePreSend<T>;
 }
 
 export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {
