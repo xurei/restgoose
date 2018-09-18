@@ -9,8 +9,8 @@ import {
     RestRequest,
 } from './types';
 
-export function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
-        Promise<boolean> {
+export async function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<boolean> {
 
     return methodConfig.preFetch ?
         methodConfig.preFetch(req) :
@@ -46,7 +46,7 @@ export async function fetchOne<T extends Typegoose>(modelType: Model<InstanceTyp
         modelType.findById(req.params.id);
 }
 
-export function postFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
+export async function postFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
     Promise<InstanceType<T>> {
 
     const promise: Promise<any> = Promise.resolve(entity);
@@ -56,7 +56,7 @@ export function postFetch<T extends Typegoose>(methodConfig: RestConfigurationMe
         promise;
 }
 
-export function postFetchAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: T[]):
+export async function postFetchAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]):
     Promise<InstanceType<T>[]> {
 
     return methodConfig.postFetch ?
@@ -64,7 +64,7 @@ export function postFetchAll<T extends Typegoose>(methodConfig: RestConfiguratio
         Promise.resolve(entities);
 }
 
-export function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T, newEntity: T):
+export async function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T, newEntity: T):
     Promise<InstanceType<T>> {
 
     const promise: Promise<any> = Promise.resolve(newEntity);
@@ -74,7 +74,7 @@ export function preSave<T extends Typegoose>(methodConfig: RestConfigurationMeth
         promise;
 }
 
-export function preSaveAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: T[], newEntities: T[]):
+export async function preSaveAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: T[], newEntities: T[]):
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSave ?
@@ -108,7 +108,7 @@ export async function saveDeleteOne<T extends Typegoose>(modelType: Model<Instan
         modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 
-export function preSend<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
+export async function preSend<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
     Promise<InstanceType<T>> {
 
     const promise: Promise<any> = Promise.resolve(entity);
@@ -118,7 +118,7 @@ export function preSend<T extends Typegoose>(methodConfig: RestConfigurationMeth
         promise;
 }
 
-export function preSendAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: T[]):
+export async function preSendAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: T[]):
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSend ?
