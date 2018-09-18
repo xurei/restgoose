@@ -184,5 +184,16 @@ describe('Minimal TODO API', function() {
 
             //TODO check one() defined
         });
+
+        describe('all() with filter', function() {
+            it('should filter the returned documents', function () {
+                return Promise.resolve()
+                .then(() => restTester.get('/todos?q='+JSON.stringify({title:"blah"})))
+                .then(({ code, body, headers }) => {
+                    expect(code).to.eq(200);
+                    console.log(body)
+                });
+            });
+        });
     });
 });

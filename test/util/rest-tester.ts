@@ -1,4 +1,3 @@
-import * as chai from 'chai';
 import { Express } from 'express';
 
 export interface IRestTesterConfiguration {
@@ -32,6 +31,14 @@ export class RestTester {
     }
 
     private runMiddleware(route, options) {
+        let query = null;
+        if (route.indexOf('?')) {
+            const tmp = route.split(/\?/, 2);
+            console.log(tmp);
+            query = tmp[1];
+            route = tmp[0];
+        }
+        options = Object.assign({query: query}, options);
         return new Promise<Response>((resolve, reject) => {
             this.app.runMiddleware(route, options,
                 (code, body, headers) => {
