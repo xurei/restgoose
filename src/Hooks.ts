@@ -68,7 +68,8 @@ export async function postFetchAll<T extends Typegoose>(methodConfig: RestConfig
     }
 }
 
-export async function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: InstanceType<T>, newEntity: InstanceType<T>):
+export async function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: InstanceType<T>,
+                                                   newEntity: InstanceType<T>):
     Promise<InstanceType<T>> {
 
     const promise: Promise<any> = Promise.resolve(newEntity);
@@ -78,7 +79,8 @@ export async function preSave<T extends Typegoose>(methodConfig: RestConfigurati
         promise;
 }
 
-export async function preSaveAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: InstanceType<T>[], newEntities: InstanceType<T>[]):
+export async function preSaveAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: InstanceType<T>[],
+                                                      newEntities: InstanceType<T>[]):
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSave ?
@@ -105,7 +107,8 @@ export async function persistDeleteAll<T extends Typegoose>(modelType: Model<Ins
             modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
 }
 
-export async function persistDeleteOne<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, entity: InstanceType<T>):
+export async function persistDeleteOne<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
+                                                            entity: InstanceType<T>):
     Promise<boolean> {
 
     return methodConfig.persist ?

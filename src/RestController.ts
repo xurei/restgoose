@@ -3,9 +3,9 @@ import { CastError, Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import {
     fetchAll, fetchCreate, fetchOne,
-    postFetch, postFetchAll,
-    preFetch, preSave, preSaveAll, preSend, preSendAll,
-    persistSave, persistDeleteAll, persistDeleteOne,
+    persistDeleteAll, persistDeleteOne,
+    persistSave, postFetch, postFetchAll, preFetch, preSave,
+    preSaveAll, preSend, preSendAll,
 } from './Hooks';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod, RestError } from './rest';
