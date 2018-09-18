@@ -17,11 +17,11 @@ export type MiddlewareFetchAll<T extends Typegoose> = (req: Request) => Promise<
 export type MiddlewareFetch<T extends Typegoose> = MiddlewareFetchOne<T> | MiddlewareFetchAll<T>;
 
 export interface MiddlewarePostFetch<T extends Typegoose> extends Middleware {
-    (req: Request, entity: T): Promisable<T>;
+    (req: Request, entity: InstanceType<T>): Promisable<InstanceType<T>>;
 }
 
 export interface MiddlewarePreSave<T extends Typegoose> extends Middleware {
-    (req: Request, oldEntity: T, newEntity: T): Promisable<T>;
+    (req: Request, oldEntity: T, newEntity: T): Promisable<InstanceType<T>>;
 }
 
 export type MiddlewarePersistDeleteAll<T extends Typegoose> = (entities: InstanceType<T>[]) => Promise<boolean>;

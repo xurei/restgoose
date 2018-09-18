@@ -59,9 +59,13 @@ export async function postFetch<T extends Typegoose>(methodConfig: RestConfigura
 export async function postFetchAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]):
     Promise<InstanceType<T>[]> {
 
-    return methodConfig.postFetch ?
-        Promise.all(entities.map(async entity => methodConfig.postFetch(req, entity, methodConfig.postFetch))) :
-        Promise.resolve(entities);
+    if (methodConfig.postFetch) {
+        const out = await Promise.all(entities.map(async entity => entity && methodConfig.postFetch(req, entity)));
+        return out.filter(e => !!e);
+    }
+    else {
+        return Promise.resolve(entities);
+    }
 }
 
 export async function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T, newEntity: T):
