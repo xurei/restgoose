@@ -5,7 +5,7 @@ import {
     fetchAll, fetchCreate, fetchOne,
     postFetch, postFetchAll,
     preFetch, preSave, preSaveAll, preSend, preSendAll,
-    save, saveDeleteAll, saveDeleteOne,
+    persistSave, persistDeleteAll, persistDeleteOne,
 } from './Hooks';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod, RestError } from './rest';
@@ -93,7 +93,7 @@ export function create<T extends Typegoose>(
         const preSaveResult = await preSave(methodConfig, req, null, postFetchResult);
 
         // save
-        const saveResult = await save(methodConfig, preSaveResult);
+        const saveResult = await persistSave(methodConfig, preSaveResult);
 
         // preSend
         const preSendResult = await preSend(methodConfig, req, saveResult);
@@ -129,11 +129,11 @@ export function createWithin<T extends Typegoose>(
             const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
 
             // save - sub
-            const saveSubResult = await save(submethodConfig, postFetchSubResult);
+            const saveSubResult = await persistSave(submethodConfig, postFetchSubResult);
 
             // save - parent
             postFetchParentResult[property].push(saveSubResult._id);
-            await save(methodConfig, postFetchParentResult);
+            await persistSave(methodConfig, postFetchParentResult);
 
             // preSend - sub
             const preSendSubResult = await preSend(submethodConfig, req, saveSubResult);
@@ -192,7 +192,7 @@ export function remove<T extends Typegoose>(
             await preSave(methodConfig, req, postFetchResult, null);
 
             // save
-            await saveDeleteOne(modelType, methodConfig, postFetchResult);
+            await persistDeleteOne(modelType, methodConfig, postFetchResult);
 
             return res.status(204).end();
         }
@@ -214,7 +214,7 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
         await preSaveAll(methodConfig, req, postFetchResult, new Array(postFetchResult.length).fill(null));
 
         // save
-        await saveDeleteAll(modelType, methodConfig, postFetchResult);
+        await persistDeleteAll(modelType, methodConfig, postFetchResult);
 
         return res.status(204).end();
     });
@@ -244,7 +244,7 @@ export function update<T extends Typegoose>(
             const mergeResult = Object.assign(postFetchResult, payload);
 
             // save
-            const saveResult = await save(methodConfig, mergeResult);
+            const saveResult = await persistSave(methodConfig, mergeResult);
 
             // preSend
             const preSendResult = await preSend(methodConfig, req, saveResult);
