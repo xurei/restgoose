@@ -94,7 +94,8 @@ export async function save<T extends Typegoose>(methodConfig: RestConfigurationM
         entity.save();
 }
 
-export async function saveDeleteAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, entities: InstanceType<T>[]):
+export async function saveDeleteAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
+                                                         entities: InstanceType<T>[]):
     Promise<boolean> {
 
     const out = entities.filter(e => !!e);
