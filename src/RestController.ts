@@ -241,10 +241,13 @@ export function update<T extends Typegoose>(
         else {
             // merge
             const payload = buildPayload(req, modelType);
-            const mergeResult = Object.assign(postFetchResult, payload);
+            const mergeResult = Object.assign({}, postFetchResult, payload);
+
+            // preSave
+            const preSaveResult = await preSave(methodConfig, req, postFetchResult, mergeResult);
 
             // save
-            const saveResult = await persistSave(methodConfig, mergeResult);
+            const saveResult = await persistSave(methodConfig, preSaveResult);
 
             // preSend
             const preSendResult = await preSend(methodConfig, req, saveResult);
