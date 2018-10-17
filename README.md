@@ -60,3 +60,6 @@ We also had some objectives in mind while writing Restgoose :
 - The framework should be small and provide as little middlewares as necessary. 
   Plugins will be created for better cherry-picking. 
 
+## Contribute
+We are looking for collaborators to test the framework in real-world situations, and also make the development faster.
+Check out the [roadmap](https://xurei.github.io/restgoose/roadmap.html) to see what's going on.  
