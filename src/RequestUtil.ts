@@ -7,7 +7,7 @@ export function buildPayload<T extends Typegoose>(req: RestRequest, modelType: M
     const properties = Object.keys(modelType.schema.obj);
     properties.forEach((prop: string) => {
         // TODO: search for typegoose annotations and process them?
-        if (req.body[prop]) {
+        if (typeof(req.body[prop]) !== 'undefined') {
             payload[prop] = req.body[prop];
         }
     });
