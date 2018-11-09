@@ -2,43 +2,55 @@
 
 # API reference
 
-## Restgoose.initialize(app | router)
+## Restgoose.initialize()
   This is the enrty point of Restgoose. 
   It creates all the routes in the given context.
   Example:
   ```typescript
   const app = express();
-  Restgoose.initialize(app);
+  app.use(Restgoose.initialize());
   ```
     
 ## @rest(config)
 The main decorator of Restgoose. It can be placed on top of a class extending Typegoose, 
-or a property in such a class (see [Using @rest() on submodels](#using-rest-on-submodels)).
+or on top of a property in such a class (see [Using @rest() on submodels](#using-rest-on-submodels)).
 - ### config: object
   ```typescript
   { 
     route: '/path/to/entity', 
+    getModel: (req: ExpressRequest, model: MongooseModel) => MongooseModel, 
     methods: [
-      method({
-        preFetch?: (req)=>Promise<boolean>, 
-        postFetch?: (req,entity)=>Entity | Promise<Entity>, 
-        fetch?: (req)=>Promise<Entity>;
-        preSend?: (req,entity)=>Entity | Promise<Entity>;
-      }),
+      method( type({
+        preFetch?: (req: ExpressRequest) => Promise<boolean>,
+        postFetch?: (req: ExpressRequest, entity: MongooseEntity) => Promise<MongooseEntity>,
+        fetch?: (req: ExpressRequest) => Promise<MongooseEntity>,
+        preSend?: (req: ExpressRequest, entity: MongooseEntity) => Entity | Promise<Entity>,
+      })),
     ] 
   }
   ```
   
   - **route** the path where the model will be served
   
+  - **getModel(req: ExpressRequest, model: MongooseModel)** if defined, returns the mongoose model that will be used for database requests. 
+    Typical use case is when multiple databases are used :
+    Example:  
+    ```typescript
+    {
+        getModel: (req, model) => { return model. }
+    }
+    ```
+  
   - **method** a provided function that defines a RESTful method :
-    - all() : GET `/path/to/entity/`
-    - one() : GET `/path/to/entity/:id`
-    - create() : POST `/path/to/entity/`
-    - update() : PATCH `/path/to/entity/:id`
-    - remove() : DELETE `/path/to/entity/:id`
-    - removeAll() : DELETE `/path/to/entity/`
-    - custom() : custom path, ***TODO***
+    - all(options) : GET `/path/to/entity/`
+    - one(options) : GET `/path/to/entity/:id`
+    - create(options) : POST `/path/to/entity/`
+    - update(options) : PATCH `/path/to/entity/:id`
+    - remove(options) : DELETE `/path/to/entity/:id`
+    - removeAll(options) : DELETE `/path/to/entity/`
+    - custom(options) : custom path, ***Work in progress***
+    
+    Options are explained in the [Rest endpoint lifecycle](./rest-lifecycle.md) page.
     
   - **preFetch**
   

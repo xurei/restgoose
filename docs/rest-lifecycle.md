@@ -4,7 +4,7 @@
 
 ## Overview
 All the REST endpoints follow the same lifecycle. 
-The `@rest` decorator provides lifecycle hooks to most of the steps. 
+The `@rest` decorator provides lifecycle hooks to all steps. 
 
 1. [preFetch](#prefetch)
 1. (submodels only) [fetchParent](#fetchparent-submodels-only)
@@ -19,11 +19,11 @@ The `@rest` decorator provides lifecycle hooks to most of the steps.
 ### preFetch
 This step is responsible of the alteration or rejection of the request before any query is done.
 
-This is usually where the authentication check is done.
+This is usually where the authentication and validation are done.
 
 ### fetch
 This step is the actual call to the database. 
-It is responsible of the creation of the MongoDB query using [mongoose](https://mongoosejs.com/).
+It is responsible of the creation of the MongoDB query with [mongoose](https://mongoosejs.com/).
 
 It executes the query returned by the `fetch` hook, or uses the default behaviour 
 (see the [reference table](#reference-table) below).
