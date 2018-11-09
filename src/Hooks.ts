@@ -2,12 +2,19 @@ import { Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod } from './rest';
+import { RestModelEntry } from './RestRegistry';
 import {
     MiddlewarePersistDeleteAll,
     MiddlewarePersistDeleteOne,
     MiddlewarePersistSave,
     RestRequest,
 } from './types';
+
+export function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Model<InstanceType<T>> {
+    return modelEntry.config.getModel ?
+        modelEntry.config.getModel(req) :
+        modelEntry.type.prototype.getModelForClass();
+}
 
 export async function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
     Promise<boolean> {

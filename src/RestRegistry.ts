@@ -20,8 +20,7 @@ const RestRegistry = {
         });
     },
 
-    registerSubModel<T extends Typegoose>(
-        modelType: Constructor<T>, propertyKey: string, config: RestConfiguration<T>) {
+    registerSubModel<T extends Typegoose>(modelType: Constructor<T>, propertyKey: string, config: RestConfiguration<T>) {
         if (!submodelsRegistryMap.has(modelType.name)) {
             submodelsRegistryMap.set(modelType.name, new Map<string, RestModelEntry<Typegoose>>());
         }
@@ -40,10 +39,10 @@ const RestRegistry = {
         return modelsRegistryMap.values();
     },
 
-    listSubModelsOf(modelName: string): Iterable<RestModelEntry<Typegoose>> {
-        const map = submodelsRegistryMap.get(modelName);
+    listSubModelsOf<T extends Typegoose>(modelType: Constructor<T>): Iterable<RestModelEntry<Typegoose>> {
+        const map = submodelsRegistryMap.get(modelType.name);
         if (map) {
-            return submodelsRegistryMap.get(modelName).values();
+            return submodelsRegistryMap.get(modelType.name).values();
         }
         else {
             return [];

@@ -1,14 +1,15 @@
 import { Response } from 'express';
 import { CastError, Model } from 'mongoose';
-import { InstanceType, Typegoose } from 'typegoose';
+import { Typegoose } from 'typegoose';
 import {
-    fetchAll, fetchCreate, fetchOne,
+    fetchAll, fetchCreate, fetchOne, getModel,
     persistDeleteAll, persistDeleteOne,
     persistSave, postFetch, postFetchAll, preFetch, preSave,
     preSaveAll, preSend, preSendAll,
 } from './Hooks';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod, RestError } from './rest';
+import { RestModelEntry } from './RestRegistry';
 import { RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
@@ -17,8 +18,11 @@ export const ERROR_READONLY_CODE: string = 'READ_ONLY';
 export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
 export const ERROR_VALIDATION_NAME: string = 'ValidationError';
 
-export function all<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 
@@ -36,10 +40,13 @@ export function all<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
 }
 
 export function allWithin<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-    property: string, submodelType: Model<InstanceType<T>>, submethodConfig: RestConfigurationMethod<T>) {
+    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
+    submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
-        // preFetch
+        // getModel - parent
+        const modelType = getModel(modelEntry, req);
+
+        // preFetch - parent
         await preFetch(submethodConfig, req);
 
         // fetch - parent
@@ -63,6 +70,9 @@ export function allWithin<T extends Typegoose>(
                 _id: { $in: refs },
             });
 
+            // getModel - sub
+            const submodelType = getModel(submodelEntry, req);
+
             // fetch - sub
             const fetchSubResult = await fetchAll(submodelType, submethodConfig, req);
 
@@ -77,9 +87,11 @@ export function allWithin<T extends Typegoose>(
     });
 }
 
-export function create<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function create<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 
@@ -103,10 +115,13 @@ export function create<T extends Typegoose>(
 }
 
 export function createWithin<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-    property: string, submodelType: Model<InstanceType<T>>, submethodConfig: RestConfigurationMethod<T>) {
+    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
+    submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
-        // preFetch
+        // getModel - parent
+        const modelType = getModel(modelEntry, req);
+
+        // preFetch - parent
         await preFetch(submethodConfig, req);
 
         // fetch - parent
@@ -122,6 +137,9 @@ export function createWithin<T extends Typegoose>(
             });
         }
         else {
+            // getModel - sub
+            const submodelType = getModel(submodelEntry, req);
+
             // fetch - sub
             const fetchSubResult = await fetchCreate(submodelType, submethodConfig, req);
 
@@ -143,8 +161,11 @@ export function createWithin<T extends Typegoose>(
     });
 }
 
-export function one<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function one<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 
@@ -169,9 +190,11 @@ export function one<T extends Typegoose>(modelType: Model<InstanceType<T>>, meth
     });
 }
 
-export function remove<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function remove<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 
@@ -199,8 +222,11 @@ export function remove<T extends Typegoose>(
     });
 }
 
-export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function removeAll<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 
@@ -220,9 +246,11 @@ export function removeAll<T extends Typegoose>(modelType: Model<InstanceType<T>>
     });
 }
 
-export function update<T extends Typegoose>(
-    modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>) {
+export function update<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        // getModel
+        const modelType = getModel(modelEntry, req);
+
         // preFetch
         await preFetch(methodConfig, req);
 

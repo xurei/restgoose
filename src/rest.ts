@@ -1,4 +1,6 @@
-import { Typegoose } from 'typegoose';
+import { Request } from 'express';
+import { Model } from 'mongoose';
+import { InstanceType, Typegoose } from 'typegoose';
 import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
@@ -12,12 +14,14 @@ import {
     RestMethodName,
 } from './types';
 
-export function rest<T extends Typegoose, E extends Constructor<T>>(config: RestConfiguration<T>) {
-    return (target: E | T, propertyKey?: string) => {
+export function rest<T extends Typegoose>(config: RestConfiguration<T>) {
+    return (target: T | Constructor<T>, propertyKey?: string) => {
         if (!propertyKey) {
-            RestRegistry.registerModel(target as E, config);
+            target = target as Constructor<T>;
+            RestRegistry.registerModel(target, config);
         }
         else {
+            target = target as T;
             RestRegistry.registerSubModel(target.constructor as Constructor<T>, propertyKey, config);
         }
     };
@@ -62,6 +66,7 @@ export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod
 
 export interface RestConfiguration<T extends Typegoose> {
     route: string;
+    getModel?: (req: Request) => Model<InstanceType<T>>;
     methods?: RestConfigurationMethodWithPath<T>[];
 }
 
