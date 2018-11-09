@@ -21,11 +21,13 @@ export class Restgoose {
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
 
-    public static initialize(app) {
+    public static initialize() {
         const models = RestRegistry.listModels();
+        const router = Router();
         for (const model of models) {
-            app.use(model.config.route, this.createRestRoot(model));
+            router.use(model.config.route, this.createRestRoot(model));
         }
+        return router as any;
     }
 
     /**

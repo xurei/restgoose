@@ -40,7 +40,7 @@ app.use(cors({
 }));
 
 openDatabase();
-Restgoose.initialize(app);
+app.use(Restgoose.initialize());
 let server = require('http').createServer(app);
 server = server.listen(3000, function () {
     console.log('Example app listening on port 3000!')
