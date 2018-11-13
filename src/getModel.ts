@@ -7,7 +7,7 @@ import { Model, Connection } from 'mongoose';
  * @param connection
  * @param model
  */
-export async function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Promise<Model<InstanceType<T>>> {
+export function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Model<InstanceType<T>> {
     if (!connection.models[model.name]) {
         //const schema = model.prototype.buildSchema(model.name);
         // get schema of current model
