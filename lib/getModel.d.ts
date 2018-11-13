@@ -7,4 +7,4 @@ import { Model, Connection } from 'mongoose';
  * @param connection
  * @param model
  */
-export declare function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Promise<Model<InstanceType<T>>>;
+export declare function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Model<InstanceType<T>>;
