@@ -18,7 +18,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
   ```typescript
   { 
     route: '/path/to/entity', 
-    getModel: (req: ExpressRequest, model: MongooseModel) => MongooseModel, 
+    getConnection: (req: ExpressRequest) => MongooseConnection, 
     methods: [
       method( type({
         preFetch?: (req: ExpressRequest) => Promise<boolean>,
@@ -32,12 +32,16 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
   
   - **route** the path where the model will be served
   
-  - **getModel(req: ExpressRequest, model: MongooseModel)** if defined, returns the mongoose model that will be used for database requests. 
-    Typical use case is when multiple databases are used :
+  - **getConnection(req: ExpressRequest)** if defined, returns the mongoose connection that will be used for database requests. 
+    Typical use case is when multiple databases are used.
+    
+    Note that it's up to your implementation to keep track of your connections. 
+    DO NOT RECONNECT EVERY TIME !
+    
     Example:  
     ```typescript
     {
-        getModel: (req, model) => { return model. }
+        getConnection: async (req) => { return myConnection; }
     }
     ```
   

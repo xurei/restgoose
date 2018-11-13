@@ -4,7 +4,8 @@ import { RestRequest } from './types';
 
 export function buildPayload<T extends Typegoose>(req: RestRequest, modelType: Model<InstanceType<T>>) {
     const payload = {};
-    const properties = Object.keys(modelType.schema.obj);
+    // FIXME as any
+    const properties = Object.keys((modelType.schema as any).tree);
     properties.forEach((prop: string) => {
         // TODO: search for typegoose annotations and process them?
         if (typeof(req.body[prop]) !== 'undefined') {

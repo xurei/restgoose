@@ -42,7 +42,7 @@ export class Restgoose {
             throw new Error(`On model ${modelType.name}: method one() is not specified. Cannot use getOne()`);
         }
 
-        const result = await fetchOne(getModel(model, req), method, req);
+        const result = await fetchOne(await getModel(model, req), method, req);
         return postFetch(method, req, result);
     }
 
@@ -58,7 +58,7 @@ export class Restgoose {
             throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
         }
 
-        const result = await fetchAll(getModel(model, req), method, req);
+        const result = await fetchAll(await getModel(model, req), method, req);
         return postFetchAll(method, req, result);
     }
 

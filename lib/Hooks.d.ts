@@ -1,0 +1,20 @@
+/// <reference types="mongoose" />
+import { Model } from 'mongoose';
+import { InstanceType, Typegoose } from 'typegoose';
+import { RestConfigurationMethod } from './rest';
+import { RestModelEntry } from './RestRegistry';
+import { RestRequest } from './types';
+export declare function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>>;
+export declare function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<boolean>;
+export declare function fetchAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<InstanceType<T>[]>;
+export declare function fetchCreate<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<InstanceType<T>>;
+export declare function fetchOne<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<InstanceType<T>>;
+export declare function postFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T): Promise<InstanceType<T>>;
+export declare function postFetchAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]): Promise<InstanceType<T>[]>;
+export declare function preSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: InstanceType<T>, newEntity: InstanceType<T>): Promise<InstanceType<T>>;
+export declare function preSaveAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: InstanceType<T>[], newEntities: InstanceType<T>[]): Promise<InstanceType<T>[]>;
+export declare function persistSave<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, entity: InstanceType<T>): Promise<InstanceType<T>>;
+export declare function persistDeleteAll<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, entities: InstanceType<T>[]): Promise<boolean>;
+export declare function persistDeleteOne<T extends Typegoose>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, entity: InstanceType<T>): Promise<boolean>;
+export declare function preSend<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: InstanceType<T>): Promise<InstanceType<T>>;
+export declare function preSendAll<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]): Promise<InstanceType<T>[]>;

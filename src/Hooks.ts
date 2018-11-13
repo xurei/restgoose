@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod } from './rest';
@@ -10,10 +11,29 @@ import {
     RestRequest,
 } from './types';
 
-export function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Model<InstanceType<T>> {
-    return modelEntry.config.getModel ?
-        modelEntry.config.getModel(req) :
-        modelEntry.type.prototype.getModelForClass();
+export async function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
+    const model = modelEntry.type;
+
+    // FIXME as any
+    const connection = modelEntry.config.getConnection ? await modelEntry.config.getConnection(req) as any : mongoose;
+
+    if (!connection.models[model.name]) {
+        //const schema = model.prototype.buildSchema(model.name);
+        // get schema of current model
+        let schema = model.prototype.buildSchema(model.name);
+        // get parents class name
+        let parentCtor = Object.getPrototypeOf(model);
+        // iterate trough all parents
+        while (parentCtor && parentCtor.name !== 'Typegoose' && parentCtor.name !== 'Object') {
+            // extend schema
+            schema = model.prototype.buildSchema(parentCtor.name, undefined, schema);
+            // next parent
+            parentCtor = Object.getPrototypeOf(parentCtor);
+        }
+        return connection.model(model.name, schema);
+    }
+
+    return connection.models[model.name];
 }
 
 export async function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):

@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { Model } from 'mongoose';
-import { InstanceType, Typegoose } from 'typegoose';
+import { Connection, Model } from 'mongoose';
+import { Typegoose } from 'typegoose';
 import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
@@ -66,7 +66,7 @@ export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod
 
 export interface RestConfiguration<T extends Typegoose> {
     route: string;
-    getModel?: (req: Request) => Model<InstanceType<T>>;
+    getConnection?: (req: Request) => Promise<Connection>;
     methods?: RestConfigurationMethodWithPath<T>[];
 }
 
