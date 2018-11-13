@@ -10,30 +10,14 @@ import {
     MiddlewarePersistSave,
     RestRequest,
 } from './types';
+import { getModel as getModelForConnection } from './getModel';
 
 export async function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
-    const model = modelEntry.type;
-
     // FIXME as any
     const connection = modelEntry.config.getConnection ? await modelEntry.config.getConnection(req) as any : mongoose;
+    const model = modelEntry.type;
 
-    if (!connection.models[model.name]) {
-        //const schema = model.prototype.buildSchema(model.name);
-        // get schema of current model
-        let schema = model.prototype.buildSchema(model.name);
-        // get parents class name
-        let parentCtor = Object.getPrototypeOf(model);
-        // iterate trough all parents
-        while (parentCtor && parentCtor.name !== 'Typegoose' && parentCtor.name !== 'Object') {
-            // extend schema
-            schema = model.prototype.buildSchema(parentCtor.name, undefined, schema);
-            // next parent
-            parentCtor = Object.getPrototypeOf(parentCtor);
-        }
-        return connection.model(model.name, schema);
-    }
-
-    return connection.models[model.name];
+    return getModelForConnection(connection, model);
 }
 
 export async function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
