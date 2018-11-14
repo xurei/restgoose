@@ -2,9 +2,8 @@ import * as express from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, Ref, prop } from '../src';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
 import * as cors from 'cors';
-import { ObjectId } from 'mongodb';
 
 const connectionA = mongoose.createConnection('mongodb://localhost/restgoose-test-extended-model');
 
