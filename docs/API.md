@@ -18,13 +18,14 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
   ```typescript
   { 
     route: '/path/to/entity', 
-    getConnection: (req: ExpressRequest) => MongooseConnection, 
+    schemaOptions: mongoose.SchemaOptions,
+    getConnection: (req: express.Request) => mongoose.Connection, 
     methods: [
       method( type({
-        preFetch?: (req: ExpressRequest) => Promise<boolean>,
-        postFetch?: (req: ExpressRequest, entity: MongooseEntity) => Promise<MongooseEntity>,
-        fetch?: (req: ExpressRequest) => Promise<MongooseEntity>,
-        preSend?: (req: ExpressRequest, entity: MongooseEntity) => Entity | Promise<Entity>,
+        preFetch?: (req: express.Request) => Promise<boolean>,
+        postFetch?: (req: express.Request, entity: mongoose.Entity) => Promise<mongoose.Entity>,
+        fetch?: (req: express.Request) => Promise<mongoose.Entity>,
+        preSend?: (req: express.Request, entity: mongoose.Entity) => Entity | Promise<Entity>,
       })),
     ] 
   }
@@ -32,7 +33,16 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
   
   - **route** the path where the model will be served
   
-  - **getConnection(req: ExpressRequest)** if defined, returns the mongoose connection that will be used for database requests. 
+  - **schemaOptions** the mongoose options of the model's schema. 
+    See [the mongoose.SchemaOptions type](https://mongoosejs.com/docs/guide.html#options).
+    Example: 
+    ```typescript
+    {
+        schemaOptions: { timestamps: true }
+    }
+    ```
+  
+  - **getConnection(req: express.Request)** if defined, returns the mongoose connection that will be used for database requests. 
     Typical use case is when multiple databases are used.
     
     Note that it's up to your implementation to keep track of your connections. 
