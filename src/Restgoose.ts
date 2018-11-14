@@ -37,7 +37,8 @@ export class Restgoose {
      */
     public static async getOne<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
-        const method = model.config.methods.find(m => m.method === 'one');
+        const methods = model.config.methods || [];
+        const method = methods.find(m => m.method === 'one');
         if (!method) {
             throw new Error(`On model ${modelType.name}: method one() is not specified. Cannot use getOne()`);
         }
@@ -53,7 +54,8 @@ export class Restgoose {
      */
     public static async getAll<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
-        const method = model.config.methods.find(m => m.method === 'all');
+        const methods = model.config.methods || [];
+        const method = methods.find(m => m.method === 'all');
         if (!method) {
             throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
         }
@@ -67,7 +69,8 @@ export class Restgoose {
 
         debug(`Building routes for model ${model.type.name}`);
 
-        model.config.methods.forEach(method => {
+        const methods = model.config.methods || [];
+        methods.forEach(method => {
             const route = this.ROUTES[method.method];
             const routerFn = router[route.httpMethod].bind(router);
             const controllerFn = route.fn(model, method);
@@ -75,7 +78,7 @@ export class Restgoose {
             routerFn(route.path, controllerFn);
         });
 
-        const methodOne = model.config.methods.find(m => m.method.toLowerCase() === 'one');
+        const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
         const submodels = RestRegistry.listSubModelsOf(model.type);
         for (let submodel of submodels) {
             if (!methodOne) {
@@ -90,7 +93,8 @@ export class Restgoose {
             submodel = Object.assign({}, submodel);
             submodel.type = parentModel.schema.tree[submodel.property][0].ref;
 
-            submodel.config.methods.forEach(method => {
+            const submethods = submodel.config.methods || [];
+            submethods.forEach(method => {
                 const route = this.ROUTES_EMBED[method.method];
                 const routerFn = router[route.httpMethod].bind(router);
                 const routePath = `/:id${submodel.config.route}${route.path}`;
