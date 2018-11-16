@@ -2,8 +2,8 @@
 /// <reference types="express" />
 import { Request } from 'express';
 import { Connection } from 'mongoose';
-import { Typegoose } from 'typegoose';
 import { SchemaOptions } from 'mongoose';
+import { Typegoose } from 'typegoose';
 import { Constructor, HttpMethod, MiddlewareFetch, MiddlewarePersist, MiddlewarePostFetch, MiddlewarePreFetch, MiddlewarePreSave, MiddlewarePreSend, RestMethodName } from './types';
 export declare function rest<T extends Typegoose>(config: RestConfiguration<T>): (target: T | Constructor<T>, propertyKey?: string) => void;
 export declare function all<T extends Typegoose>(config?: RestConfigurationMethod<T>): RestConfigurationMethodWithPath<T>;

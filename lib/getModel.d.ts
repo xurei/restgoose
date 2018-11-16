@@ -1,7 +1,7 @@
 /// <reference types="mongoose" />
-import { Typegoose, InstanceType } from 'typegoose';
+import { Connection, Model } from 'mongoose';
+import { InstanceType, Typegoose } from 'typegoose';
 import { Constructor } from './types';
-import { Model, Connection } from 'mongoose';
 /**
  * Get or builds the model for a specific connection
  * @param connection

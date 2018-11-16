@@ -1,6 +1,7 @@
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
+import { getModel as getModelForConnection } from './getModel';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod } from './rest';
 import { RestModelEntry } from './RestRegistry';
@@ -10,7 +11,6 @@ import {
     MiddlewarePersistSave,
     RestRequest,
 } from './types';
-import { getModel as getModelForConnection } from './getModel';
 
 export async function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
     // FIXME as any

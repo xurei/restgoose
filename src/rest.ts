@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { Connection, Model } from 'mongoose';
-import { Typegoose } from 'typegoose';
 import { SchemaOptions } from 'mongoose';
+import { Typegoose } from 'typegoose';
 import { RestRegistry } from './RestRegistry';
 import {
     Constructor,
