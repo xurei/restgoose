@@ -27,6 +27,7 @@ export function getModel<T extends Typegoose>(connection: Connection, model: Con
         }
         const newModel: Model<InstanceType<T>> = connection.model(model.name, schema);
         newModel.init();
+        newModel.ensureIndexes();
         return newModel;
     }
 
