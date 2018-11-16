@@ -1,6 +1,6 @@
 import { Typegoose, InstanceType } from 'typegoose';
 import { Constructor } from './types';
-import { Model, Connection } from 'mongoose';
+import { Model, Connection, Document } from 'mongoose';
 import { RestRegistry } from './RestRegistry';
 
 /**
@@ -8,7 +8,7 @@ import { RestRegistry } from './RestRegistry';
  * @param connection
  * @param model
  */
-export function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Model<InstanceType<T>> {
+export function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Model<Document> {
     const modelEntry = RestRegistry.getModel(model);
     const schemaOptions = modelEntry && modelEntry.config ? modelEntry.config.schemaOptions : undefined;
 
@@ -25,7 +25,9 @@ export function getModel<T extends Typegoose>(connection: Connection, model: Con
             // next parent
             parentCtor = Object.getPrototypeOf(parentCtor);
         }
-        return connection.model(model.name, schema);
+        const newModel: Model<Document> = connection.model(model.name, schema);
+        newModel.init();
+        return newModel;
     }
 
     return connection.models[model.name];
