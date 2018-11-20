@@ -13,15 +13,14 @@ export function getModel<T extends Typegoose>(connection: Connection, model: Con
     const schemaOptions = modelEntry && modelEntry.config ? modelEntry.config.schemaOptions : undefined;
 
     if (!connection.models[model.name]) {
-        //const schema = model.prototype.buildSchema(model.name);
         // get schema of current model
-        let schema = model.prototype.buildSchema(model.name, schemaOptions);
+        let schema = model.prototype.buildSchema(model, model.name, schemaOptions);
         // get parents class name
         let parentCtor = Object.getPrototypeOf(model);
         // iterate trough all parents
         while (parentCtor && parentCtor.name !== 'Typegoose' && parentCtor.name !== 'Object') {
             // extend schema
-            schema = model.prototype.buildSchema(parentCtor.name, schemaOptions, schema);
+            schema = model.prototype.buildSchema(parentCtor, parentCtor.name, schemaOptions, schema);
             // next parent
             parentCtor = Object.getPrototypeOf(parentCtor);
         }

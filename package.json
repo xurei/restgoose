@@ -21,8 +21,7 @@
   "author": "Olivier Bourdoux",
   "license": "MIT",
   "peerDependencies": {
-    "express": "^4.0.0",
-    "typegoose": "^5.0.0"
+    "express": "^4.0.0"
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
@@ -54,6 +53,7 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
+    "typegoose": "^5.4.0",
     "debug": "^3.1.0"
   }
 }
