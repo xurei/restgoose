@@ -101,16 +101,23 @@ export function create<T extends Typegoose>(modelEntry: RestModelEntry<T>, metho
         // postFetch
         const postFetchResult = await postFetch(methodConfig, req, fetchResult);
 
-        // preSave
-        const preSaveResult = await preSave(methodConfig, req, null, postFetchResult);
+        if (!postFetchResult) {
+            return res.status(404).json({
+                code: ERROR_NOT_FOUND_CODE,
+            });
+        }
+        else {
+            // preSave
+            const preSaveResult = await preSave(methodConfig, req, null, postFetchResult);
 
-        // save
-        const saveResult = await persistSave(methodConfig, preSaveResult);
+            // save
+            const saveResult = await persistSave(methodConfig, preSaveResult);
 
-        // preSend
-        const preSendResult = await preSend(methodConfig, req, saveResult);
+            // preSend
+            const preSendResult = await preSend(methodConfig, req, saveResult);
 
-        res.status(201).json(preSendResult);
+            res.status(201).json(preSendResult);
+        }
     });
 }
 
