@@ -22,7 +22,7 @@ export interface MiddlewarePostFetch<T extends Typegoose> extends Middleware {
 }
 
 export interface MiddlewarePreSave<T extends Typegoose> extends Middleware {
-    (req: Request, oldEntity: Doc<T>, newEntity: Doc<T>): Promisable<Doc<T>>;
+    (req: Request, entity: Doc<T>, oldEntity?: Doc<T>): Promisable<Doc<T>>;
 }
 
 export type MiddlewarePersistDeleteAll<T extends Typegoose> = (entities: Doc<T>[]) => Promise<boolean>;

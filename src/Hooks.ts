@@ -86,7 +86,7 @@ export async function preSave<T extends Typegoose>(methodConfig: RestConfigurati
     const promise: Promise<any> = Promise.resolve(newEntity);
 
     return methodConfig.preSave ?
-        promise.then(entity => entity && methodConfig.preSave(req, oldEntity, newEntity)) :
+        promise.then(entity => entity && methodConfig.preSave(req, newEntity, oldEntity)) :
         promise;
 }
 
