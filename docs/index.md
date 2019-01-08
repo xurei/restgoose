@@ -34,7 +34,7 @@ export class Todo extends Typegoose {
 Restgoose takes its inspiration from Typegoose and Loopback.
 We also had some objectives in mind while writing Restgoose :
 - Simple, common behaviors should be really easy to write,
-- The framework sould follow a RESTful design,
+- The framework should follow a RESTful design,
 - The framework should be simple to add in an existing project,
 - While promoting some best practices, the framework should let the user add 
   complex endpoints without Restgoose if necessary
