@@ -5,8 +5,10 @@ import * as bodyParser from 'body-parser';
 import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
 import * as cors from 'cors';
 
-const connectionA = mongoose.createConnection('mongodb://localhost/restgoose-test-multiple-db-a');
-const connectionB = mongoose.createConnection('mongodb://localhost/restgoose-test-multiple-db-b');
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/';
+
+const connectionA = mongoose.createConnection(mongoUri+'restgoose-test-multiple-db-a');
+const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-db-b');
 
 @rest({
     /*getModel: async (req: express.Request, model: Constructor<Item>) => {

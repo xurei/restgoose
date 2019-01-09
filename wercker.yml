@@ -21,7 +21,7 @@ build:
     - script:
         name: npm tests
         code: |
-          MONGO_URI="mongodb://${MONGO_PORT_27017_TCP_ADDR}:27017/restgoose-db" npm run test
+          MONGO_URI="mongodb://${MONGO_PORT_27017_TCP_ADDR}:27017/" npm run test
     
     - script:
         name: Code coverage

@@ -78,7 +78,7 @@ server = server.listen(3001, function () {
 
 function openDatabase() {
     // Business as usual - connect to your database with mongoose
-    const mongoHost = process.env.MONGO_URI || 'mongodb://localhost/restgoose-example';
+    const mongoHost = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-example';
     console.log('Mongo Host:', mongoHost);
     mongoose.connect(mongoHost)
     .catch(e => {

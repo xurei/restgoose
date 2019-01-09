@@ -5,7 +5,8 @@ import * as bodyParser from 'body-parser';
 import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
 import * as cors from 'cors';
 
-const connectionA = mongoose.createConnection('mongodb://localhost/restgoose-test-extended-model');
+const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
+const connectionA = mongoose.createConnection(mongoUri);
 
 class InnerItem {
     innerTitle: string;
