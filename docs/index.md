@@ -28,10 +28,11 @@ export class Todo extends Typegoose {
 }
 ```
 
+
 # Documentation
 
-- [API Reference](./API.md)
-- [Rest endpoint lifecycle](./rest-lifecycle.md)
+- ## [API Reference](./API.md)
+- ## [Rest endpoint lifecycle](./rest-lifecycle.md)
 
 # The Philosophy behind Restgoose
 Restgoose takes its inspiration from Typegoose and Loopback.

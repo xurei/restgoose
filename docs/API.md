@@ -239,7 +239,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
      
      If all the middlewares are rejected, the error thrown from the last one is passed through.
      
-     Example: 
+     #### Example: 
      ```typescript
      /**
       * return the entity if the user is admin, throw 401 otherwise
@@ -286,7 +286,7 @@ then wrap it around with `asFilter()`.
   A function with the same signature, but that will never throw an error or call the 
   `catch()` method of the returned Promise, but `null` instead.
 
-- ### Example: 
+#### Example: 
   ```typescript
   function myPostFetchFn(req, item) {
       if (/* some check */) {

@@ -66,7 +66,7 @@ It is only composed of two steps: **fetch** and **postFetch**.
 They work exactly as described in their respective sections, but on the parent model instead of the 
 submodel that the enpoint points to.
 
-### Reference table
+## Reference table
 The following table shows the mongoose functions that are called at fetch and persist step, 
 and indicates if hooks are called or not.
 

@@ -65,11 +65,12 @@ section {
     background: #118D4C;
     border: none;
     box-shadow: none;
-    padding-right: 10px;
+    padding: 5px 10px;
     box-sizing: border-box;
     text-align: right;
     
     @media screen and (min-width: 1024px) {
+        padding-top: 15px;
         right: 0;
         top: 0;
         left: initial;
@@ -83,13 +84,20 @@ section {
     
     .fork {
         $w: 21px;
-        float: right;
         position: relative;
         top: initial;
         left: initial;
         right: initial;
         padding-left: 12px + $w + 5px;
         margin-left: 0;
+        margin-top: 0;
+        
+        background: #eee;
+        border-color: #ddd;
+        &:hover {
+            background: #f8f8f8;
+            border-color: #ddd;
+        }
         
         #logo {
             position: absolute;
@@ -112,19 +120,24 @@ section {
             }
         }
     }
+    
+    code {
+        color: #eee;
+        background: #222;
+        padding: 6px 13px;
+        display: inline-block;
+        margin: 0;
+
+        @media screen and (min-width: 1024px) {
+            margin-top: 5px;
+            float: none;
+        }
+    }
 }
 
 nav {
-    //top: 120px;
-    //bottom: 0px;
-    //margin-left: -590px;
-    //padding-top: 25px;
-    //padding-right: 10px;
-    //overflow-y: auto;
-    //text-align: left;
-
     top: 120px;
-    bottom: 0px;
+    bottom: 0;
     margin-left: -590px;
     padding-top: 25px;
     padding-right: 10px;
@@ -154,6 +167,18 @@ nav {
         
         li.tag-h1 a {
             //color: #fff;
+        }
+        
+        li.external {
+            > a:before {
+                content: "";
+                background: url("/assets/images/doc.svg");
+                width: 8px;
+                height: 10px;
+                background-size: contain;
+                display: inline-block;
+                margin-right: 5px;
+            }
         }
 
         .tag-h1 {
@@ -186,6 +211,17 @@ footer {
 
 pre, code {
     font-family: monospace;
+}
+
+pre > code {
+    background: none;
+    color: inherit;
+}
+
+code {
+    background: #ddd;
+    color: #222;
+    text-shadow: none;
 }
 
 ul {

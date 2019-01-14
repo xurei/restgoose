@@ -28,6 +28,10 @@
         <strong>View On GitHub</strong>
     </a>
 
+    {% if site.npm_package %}
+    <code>npm install {{site.npm_package}}</code>
+    {% endif %}
+    
     {% if site.show_downloads %}
     <div class="downloads">
         <span>Downloads:</span>

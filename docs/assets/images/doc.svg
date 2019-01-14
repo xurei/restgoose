@@ -1,0 +1,10 @@
+<svg height='25px' width='20px' fill="#000000" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+     preserveAspectRatio="none" x="0px" y="0px" viewBox="20 10 60 80">
+    <defs>
+        <path id="a" stroke="#000000" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" fill="none"
+              d=" M 21.05 18.35 L 21.05 81.75 Q 21.464453125 88.219921875 27.65 88.8 27.9576171875 88.8353515625 28.275 88.85 L 71.775 88.85 Q 72.066796875 88.8365234375 72.35 88.8 78.607421875 88.2419921875 79 81.7 L 79 30 60.85 30 60.9 11.2 30.1 11.2 Q 29.87265625 11.185546875 29.65 11.175 21.5150390625 10.855859375 21.05 18.35 Z M 60.9 11.2 L 61.05 11.2 79 29.9 79 30 M 34.35 50"></path>
+    </defs>
+    <g transform="matrix( 1, 0, 0, 1, 0,0) ">
+        <use xlink:href="#a"></use>
+    </g>
+</svg>
