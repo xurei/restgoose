@@ -228,11 +228,11 @@ ul {
     list-style: none;
     padding: 0;
     
-    li {
+    > li {
         padding-left: 20px; 
     }
     
-    li:before {
+    > li:before {
         content: ">";
         margin-left: -18px;
         margin-right : 0;

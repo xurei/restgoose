@@ -1,12 +1,13 @@
 # Restgoose
 Model-driven REST API framework
 
+[![npm version](https://badge.fury.io/js/%40xureilab%2Frestgoose.svg)](https://badge.fury.io/js/%40xureilab%2Frestgoose)
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/s/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
 [![codecov](https://codecov.io/gh/xurei/restgoose/branch/master/graph/badge.svg)](https://codecov.io/gh/xurei/restgoose)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2181/badge)](https://bestpractices.coreinfrastructure.org/projects/2181)
 
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/m/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
-[![NPM](https://nodei.co/npm/@xureilab/restgoose.png?compact=true)](https://www.npmjs.com/package/@xureilab/restgoose)
+
 
 #### MongoDB + Typegoose + Restgoose = ❤️️
 

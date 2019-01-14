@@ -7,11 +7,11 @@
   This is the enrty point of Restgoose. 
   It creates all the routes in the given context.
   Example:
-  ```typescript
-  const app = express();
-  app.use(Restgoose.initialize());
-  ```
-    
+```typescript
+const app = express();
+app.use(Restgoose.initialize());
+```
+  
 ## @rest(config)
 The main decorator of Restgoose. It can be placed on top of a class extending Typegoose, 
 or on top of a property in such a class (see [Using @rest() on submodels](#using-rest-on-submodels)).
@@ -76,30 +76,30 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
     
     Example:
     ```typescript
-        function somePreFetchMethod(req) 
-        { 
-            if (/* some check */) {
-                throw new RestError(403, 'Unauthorized');
-            }
-            else {
-                //In case of success, you MUST return true in a preFetch hook.
-                return true;
-            }
+    function somePreFetchMethod(req) 
+    { 
+        if (/* some check */) {
+            throw new RestError(403, 'Unauthorized');
         }
-        @rest({
-            route: '/items',
-            methods: [
-                all({
-                    postFetch: removePassword
-                }),
-                one({
-                    postFetch: removePassword
-                })
-            ]
-        })
-        export class Item extends Typegoose {
-            /* ... */
-        } 
+        else {
+            //In case of success, you MUST return true in a preFetch hook.
+            return true;
+        }
+    }
+    @rest({
+        route: '/items',
+        methods: [
+            all({
+                postFetch: removePassword
+            }),
+            one({
+                postFetch: removePassword
+            })
+        ]
+    })
+    export class Item extends Typegoose {
+        /* ... */
+    } 
     ```
     
   - **fetch**
@@ -148,37 +148,37 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
        - `items/:id` will return a 403 error if the item is not accessible
        
        ```typescript
-           function checkAccessRule(req, item) 
-           {
-               return Promise.resolve()
-               .then(() => fetchUser()) // fetch the user somehow
-               .then(user => {
-                   if (userCanReadItem(user, item)) {
-                       return item;
-                   }
-                   else {
-                       // filter the entity from the result
-                       return null; 
-                       // or throw an exception, stopping the pipeline
-                       throw new RestError(403, 'Cannot access item'); 
-                   }
-               });
-           }
-       
-           @rest({
-               route: '/items',
-               methods: [
-                   all({
-                       postFetch: asFilter(checkAccessRule)
-                   }),
-                   one({
-                       postFetch: checkAccessRule
-                   })
-               ]
-           })
-           export class Item extends Typegoose {
-               /* ... */
-           }
+       function checkAccessRule(req, item) 
+       {
+           return Promise.resolve()
+           .then(() => fetchUser()) // fetch the user somehow
+           .then(user => {
+               if (userCanReadItem(user, item)) {
+                   return item;
+               }
+               else {
+                   // filter the entity from the result
+                   return null; 
+                   // or throw an exception, stopping the pipeline
+                   throw new RestError(403, 'Cannot access item'); 
+               }
+           });
+       }
+   
+       @rest({
+           route: '/items',
+           methods: [
+               all({
+                   postFetch: asFilter(checkAccessRule)
+               }),
+               one({
+                   postFetch: checkAccessRule
+               })
+           ]
+       })
+       export class Item extends Typegoose {
+           /* ... */
+       }
        ```
        
   - **preSend** a function
@@ -192,28 +192,28 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
     1. Create the routes GET `/users/` and GET `/users/:id`. 
        Both will remove the `password` field from the returned object(s).
        ```typescript
-           function removePassword(req, user) 
-           { 
-               user.password = null;
-               return user;
-           }
-           
-           @rest({
-               route: '/users',
-               methods: [
-                   all({
-                       preSend: removePassword
-                   }),
-                   one({
-                       preSend: removePassword
-                   })
-               ]
-           })
-           export class User extends Typegoose {
-               @prop({required: true})
-               password: string;
-               /* ... */
-           }
+       function removePassword(req, user) 
+       { 
+           user.password = null;
+           return user;
+       }
+       
+       @rest({
+           route: '/users',
+           methods: [
+               all({
+                   preSend: removePassword
+               }),
+               one({
+                   preSend: removePassword
+               })
+           ]
+       })
+       export class User extends Typegoose {
+           @prop({required: true})
+           password: string;
+           /* ... */
+       }
        ``` 
        
 - ### Using `@rest()` on submodels
@@ -225,7 +225,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
    The returned functions generated by `or()`/`and()` can themselves be used in another `or()`/`and()`, allowing
    complex logic : 
    ```typescript
-   or(and(middlewareA, middlewareB), and(middlewareA, middlewareC))
+or(and(middlewareA, middlewareB), and(middlewareA, middlewareC))
    ```
    
    **NOTE** : middleware composition does NOT work with the `fetch` or `persist` hooks.
