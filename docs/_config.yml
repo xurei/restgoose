@@ -1,1 +1,4 @@
-theme: jekyll-theme-midnight
+theme: jekyll-theme-leap-day
+show_downloads: false
+title: Restgoose
+npm_package: "@xureilab/restgoose" 

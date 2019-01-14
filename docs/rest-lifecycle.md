@@ -1,5 +1,3 @@
-[Index](./)
-
 # Rest endpoint lifecycle
 
 ## Overview

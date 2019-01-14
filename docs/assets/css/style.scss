@@ -1,0 +1,215 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+$green: #118D4C;
+
+body {
+    background-color: #444;
+    font-size: 16px;
+    line-height: 25px;
+    padding-bottom: 0;
+}
+
+a {
+    color: $green;
+    
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+header {
+    background: $green;
+    padding-bottom: 20px;
+    
+    a {
+        color: inherit;
+        text-shadow: 0 2px 0 #225038;
+    }
+}
+
+div.wrapper {
+    @media screen and (min-width: 1060px) {
+        width: 800px;
+        margin: 0 auto;
+    }
+    @media screen and (min-width: 1200px) {
+        width: 900px;
+        left: 100px;
+    }
+}
+
+section {
+    max-width: none;
+    box-sizing: border-box;
+    width: 100%;
+    @media screen and (min-width: 760px) {
+        width: 90%;
+    }
+    @media screen and (min-width: 1060px) {
+        width: 100%;
+        margin-top: 120px;
+        margin-bottom: 0;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+
+    @media screen and (max-width: 480px) {
+        margin-top: 0;
+    }
+}
+
+#banner {
+    background: #118D4C;
+    border: none;
+    box-shadow: none;
+    padding-right: 10px;
+    box-sizing: border-box;
+    text-align: right;
+    
+    @media screen and (min-width: 1024px) {
+        right: 0;
+        top: 0;
+        left: initial;
+        margin: 0;
+        width: 390px;
+    }
+    
+    a {
+        color: #333;
+    }
+    
+    .fork {
+        $w: 21px;
+        float: right;
+        position: relative;
+        top: initial;
+        left: initial;
+        right: initial;
+        padding-left: 12px + $w + 5px;
+        margin-left: 0;
+        
+        #logo {
+            position: absolute;
+            width: $w;
+            height: $w;
+            left: 10px;
+            margin-top: -1px;
+            right: initial;
+            display: inline-block;
+            vertical-align: middle;
+            background-size: contain;
+            opacity: 0.8;
+        }
+        
+        &:hover {
+            text-decoration: none;
+            
+            .logo {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+nav {
+    //top: 120px;
+    //bottom: 0px;
+    //margin-left: -590px;
+    //padding-top: 25px;
+    //padding-right: 10px;
+    //overflow-y: auto;
+    //text-align: left;
+
+    top: 120px;
+    bottom: 0px;
+    margin-left: -590px;
+    padding-top: 25px;
+    padding-right: 10px;
+    overflow-y: auto;
+    text-align: left;
+    
+    background: #ddd;
+    
+    @media screen and (max-width: 1199px) {
+        display: none;
+    }
+    
+    ul {
+        list-style: none;
+        padding-left: 15px;
+        a {
+            //color: #eee;
+            
+            &:hover {
+                color: $green;
+            }
+        }
+
+        li:before {
+            content: none;
+        }
+        
+        li.tag-h1 a {
+            //color: #fff;
+        }
+
+        .tag-h1 {
+            padding-left: 0;
+
+            a:hover {
+                color: $green;
+            }
+        }
+        .tag-h2 {
+            padding-left: 20px;
+        }
+        .tag-h3 {
+            padding-left: 40px;
+        }
+    }
+}
+
+footer {
+    position: static;
+    display: block;
+    width: auto;
+    color: #bbb;
+    margin-left: 0;
+    text-align: center;
+    > p {
+        margin: 0;
+    }
+}
+
+pre, code {
+    font-family: monospace;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    
+    li {
+        padding-left: 20px; 
+    }
+    
+    li:before {
+        content: ">";
+        margin-left: -18px;
+        margin-right : 0;
+        display: inline-block;
+        width: 18px;
+        position: absolute;
+        //color: $green;
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+// Helpers
+
+.text-right {
+    text-align: right;
+}

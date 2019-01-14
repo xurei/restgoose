@@ -3,6 +3,8 @@
 # compiled output
 /examples-build
 .nyc_output
+.jekyll-metadata
+_site
 coverage
 
 # dependencies

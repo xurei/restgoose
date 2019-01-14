@@ -1,4 +1,5 @@
-[Index](./)
+---
+---
 
 # API reference
 

@@ -1,4 +1,7 @@
-### MongoDB + Typegoose + Restgoose = ❤️️
+---
+title: Restgoose
+---
+**MongoDB + Typegoose + Restgoose = ❤️️**
 
 Restgoose exposes your MongoDB database through a REST API with ease. 
 It is driven by the model itself, which reduces the boilerplate code necessary to write simple endpoints.
