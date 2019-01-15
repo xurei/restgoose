@@ -18,6 +18,10 @@
     "decorators",
     "framework"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/xurei/restgoose.git"
+  },
   "author": "Olivier Bourdoux",
   "license": "MIT",
   "peerDependencies": {
@@ -53,7 +57,7 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "typegoose": "^5.4.0",
-    "debug": "^3.1.0"
+    "debug": "^3.2.6",
+    "typegoose": "^5.4.0"
   }
 }
