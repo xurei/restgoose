@@ -34,7 +34,7 @@ export async function fetchAll<T extends Typegoose>(modelType: Model<InstanceTyp
     // TODO: getAll() remove req.filter from the default behaviour ?
     const query = (
         methodConfig.fetch ?
-            methodConfig.fetch(req) :
+            methodConfig.fetch(req, modelType) :
             modelType.find(req.filter)
     ) as Promise<InstanceType<T>[]>;
 
@@ -45,7 +45,7 @@ export async function fetchCreate<T extends Typegoose>(modelType: Model<Instance
     Promise<InstanceType<T>> {
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req) as Promise<InstanceType<T>> :
+        methodConfig.fetch(req, modelType) as Promise<InstanceType<T>> :
         Promise.resolve(new modelType(buildPayload(req, modelType)));
 }
 
@@ -53,7 +53,7 @@ export async function fetchOne<T extends Typegoose>(modelType: Model<InstanceTyp
     Promise<InstanceType<T>> {
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req) as Promise<InstanceType<T>> :
+        methodConfig.fetch(req, modelType) as Promise<InstanceType<T>> :
         modelType.findById(req.params.id);
 }
 

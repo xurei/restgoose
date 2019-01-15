@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 
 export interface Constructor<T> {
@@ -13,9 +14,7 @@ export interface MiddlewarePreFetch extends Middleware {
     (req: Request): Promise<boolean>;
 }
 
-export type MiddlewareFetchOne<T extends Typegoose> = (req: Request) => Promise<Doc<T>>;
-export type MiddlewareFetchAll<T extends Typegoose> = (req: Request) => Promise<Doc<T>[]>;
-export type MiddlewareFetch<T extends Typegoose> = MiddlewareFetchOne<T> | MiddlewareFetchAll<T>;
+export type MiddlewareFetch<T extends Typegoose> = (req: Request, modelType?: Model<InstanceType<T>>) => Promise<Doc<T> | Doc<T>[]>;
 
 export interface MiddlewarePostFetch<T extends Typegoose> extends Middleware {
     (req: Request, entity: Doc<T>): Promisable<Doc<T>>;
