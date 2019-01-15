@@ -5,12 +5,12 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rimraf lib && npm run tslint && npm run build-ts",
-    "build-ts": "tsc -p .",
-    "build-examples": "tsc -p examples",
-    "tslint": "tslint -p .",
-    "test": "nyc mocha --opts ./mocha.opts test/*.ts",
-    "coverage": "nyc report --reporter=json && codecov -f coverage/*.json"
+    "build": "node_modules/.bin/rimraf lib && npm run tslint && npm run build-ts",
+    "build-ts": "node_modules/.bin/tsc -p .",
+    "build-examples": "node_modules/.bin/tsc -p examples",
+    "tslint": "node_modules/.bin/tslint -p .",
+    "test": "node_modules/.bin/nyc mocha --opts ./mocha.opts test/*.ts",
+    "coverage": "node_modules/.bin/nyc report --reporter=json && node_modules/.bin/codecov -f coverage/*.json"
   },
   "keywords": [
     "REST",
