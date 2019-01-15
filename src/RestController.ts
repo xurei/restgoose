@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CastError, Model } from 'mongoose';
+import { CastError } from 'mongoose';
 import { Typegoose } from 'typegoose';
 import {
     fetchAll, fetchCreate, fetchOne, getModel,
