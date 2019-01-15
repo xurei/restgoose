@@ -53,7 +53,6 @@
     "ts-node": "^3.3.0",
     "ts-sinon": "^1.0.12",
     "tslint": "5.9.1",
-    "typegoose": "^5.2.1",
     "typescript": "2.7.2"
   },
   "dependencies": {
