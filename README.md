@@ -4,6 +4,7 @@ Model-driven REST API framework
 [![npm version](https://img.shields.io/npm/v/%40xureilab%2Frestgoose.svg)](https://www.npmjs.com/package/@xureilab/restgoose)
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/s/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
 [![codecov](https://codecov.io/gh/xurei/restgoose/branch/master/graphs/badge.svg)](https://codecov.io/gh/xurei/restgoose)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/91cdb5b6e3444a7b91949a022bf650f2)](https://www.codacy.com/app/xurei/restgoose?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=xurei/restgoose&amp;utm_campaign=Badge_Grade)
 
 [![CII Best Practices](https://img.shields.io/cii/summary/2181.svg)](https://bestpractices.coreinfrastructure.org/projects/2181)
 [![npms score](https://badges.npms.io/%40xureilab%2Frestgoose.svg)](https://npms.io/search?q=%40xureilab%2Frestgoose)
