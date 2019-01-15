@@ -1,9 +1,9 @@
 import * as express from 'express';
 import { Request } from 'express';
-import { InstanceType, prop, Typegoose } from 'typegoose';
+import { prop, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, RestError } from '../../lib';
+import { Restgoose, all, create, one, removeAll, rest } from '../../lib';
 import * as cors from 'cors';
 
 @rest({

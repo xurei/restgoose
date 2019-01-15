@@ -1,11 +1,10 @@
 import * as express from 'express';
-import { Request, Response } from 'express';
-import { arrayProp, prop, Ref, Typegoose, InstanceType } from 'typegoose';
+import { Request } from 'express';
+import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, RestError, and, or } from '../../lib';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, RestError, and } from '../../lib';
 import * as cors from 'cors';
-import { Constructor } from '../../lib/types';
 
 @rest({
     route: '/subitems',

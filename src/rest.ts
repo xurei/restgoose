@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Connection, Model } from 'mongoose';
+import { Connection } from 'mongoose';
 import { SchemaOptions } from 'mongoose';
 import { Typegoose } from 'typegoose';
 import { RestRegistry } from './RestRegistry';
@@ -18,11 +18,9 @@ import {
 export function rest<T extends Typegoose>(config: RestConfiguration<T>) {
     return (target: T | Constructor<T>, propertyKey?: string) => {
         if (!propertyKey) {
-            target = target as Constructor<T>;
-            RestRegistry.registerModel(target, config);
+            RestRegistry.registerModel(target as Constructor<T>, config);
         }
         else {
-            target = target as T;
             RestRegistry.registerSubModel(target.constructor as Constructor<T>, propertyKey, config);
         }
     };
