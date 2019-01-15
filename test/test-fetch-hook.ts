@@ -3,7 +3,48 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { app } from '../examples/fetch-hook';
+import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { simpleServer } from './util/simple-server';
+import { Request } from 'express';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../src';
+import { openDatabase } from './util/open-database';
+
+//import { app } from '../examples/complex-api';
+
+const app = simpleServer();
+openDatabase('restgoose-test-fetch-hook');
+
+@rest({
+    route: '/otheritems',
+    methods: [
+        all({ fetch: otherItemFetchAll }),
+        one({ fetch: otherItemFetchOne }),
+        create(),
+        removeAll(),
+    ],
+})
+export class OtherItem extends Typegoose {
+    @prop({required: true})
+    name: string;
+
+    @prop({required: true})
+    value: number;
+
+    @prop({required: true, default: false})
+    public: boolean;
+}
+
+export const OtherItemModel = new OtherItem().getModelForClass(OtherItem);
+
+async function otherItemFetchAll(req: Request) {
+    return OtherItemModel.find({ public: true });
+}
+async function otherItemFetchOne(req: Request) {
+    return OtherItemModel.findOne({ public: true, _id: req.params.id });
+}
+
+app.use(Restgoose.initialize());
+// ---------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
 

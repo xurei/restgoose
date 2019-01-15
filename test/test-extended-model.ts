@@ -1,9 +1,12 @@
 import * as express from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
-import * as bodyParser from 'body-parser';
 import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
-import * as cors from 'cors';
+import * as chai from 'chai';
+import * as dirtyChai from 'dirty-chai';
+import 'mocha';
+import { RestTester } from './util/rest-tester';
+import { simpleServer } from './util/simple-server';
 
 const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
 const connectionA = mongoose.createConnection(mongoUri);
@@ -42,23 +45,10 @@ export class Item extends ParentItem {
 export const ItemModel = new Item().getModelForClass(Item);
 
 // Create the minimal express with CORS and bodyParser.json
-const app = express();
-app.use(bodyParser.json());
-app.use(cors({
-    origin: '*',
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Origin,Content-Type,Accept,Authorization',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-}));
+const app = simpleServer();
 
 app.use('/dba', Restgoose.initialize());
 //----------------------------------------------------------------------------------------------------------------------
-
-import * as chai from 'chai';
-import * as dirtyChai from 'dirty-chai';
-import 'mocha';
-import { RestTester } from './util/rest-tester';
 
 chai.use(dirtyChai);
 

@@ -3,10 +3,36 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { app, Todo } from '../examples/minimal-todo';
-import { Restgoose } from '../lib';
 import * as MockReq from 'mock-req';
 
+import { prop, Typegoose } from 'typegoose';
+import { simpleServer } from './util/simple-server';
+import { Restgoose, all, create, one, remove, removeAll, rest, update } from '../src';
+import { openDatabase } from './util/open-database';
+
+//import { app } from '../examples/complex-api';
+
+const app = simpleServer();
+openDatabase('restgoose-test-minimal-todo');
+
+@rest({
+    route: '/todos',
+    methods: [
+        all(), // GET /todos
+        one(), // GET /todos/:id
+        create(), // POST /todos
+        update(), // PATCH /todos/:id
+        remove(), // DELETE /todos/:id
+        removeAll(), // DELETE /todos
+    ],
+})
+export class Todo extends Typegoose {
+    @prop({required: true})
+    title: string;
+}
+
+app.use(Restgoose.initialize());
+// ---------------------------------------------------------------------------------------------------------------------
 chai.use(dirtyChai);
 
 const expect = chai.expect;

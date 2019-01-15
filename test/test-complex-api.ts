@@ -1,9 +1,69 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
+import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
 import { RestTester } from './util/rest-tester';
+import { simpleServer } from './util/simple-server';
+import { Request } from 'express';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../src';
+import { openDatabase } from './util/open-database';
 
-import { app } from '../examples/complex-api';
+//import { app } from '../examples/complex-api';
+
+const app = simpleServer();
+openDatabase('restgoose-test-complex-api');
+
+async function verifyToken(req: Request) {
+    // !!! This is NOT safe !!! Just for the sake of the example
+    const header = req.headers['authorization'];
+    if (header !== 'admin') {
+        throw new RestError(401);
+    }
+    return true;
+}
+
+@rest({
+    route: '/subitems',
+    methods: [
+        one({ preFetch: and(verifyToken) }), // GET /subitems/:id
+    ],
+})
+export class SubItem extends Typegoose {
+    @prop({required: true})
+    name: string;
+
+    @prop({required: true})
+    value: number;
+}
+
+@rest({
+    route: '/items',
+    methods: [
+        all(),
+        one(),
+        create(),
+        update(),
+        remove(),
+        removeAll(),
+    ],
+})
+export class Item extends Typegoose {
+    @prop({required: true})
+    title: string;
+
+    @rest({
+        route: '/subitems',
+        methods: [
+            all({ preFetch: verifyToken }),
+            create({ preFetch: verifyToken }),
+        ],
+    })
+    @arrayProp({itemsRef: {name: SubItem}})
+    subItems: Ref<SubItem>[];
+}
+
+app.use(Restgoose.initialize());
+// ---------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
 
