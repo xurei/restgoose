@@ -30,6 +30,7 @@ export class Todo extends Typegoose {
 
 # Documentation
 
+- ## [Getting started](./getting-started.md)
 - ## [API Reference](./API.md)
 - ## [Rest endpoint lifecycle](./rest-lifecycle.md)
 - ## [Development Roadmap](./roadmap.md)
