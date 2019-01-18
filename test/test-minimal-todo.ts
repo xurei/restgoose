@@ -7,10 +7,8 @@ import * as MockReq from 'mock-req';
 
 import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
-import { Restgoose, all, create, one, remove, removeAll, rest, update } from '../src';
+import { Restgoose, all, create, one, remove, removeAll, rest, update } from '../lib';
 import { openDatabase } from './util/open-database';
-
-//import { app } from '../examples/complex-api';
 
 const app = simpleServer();
 openDatabase('restgoose-test-minimal-todo');
@@ -217,7 +215,7 @@ describe('Minimal TODO API', function() {
                 .then(() => restTester.get('/todos?q='+JSON.stringify({title:"blah"})))
                 .then(({ code, body, headers }) => {
                     expect(code).to.eq(200);
-                    console.log(body)
+                    //TODO check the content
                 });
             });
         });

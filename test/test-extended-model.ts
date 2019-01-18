@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
@@ -65,8 +65,8 @@ describe('Extended model', function() {
         .then(() => restTester.delete('/dba/items'))
         .then(() => restTester.post('/dba/items', { title: 'Item 0 from DB A', subtitle: 'this is a subtitle', inner: {innerTitle: 'my inner title'} }))
         .then(({ code, body, headers }) => {
-            console.log(code);
-            console.log(body);
+            //console.log(code);
+            //console.log(body);
         });
     });
 

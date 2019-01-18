@@ -3,13 +3,11 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../src';
+import { Restgoose, all, create, one, removeAll, rest } from '../lib';
 import { openDatabase } from './util/open-database';
-
-//import { app } from '../examples/complex-api';
 
 const app = simpleServer();
 openDatabase('restgoose-test-fetch-hook');

@@ -5,10 +5,8 @@ import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../src';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
 import { openDatabase } from './util/open-database';
-
-//import { app } from '../examples/complex-api';
 
 const app = simpleServer();
 openDatabase('restgoose-test-complex-api');
@@ -152,7 +150,6 @@ describe('Complex API', function() {
                     .then(() => restTester.as('admin').get('/subitems/'+subItemId))
                     .then(({ code, body, headers }) => {
                         expect(code).to.eq(200);
-                        console.log(body);
                         expect(body.name).to.eq('val1');
                         expect(body.value).to.eq(1);
                         return true;

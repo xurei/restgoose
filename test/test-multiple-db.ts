@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../src';
+import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
@@ -19,7 +19,7 @@ const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-
     },*/
     getConnection: async(req: express.Request) => {
         const clientName = req.baseUrl.split('/')[1];
-        console.log(clientName);
+        //console.log(clientName);
         return clientName === 'dba' ? connectionA : connectionB;
     },
     route: '/items',

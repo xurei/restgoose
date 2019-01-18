@@ -34,7 +34,6 @@ export class RestTester {
         let query = null;
         if (route.indexOf('?')) {
             const tmp = route.split(/\?/, 2);
-            console.log(tmp);
             query = tmp[1];
             route = tmp[0];
         }
