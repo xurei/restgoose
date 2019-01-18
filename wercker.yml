@@ -10,9 +10,9 @@ build:
         code: |
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-          
+
     - npm-install
-          
+
     - script:
         name: npm run build
         code: |
@@ -22,8 +22,10 @@ build:
         name: npm tests
         code: |
           MONGO_URI="mongodb://${MONGO_PORT_27017_TCP_ADDR}:27017/" npm run test
-    
+
     - script:
         name: Code coverage
         code: |
           npm run coverage
+          npm run coverage:codecov
+          npm run coverage:codacy
