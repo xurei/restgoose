@@ -14,16 +14,29 @@ body {
 
 a {
     color: $green;
-    
+
     &:hover {
         text-decoration: underline;
+    }
+}
+
+h2, h3 {
+    &:not(:first-child) {
+        margin-top: 2em;
+    }
+}
+
+h1 {
+    &:not(:first-child) {
+        margin-top: 48px;
     }
 }
 
 header {
     background: $green;
     padding-bottom: 20px;
-    
+    padding-top: 10px;
+
     a {
         color: inherit;
         text-shadow: 0 2px 0 #225038;
@@ -50,7 +63,7 @@ section {
     }
     @media screen and (min-width: 1060px) {
         width: 100%;
-        margin-top: 120px;
+        margin-top: 105px;
         margin-bottom: 0;
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
@@ -68,7 +81,7 @@ section {
     padding: 5px 10px;
     box-sizing: border-box;
     text-align: right;
-    
+
     @media screen and (min-width: 1024px) {
         padding-top: 15px;
         right: 0;
@@ -77,11 +90,11 @@ section {
         margin: 0;
         width: 390px;
     }
-    
+
     a {
         color: #333;
     }
-    
+
     .fork {
         $w: 21px;
         position: relative;
@@ -91,14 +104,14 @@ section {
         padding-left: 12px + $w + 5px;
         margin-left: 0;
         margin-top: 0;
-        
+
         background: #eee;
         border-color: #ddd;
         &:hover {
             background: #f8f8f8;
             border-color: #ddd;
         }
-        
+
         #logo {
             position: absolute;
             width: $w;
@@ -111,16 +124,16 @@ section {
             background-size: contain;
             opacity: 0.8;
         }
-        
+
         &:hover {
             text-decoration: none;
-            
+
             .logo {
                 opacity: 0.9;
             }
         }
     }
-    
+
     code {
         color: #eee;
         background: #222;
@@ -136,26 +149,26 @@ section {
 }
 
 nav {
-    top: 120px;
+    top: 105px;
     bottom: 0;
     margin-left: -590px;
     padding-top: 25px;
     padding-right: 10px;
     overflow-y: auto;
     text-align: left;
-    
+
     background: #ddd;
-    
+
     @media screen and (max-width: 1199px) {
         display: none;
     }
-    
+
     ul {
         list-style: none;
         padding-left: 15px;
         a {
             //color: #eee;
-            
+
             &:hover {
                 color: $green;
             }
@@ -164,11 +177,11 @@ nav {
         li:before {
             content: none;
         }
-        
+
         li.tag-h1 a {
             //color: #fff;
         }
-        
+
         li.external {
             > a:before {
                 content: "";
@@ -211,9 +224,10 @@ footer {
 
 pre, code {
     font-family: monospace;
+    line-height: 19px;
 }
 
-pre > code {
+pre.highlight > code {
     background: none;
     color: inherit;
 }
@@ -227,11 +241,11 @@ code {
 ul {
     list-style: none;
     padding: 0;
-    
+
     > li {
-        padding-left: 20px; 
+        padding-left: 20px;
     }
-    
+
     > li:before {
         content: ">";
         margin-left: -18px;

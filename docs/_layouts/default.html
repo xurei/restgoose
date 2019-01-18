@@ -6,6 +6,10 @@
 
     {% seo %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+
+    {% if page.import_css %}
+    <link rel="stylesheet" href="{{ '/assets/css/' | append: page.import_css | relative_url }}">
+    {% endif %}
     <script src="{{ '/assets/js/jquery-3.3.0.min.js' | relative_url }}" integrity="sha256-RTQy8VOmNlT6b2PIRur37p6JEBZUE7o8wPgMvu18MC4=" crossorigin="anonymous"></script>
     <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
     <!--[if lt IE 9]>
@@ -31,7 +35,7 @@
     {% if site.npm_package %}
     <code>npm install {{site.npm_package}}</code>
     {% endif %}
-    
+
     {% if site.show_downloads %}
     <div class="downloads">
         <span>Downloads:</span>
@@ -49,7 +53,9 @@
             <li>
                 <a href="{{ '/' | relative_url }}">↵ Index</a>
             </li>
-            <li></li>
+            <li>
+                <noscript>Enable javascript to show the Table of Contents</noscript>
+            </li>
         </ul>
     </nav>
     <section>

@@ -48,7 +48,7 @@ $(function() {
     $('nav ul li:first-child a').parent().addClass('active');
     
     $('nav ul li').on('click', 'a', function(event) {
-        var position = $($(this).attr('href')).offset().top - 190;
+        var position = $($(this).attr('href')).offset().top - 150;
         $('html, body').animate({scrollTop: position}, 400);
         event.preventDefault();
         //$("nav ul li a").parent().removeClass("active");
