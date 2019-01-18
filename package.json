@@ -11,7 +11,9 @@
     "serve-doc": "sh scripts/serve-doc.sh",
     "tslint": "node_modules/.bin/tslint -p .",
     "test": "node_modules/.bin/nyc mocha --opts ./mocha.opts test/*.ts",
-    "coverage": "node_modules/.bin/nyc report --reporter=json && node_modules/.bin/codecov -f coverage/*.json"
+    "coverage": "node_modules/.bin/nyc report --reporter=json --reporter=lcov",
+    "coverage:codecov": "node_modules/.bin/codecov -f coverage/*.json",
+    "coverage:codacy": "echo \"Sending coverage to Codacy...\" && cat coverage/lcov.info | node_modules/.bin/codacy-coverage -v | grep \\\\[debug\\\\]"
   },
   "keywords": [
     "REST",
@@ -36,6 +38,7 @@
     "@types/node": "8.10.39",
     "chai": "^4.1.2",
     "chai-match-pattern": "^1.1.0",
+    "codacy-coverage": "^3.4.0",
     "codecov": "^3.0.4",
     "cors": "^2.8.4",
     "dirty-chai": "^2.0.1",
