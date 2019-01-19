@@ -3,9 +3,7 @@
 import { Request } from 'express';
 import { Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
-export interface Constructor<T> {
-    new (...args: any[]): T;
-}
+export declare type Constructor<T> = new (...args: any[]) => T;
 export declare type Promisable<T> = T | Promise<T>;
 export declare type Middleware = (req: Request, ...args: any[]) => Promisable<any>;
 export declare type Doc<T> = T | InstanceType<T>;

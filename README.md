@@ -20,7 +20,7 @@ It is open for extension, so you can add complex logic easily too.
 
 ## Installation
 
-```
+```bash
 npm install @xureilab/restgoose
 ```
 
