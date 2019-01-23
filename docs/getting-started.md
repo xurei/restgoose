@@ -45,7 +45,8 @@ First we need to setup a working server. Let's start a new typesciprt project.
 mkdir restgoose-getting-started
 cd restgoose-getting-started
 npm init -y
-npm install typescript express typegoose mongoose body-parser @types/node @xureilab/restgoose reflect-metadata
+npm install typescript express typegoose mongoose body-parser @xureilab/restgoose reflect-metadata
+npm install --save --dev @types/node @types/express @types/mongoose
 ```
 
 Add the `build` and `start` scripts in `package.json`:
@@ -57,6 +58,26 @@ Add the `build` and `start` scripts in `package.json`:
   } 
 }
 ``` 
+
+Create `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "build",
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+```
 
 We are ready to write the code.
 
