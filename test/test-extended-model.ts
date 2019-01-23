@@ -88,6 +88,24 @@ describe('Extended model', function() {
     });
 
     describe('all()', function () {
+        describe('with a faulty filter', () => {
+            let fetch;
+            before(() => {
+                fetch = restTester.get(`/dba/items?q=${encodeURIComponent(JSON.stringify({someDate:{$gt:{$faulty:'2018-01-01'}}}))}`);
+            });
+            it('should return an error', function () {
+                return fetch
+                .then(res => {
+                    const body = res.body as any;
+                    const status = res.status as number;
+                    console.log(body);
+                    expect(status).to.eq(500);
+
+                    return true;
+                });
+            });
+        });
+
         it('should only return items from DB', function() {
             return Promise.resolve()
             .then(() => restTester.get('/dba/items'))
