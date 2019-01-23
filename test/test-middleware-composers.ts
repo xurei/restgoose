@@ -38,8 +38,8 @@ describe('and()', function() {
                 const spy2 = spy(preSuccess);
                 return and(spy1, spy2)(null)
                 .then(() => {
-                    expect(spy1).to.have.been.calledOnce();
-                    expect(spy2).to.have.been.calledOnce();
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.been.calledOnce(null);
                 });
             });
         });
@@ -59,12 +59,12 @@ describe('and()', function() {
                     expect(e.httpCode).to.eq(418);
                     expect(e.errorData).to.eq("I'm a teapot");
 
-                    expect(spy1).to.have.been.calledOnce();
-                    expect(spy2).to.have.been.calledOnce();
-                    expect(spyFail).to.have.been.calledOnce();
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.been.calledOnce(null);
+                    expect(spyFail).to.have.been.calledOnce(null);
 
-                    expect(spy3).to.have.not.been.called();
-                    expect(spy4).to.have.not.been.called();
+                    expect(spy3).to.have.not.been.called(null);
+                    expect(spy4).to.have.not.been.called(null);
                 });
             });
         });
@@ -83,8 +83,8 @@ describe('or()', function() {
                 const spy2 = spy(preSuccess);
                 return or(spy1, spy2)(null)
                 .then((result) => {
-                    expect(spy1).to.have.been.calledOnce();
-                    expect(spy2).to.have.not.been.called();
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.not.been.called(null);
                     expect(result).to.eq(true);
                 });
             });
@@ -98,11 +98,11 @@ describe('or()', function() {
                 const spy4 = spy(preSuccess);
                 return or(spy1, spy2, spy3, spy4)(null)
                 .then((result) => {
-                    expect(spy1).to.have.been.calledOnce();
-                    expect(spy2).to.have.been.calledOnce();
-                    expect(spy3).to.have.been.calledOnce();
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.been.calledOnce(null);
+                    expect(spy3).to.have.been.calledOnce(null);
                     expect(result).to.eq(true);
-                    expect(spy4).to.have.not.been.called();
+                    expect(spy4).to.have.not.been.called(null);
                 });
             });
         });
@@ -115,11 +115,11 @@ describe('or()', function() {
                 const spy4 = spy(preSuccess);
                 return or(spy1, spy2, spy3, spy4)(null)
                 .then((result) => {
-                    expect(spy1).to.have.been.calledOnce();
-                    expect(spy2).to.have.been.calledOnce();
-                    expect(spy3).to.have.been.calledOnce();
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.been.calledOnce(null);
+                    expect(spy3).to.have.been.calledOnce(null);
                     expect(result).to.eq(true);
-                    expect(spy4).to.have.not.been.called();
+                    expect(spy4).to.have.not.been.called(null);
                 });
             });
         });
@@ -139,7 +139,7 @@ describe('asFilter()', function() {
             .then(expected => {
                 return asFilter(spy1)(null, entity)
                 .then(returned => {
-                    expect(spy1).to.have.been.calledOnce();
+                    expect(spy1).to.have.been.calledOnce(null);
                     expect(returned).to.deep.eq(expected);
                 });
             });
@@ -152,7 +152,7 @@ describe('asFilter()', function() {
             const spy1 = spy(postFail);
             return asFilter(spy1)(null, entity)
             .then(returned => {
-                expect(spy1).to.have.been.calledOnce();
+                expect(spy1).to.have.been.calledOnce(null);
                 expect(returned).to.eq(null);
             });
         });

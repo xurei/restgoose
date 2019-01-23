@@ -1,5 +1,3 @@
-/// <reference types="mongoose" />
-/// <reference types="express" />
 import { Request } from 'express';
 import { Connection } from 'mongoose';
 import { SchemaOptions } from 'mongoose';

@@ -1,7 +1,13 @@
+import * as chai from 'chai';
 import { Express } from 'express';
+import * as Promise from 'promise';
+import chaiHttp = require('chai-http');
+
+chai.use(chaiHttp);
 
 export interface IRestTesterConfiguration {
     app: Express;
+    baseUrl?: string;
     authToken?: string;
 }
 
@@ -9,19 +15,19 @@ export interface IRestTesterOptions {
     headers?: object;
 }
 
-type Response = { code:number, body:any, headers:any };
-type App = Express & { runMiddleware: any };
-
 export class RestTester {
     private config: IRestTesterConfiguration;
-    private app: App;
+    private app: Express;
+    private requester: any;
 
     public constructor(config: IRestTesterConfiguration) {
-        this.app = config.app as App;
-        if (!this.app.runMiddleware) {
-            require('run-middleware')(this.app);
-        }
-        this.config = Object.assign({}, config);
+        this.config = Object.assign({
+            baseUrl: '',
+        }, config);
+        this.app = config.app;
+
+        this.requester = chai.request(this.app).keepOpen();
+        // const initPromise = request.get(buildUrl('/reset'));
     }
 
     public as(token: string): RestTester {
@@ -30,89 +36,98 @@ export class RestTester {
         }));
     }
 
-    private runMiddleware(route, options) {
-        let query = null;
-        if (route.indexOf('?')) {
-            const tmp = route.split(/\?/, 2);
-            query = tmp[1];
-            route = tmp[0];
-        }
-        options = Object.assign({query: query}, options);
+    public post(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
+        let out = this.requester.post(`${this.config.baseUrl}${route}`);
+
+        out = this.applyOptions(out, options);
+
         return new Promise<Response>((resolve, reject) => {
-            this.app.runMiddleware(route, options,
-                (code, body, headers) => {
-                    try {
-                        if (body && !(body instanceof Object)) {
-                            body = JSON.parse(body);
-                        }
-                        resolve({ code,body,headers });
-                    }
-                    catch(e) {
-                        reject(new Error(`Could not parse json: ${body}`));
-                    }
+            out.send(payload).end((err, res: Response) => {
+                if (!res) {
+                    reject(err);
+                } else {
+                    resolve(res);
                 }
-            );
+            });
         });
     }
 
-    public post(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options);
+    public patch(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
+        let out = this.requester.patch(`${this.config.baseUrl}${route}`);
 
-        return this.runMiddleware(route,
-            Object.assign({}, options, {
-                method: 'post',
-                body: payload
-            })
-        );
-    }
+        out = this.applyOptions(out, options);
 
-    public get(route: string, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options);
-
-        return this.runMiddleware(route,
-            Object.assign({}, options, {
-                method: 'get',
-            })
-        );
+        return new Promise<Response>((resolve, reject) => {
+            out.send(payload).end((err, res: Response) => {
+                if (!res) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        });
     }
 
     public put(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options);
+        let out = this.requester.put(`${this.config.baseUrl}${route}`);
 
-        return this.runMiddleware(route,
-            Object.assign({}, options, {
-                method: 'put',
-                body: payload
-            })
-        );
+        out = this.applyOptions(out, options);
+
+        return new Promise<Response>((resolve, reject) => {
+            out.send(payload).end((err, res: Response) => {
+                if (!res) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        });
     }
 
-    public patch(route: string, payload: object, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options);
+    public get(route: string, options?: IRestTesterOptions): Promise<Response> {
+        let out = this.requester.get(`${this.config.baseUrl}${route}`).redirects(0);
 
-        return this.runMiddleware(route,
-            Object.assign({}, options, {
-                method: 'patch',
-                body: payload
-            })
-        );
+        out = this.applyOptions(out, options);
+
+        return new Promise<Response>((resolve, reject) => {
+            out.end((err, res: Response) => {
+                if (!res) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        });
     }
 
     public delete(route: string, options?: IRestTesterOptions): Promise<Response> {
-        options = this.applyOptions(options);
+        let out = this.requester.delete(`${this.config.baseUrl}${route}`);
 
-        return this.runMiddleware(route,
-            Object.assign({}, options, {
-                method: 'delete',
-            })
-        );
+        out = this.applyOptions(out, options);
+
+        return new Promise<Response>((resolve, reject) => {
+            out.end((err, res: Response) => {
+                if (!res) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        });
     }
 
-    private applyOptions(options: IRestTesterOptions) {
-        options = Object.assign({headers:{}}, options);
+    private applyOptions(out, options?: IRestTesterOptions) {
         if (this.config.authToken) {
-            options.headers['authorization'] = this.config.authToken;
+            out = out.set('authorization', this.config.authToken);
         }
-        return options;
+
+        if (options && options.headers) {
+            Object.keys(options.headers).forEach(header => {
+                out = out.set(header, options.headers[header]);
+            });
+        }
+
+        return out;
     }
 }
+

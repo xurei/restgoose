@@ -61,13 +61,18 @@ describe('Fetch hook', function() {
 
         // deletes everything
         .then(() => restTester.delete('/otheritems'))
-        .then(({ code,body,headers }) => {
-            expect(code).to.eq(204);
+
+        .then(res => {
+            const body = res.body as any;
+            const status = res.status as number;
+            expect(status).to.eq(204);
             return true;
         })
         .then(() => restTester.get('/otheritems'))
-        .then(({ code, body, headers }) => {
-            expect(code).to.eq(200);
+        .then(res => {
+            const body = res.body as any;
+            const status = res.status as number;
+            expect(status).to.eq(200);
             expect(body).to.deep.eq([]);
             return true;
         })
@@ -82,7 +87,7 @@ describe('Fetch hook', function() {
             restTester.post('/otheritems', { name: 'item6', value: 6, public: true }),
         ]))
         .then((items) => {
-            itemIds = items.map(i => i.body._id);
+            itemIds = items.map(i => (i.body as any)._id);
             return true;
         })
     });
@@ -91,8 +96,10 @@ describe('Fetch hook', function() {
         it('should only return entities with public: true', function () {
             return Promise.resolve()
             .then(() => restTester.get('/otheritems'))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(200);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
                 expect(body).to.have.length(4);
                 expect(body.map(i => i.value).sort()).to.deep.eq([ 1, 3, 4, 6 ]);
                 return true;
@@ -104,14 +111,18 @@ describe('Fetch hook', function() {
         it('should only return entities with public: true', function () {
             return Promise.resolve()
             .then(() => restTester.get('/otheritems/'+itemIds[0]))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(200);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
                 expect(body.value).to.eq(1);
                 return true;
             })
             .then(() => restTester.get('/otheritems/'+itemIds[1]))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(404);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(404);
                 return true;
             });
         });

@@ -1,4 +1,3 @@
-/// <reference types="express" />
 import { Response } from 'express';
 import { Typegoose } from 'typegoose';
 import { RestConfigurationMethod } from './rest';

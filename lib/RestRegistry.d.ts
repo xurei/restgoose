@@ -1,7 +1,7 @@
 import { Typegoose } from 'typegoose';
 import { RestConfiguration } from './rest';
 import { Constructor } from './types';
-export interface RestModelEntry<T extends Typegoose> {
+export declare interface RestModelEntry<T extends Typegoose> {
     type: Constructor<T>;
     config: RestConfiguration<T>;
     property?: string;

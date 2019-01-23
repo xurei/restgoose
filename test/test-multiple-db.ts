@@ -66,8 +66,10 @@ describe('Multiple DB', function() {
         it('should only return items from DB A', function() {
             return Promise.resolve()
             .then(() => restTester.get('/dba/items'))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(200);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
                 expect(body).to.be.an('array');
                 expect(body.map(i => i.title)).to.deep.eq(['Item 0 from DB A']);
                 return true;
@@ -79,8 +81,10 @@ describe('Multiple DB', function() {
         it('should only return items from DB B', function() {
             return Promise.resolve()
             .then(() => restTester.get('/dbb/items'))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(200);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
                 expect(body).to.be.an('array');
                 expect(body.map(i => i.title)).to.deep.eq(['Item 0 from DB B']);
                 return true;

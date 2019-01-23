@@ -1,4 +1,3 @@
-/// <reference types="mongoose" />
 import { Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { RestRequest } from './types';

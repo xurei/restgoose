@@ -80,13 +80,17 @@ describe('Complex API', function() {
 
         // deletes everything
         .then(() => restTester.delete('/items'))
-        .then(({ code,body,headers }) => {
-            expect(code).to.eq(204);
+        .then(res => {
+            const body = res.body as any;
+            const status = res.status as number;
+            expect(status).to.eq(204);
             return true;
         })
         .then(() => restTester.get('/items'))
-        .then(({ code, body, headers }) => {
-            expect(code).to.eq(200);
+        .then(res => {
+            const body = res.body as any;
+            const status = res.status as number;
+            expect(status).to.eq(200);
             expect(body).to.deep.eq([]);
             return true;
         })
@@ -101,12 +105,14 @@ describe('Complex API', function() {
             restTester.post('/items', { title: 'item6' })
         ]))
         .then((items) => {
-            itemIds = items.map(i => i.body._id);
+            itemIds = items.map(i => (i.body as any)._id);
             return true;
         })
         .then(() => restTester.get('/items'))
-        .then(({ code, body, headers }) => {
-            expect(code).to.eq(200);
+        .then(res => {
+            const body = res.body as any;
+            const status = res.status as number;
+            expect(status).to.eq(200);
             expect(body).to.have.length(6);
             return true;
         });
@@ -118,8 +124,10 @@ describe('Complex API', function() {
                 it('401', function () {
                     return Promise.resolve()
                     .then(() => restTester.post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
-                    .then(({ code, body, headers }) => {
-                        expect(code).to.eq(401);
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(401);
                         return true;
                     });
                 });
@@ -129,18 +137,24 @@ describe('Complex API', function() {
                     let subItemId = null;
                     return Promise.resolve()
                     .then(() => restTester.as('admin').post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
-                    .then(({ code, body, headers }) => {
-                        expect(code).to.eq(201);
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(201);
                     })
                     .then(() => restTester.as('admin').get('/items/'+itemIds[0]))
-                    .then(({ code, body, headers }) => {
-                        expect(code).to.eq(200);
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(200);
                         expect(body.subItems).to.have.length(1);
                         subItemId = body.subItems[0];
                     })
                     .then(() => restTester.as('admin').get('/items/'+itemIds[0]+'/subitems'))
-                    .then(({ code, body, headers }) => {
-                        expect(code).to.eq(200);
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(200);
                         expect(body).to.be.an('array');
                         expect(body).to.have.length(1);
                         expect(body[0].name).to.eq('val1');
@@ -148,8 +162,10 @@ describe('Complex API', function() {
                         return true;
                     })
                     .then(() => restTester.as('admin').get('/subitems/'+subItemId))
-                    .then(({ code, body, headers }) => {
-                        expect(code).to.eq(200);
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(200);
                         expect(body.name).to.eq('val1');
                         expect(body.value).to.eq(1);
                         return true;

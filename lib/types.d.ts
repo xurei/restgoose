@@ -1,5 +1,3 @@
-/// <reference types="express" />
-/// <reference types="mongoose" />
 import { Request } from 'express';
 import { Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';

@@ -1,4 +1,3 @@
-/// <reference types="mongoose" />
 import { Connection, Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { Constructor } from './types';

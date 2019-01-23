@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
@@ -10,6 +11,19 @@ import { simpleServer } from './util/simple-server';
 
 const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
 const connectionA = mongoose.createConnection(mongoUri);
+
+export async function parseQuery(req: Request) {
+    if (req.query && req.query.q) {
+        try {
+            req['filter'] = JSON.parse(req.query.q);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
 
 class InnerItem {
     innerTitle: string;
@@ -26,7 +40,9 @@ class ParentItem extends Typegoose {
     },
     route: '/items',
     methods: [
-        all(), // GET /todos
+        all({
+            preFetch: parseQuery,
+        }), // GET /todos
         one(), // GET /todos/:id
         create(), // POST /todos
         update(), // PATCH /todos/:id
@@ -40,9 +56,10 @@ export class Item extends ParentItem {
 
     @prop()
     inner: InnerItem;
-}
 
-export const ItemModel = new Item().getModelForClass(Item);
+    @prop()
+    someDate: Date;
+}
 
 // Create the minimal express with CORS and bodyParser.json
 const app = simpleServer();
@@ -64,7 +81,7 @@ describe('Extended model', function() {
         // deletes everything
         .then(() => restTester.delete('/dba/items'))
         .then(() => restTester.post('/dba/items', { title: 'Item 0 from DB A', subtitle: 'this is a subtitle', inner: {innerTitle: 'my inner title'} }))
-        .then(({ code, body, headers }) => {
+        .then(({ status, body, headers }) => {
             //console.log(code);
             //console.log(body);
         });
@@ -74,8 +91,10 @@ describe('Extended model', function() {
         it('should only return items from DB', function() {
             return Promise.resolve()
             .then(() => restTester.get('/dba/items'))
-            .then(({ code, body, headers }) => {
-                expect(code).to.eq(200);
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
                 expect(body).to.be.an('array');
                 expect(body.map(i => i.title)).to.deep.eq(['Item 0 from DB A']);
                 expect(body.map(i => i.subtitle)).to.deep.eq(['this is a subtitle']);
