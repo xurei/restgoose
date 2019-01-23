@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { Typegoose } from 'typegoose';
+import { Router, Response } from 'express';
+import { InstanceType, Typegoose } from 'typegoose';
 import { debug } from './debug';
-import { fetchAll, fetchOne, getModel, postFetch, postFetchAll } from './Hooks';
+import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './Hooks';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 import { Constructor, RestRequest } from './types';
@@ -40,11 +40,27 @@ export class Restgoose {
         const methods = model.config.methods || [];
         const method = methods.find(m => m.method === 'one');
         if (!method) {
-            throw new Error(`On model ${modelType.name}: method one() is not specified. Cannot use getOne()`);
+            throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
         }
 
         const result = await fetchOne(await getModel(model, req), method, req);
         return postFetch(method, req, result);
+    }
+
+    /**
+     * Passes the entity through the preSend of its one() primivite
+     */
+    public static async sendOne<T extends Typegoose>(modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest, res: Response, status: number = 200): Promise<any> /* todo any */ {
+        const model = RestRegistry.getModel(modelType);
+        const methods = model.config.methods || [];
+        const method = methods.find(m => m.method === 'one');
+        if (!method) {
+            throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
+        }
+
+        const preSendResult = await preSend(method, req, entity);
+
+        res.status(status).json(preSendResult.toJSON());
     }
 
     /**
