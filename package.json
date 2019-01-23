@@ -38,6 +38,7 @@
     "@types/mocha": "^2.2.48",
     "@types/mongoose": "^5.2.15",
     "@types/node": "8.10.39",
+    "@types/sinon": "^7.0.4",
     "@types/sinon-chai": "^3.2.2",
     "chai": "^4.1.2",
     "chai-http": "^4.2.1",
@@ -59,7 +60,6 @@
     "run-middleware": "^0.9.10",
     "sinon-chai": "^3.2.0",
     "ts-node": "^3.3.0",
-    "ts-sinon": "^1.0.12",
     "tslint": "5.12.1",
     "typescript": "2.9.2"
   },

@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import * as sinon from 'ts-sinon';
+import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { and, or, asFilter, RestError } from '../lib';
 

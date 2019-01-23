@@ -16,5 +16,5 @@ export declare class Restgoose {
      * NOTE : preFetch middlewares are NOT called
      */
     static getAll<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any>;
-    private static createRestRoot<T>(model);
+    private static createRestRoot;
 }
