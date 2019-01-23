@@ -1,3 +1,4 @@
---require ts-node/register 
---watch-extensions tsx,ts 
+--require ts-node/register
+--watch-extensions tsx,ts
 --exit
+--lib dom
