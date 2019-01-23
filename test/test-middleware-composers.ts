@@ -9,7 +9,7 @@ chai.use(dirtyChai);
 chai.use(sinonChai);
 
 const expect = chai.expect;
-const spy = sinon.default.spy;
+const spy = sinon.spy;
 
 async function preSuccess(req: Request) {
     return true;
