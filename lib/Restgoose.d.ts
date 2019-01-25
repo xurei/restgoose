@@ -1,4 +1,5 @@
-import { Typegoose } from 'typegoose';
+import { Response } from 'express';
+import { InstanceType, Typegoose } from 'typegoose';
 import { Constructor, RestRequest } from './types';
 export declare class Restgoose {
     private static ROUTES;
@@ -10,6 +11,10 @@ export declare class Restgoose {
      * NOTE : preFetch middlewares are NOT called
      */
     static getOne<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any>;
+    /**
+     * Passes the entity through the preSend of its one() primivite
+     */
+    static sendOne<T extends Typegoose>(modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest, res: Response, status?: number): Promise<any>;
     /**
      * Simulates a REST call on the method all() and passes the result through the
      * postFetch middlewares.
