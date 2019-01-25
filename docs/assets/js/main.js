@@ -32,7 +32,6 @@ $(function() {
         var text = $(this).text();
         var hash = text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         var external = $(this).find('a').attr('href');
-        console.log(nodeName, hash, text);
         
         var section = {
             nodeName: nodeName,
