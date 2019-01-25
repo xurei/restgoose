@@ -1,4 +1,4 @@
-import { Router, Response } from 'express';
+import { Response, Router } from 'express';
 import { InstanceType, Typegoose } from 'typegoose';
 import { debug } from './debug';
 import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './Hooks';
@@ -50,7 +50,9 @@ export class Restgoose {
     /**
      * Passes the entity through the preSend of its one() primivite
      */
-    public static async sendOne<T extends Typegoose>(modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest, res: Response, status: number = 200): Promise<any> /* todo any */ {
+    public static async sendOne<T extends Typegoose>(
+        modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest,
+        res: Response, status: number = 200): Promise<any> /* TODO change any if possible */ {
         const model = RestRegistry.getModel(modelType);
         const methods = model.config.methods || [];
         const method = methods.find(m => m.method === 'one');
