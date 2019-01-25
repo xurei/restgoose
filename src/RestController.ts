@@ -17,6 +17,7 @@ export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
 export const ERROR_READONLY_CODE: string = 'READ_ONLY';
 export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
 export const ERROR_VALIDATION_NAME: string = 'ValidationError';
+export const ERROR_BAD_FORMAT_CODE: string = 'BAD_FORMAT';
 
 export function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
@@ -305,15 +306,22 @@ function wrapException(fn: (req: RestRequest, res: Response) => void): (req: Res
                 return res.status(restError.httpCode).send(restError.errorData);
             }
             else if (error instanceof CastError) {
+                error = error as CastError;
                 // tslint:disable-next-line:no-string-literal
-                if (error['path'] === '_id') {
+                if (error.path === '_id') {
                     return res.status(404).json({
                         code: ERROR_NOT_FOUND_CODE,
                     });
                 }
+                else {
+                    return res.status(400).json({
+                        code: ERROR_BAD_FORMAT_CODE,
+                        field: error.path,
+                    });
+                }
             }
             else if (error.name === ERROR_VALIDATION_NAME) {
-                return res.status(400).send({ code: ERROR_VALIDATION_CODE, errors: error.errors });
+                return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });
             }
             else {
                 console.error(error);

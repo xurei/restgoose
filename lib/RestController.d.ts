@@ -8,6 +8,7 @@ export declare const ERROR_NOT_FOUND_CODE: string;
 export declare const ERROR_READONLY_CODE: string;
 export declare const ERROR_VALIDATION_CODE: string;
 export declare const ERROR_VALIDATION_NAME: string;
+export declare const ERROR_BAD_FORMAT_CODE: string;
 export declare function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>): (req: RestRequest, res: Response) => any;
 export declare function allWithin<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string, submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>): (req: RestRequest, res: Response) => any;
 export declare function create<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>): (req: RestRequest, res: Response) => any;
