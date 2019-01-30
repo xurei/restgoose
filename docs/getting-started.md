@@ -578,9 +578,9 @@ Restgoose adds a `restgoose` property in the `req` object:
 ```js
 {
     restgoose: {
-    	filter: { /* MongoDb query. This is populated by the ?q query string */ }
-    	options: { /* MongoDb options. See https://mongoosejs.com/docs/api.html#query_Query-setOptions */ }
-    	projection: { /* MongoDb projection */ }
+    	filter: { }, //MongoDb query. This is populated by the ?q query string
+    	options: { }, // MongoDb options. See https://mongoosejs.com/docs/api.html#query_Query-setOptions
+    	projection: { }, // MongoDb projection 
     }
 }
 ```
@@ -653,7 +653,7 @@ Now by doing `GET /movies`:
         "_id": "5c3e5c6499e0db258a00d087",
         "name": "movie78"
     },
-    /* and 19 other objects ... */
+    // and 19 other objects ...
 ]
 ```
 
