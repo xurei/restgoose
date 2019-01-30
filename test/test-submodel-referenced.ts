@@ -119,6 +119,29 @@ describe('Submodel - referenced', function() {
     });
 
     describe('/items', function() {
+        describe('with invalid parent id', function() {
+            it('GET should return 404', function() {
+                return Promise.resolve()
+                .then(() => restTester.as('admin').get('/items/wrong/subitems'))
+                .then(res => {
+                    const status = res.status as number;
+                    expect(status).to.eq(404);
+                    return true;
+                });
+            });
+            it('POST should return 404', function() {
+                return Promise.resolve()
+                .then(() => restTester.as('admin').post('/items/wrong/subitems', {
+                    never: 'mind'
+                }))
+                .then(res => {
+                    const status = res.status as number;
+                    expect(status).to.eq(404);
+                    return true;
+                });
+            });
+        });
+
         describe('all()/one() within item', function() {
             describe('without Autorization', function() {
                 it('401', function () {
