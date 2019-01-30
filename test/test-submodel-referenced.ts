@@ -75,7 +75,7 @@ describe('Submodel - referenced', function() {
     this.timeout(20000); //20s timeout
 
     let itemIds = null;
-    it('prepare', function() {
+    before(function() {
         return Promise.resolve()
 
         // deletes everything

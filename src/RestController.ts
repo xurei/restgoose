@@ -63,24 +63,31 @@ export function allWithin<T extends Typegoose>(
             });
         }
         else {
-            // Create filter from parent references
-            const refs = postFetchParentResult[property];
+            const isReferenced = !!submodelEntry.type;
 
-            req = Object.assign({}, req);
-            req.filter = Object.assign({}, req.filter || {}, {
-                _id: { $in: refs },
-            });
+            let fetchSubResult;
+            if (isReferenced) {
+                // Create filter from parent references
+                const refs = postFetchParentResult[property];
+                req = Object.assign({}, req);
+                req.filter = Object.assign({}, req.filter || {}, {
+                    _id: { $in: refs },
+                });
 
-            // getModel - sub
-            const submodelType = await getModel(submodelEntry, req);
+                // getModel - sub
+                const submodelType = await getModel(submodelEntry, req);
 
-            // fetch - sub
-            const fetchSubResult = await fetchAll(submodelType, submethodConfig, req);
+                // fetch - sub
+                fetchSubResult = await fetchAll(submodelType, submethodConfig, req);
+            }
+            else {
+                fetchSubResult = postFetchParentResult[property];
+            }
 
             // postFetch - sub
             const postFetchSubResult = await postFetchAll(submethodConfig, req, fetchSubResult);
 
-            // preSend -sub
+            // preSend - sub
             const preSendSubResult = await preSendAll(methodConfig, req, postFetchSubResult);
 
             return res.status(200).json(preSendSubResult);
@@ -145,21 +152,31 @@ export function createWithin<T extends Typegoose>(
             });
         }
         else {
-            // getModel - sub
-            const submodelType = await getModel(submodelEntry, req);
+            const isReferenced = !!submodelEntry.type;
+            let saveSubResult;
+            if (isReferenced) {
+                // getModel - sub
+                const submodelType = await getModel(submodelEntry, req);
 
-            // fetch - sub
-            const fetchSubResult = await fetchCreate(submodelType, submethodConfig, req);
+                // fetch - sub
+                const fetchSubResult = await fetchCreate(submodelType, submethodConfig, req);
 
-            // postFetch - sub
-            const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
+                // postFetch - sub
+                const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
 
-            // save - sub
-            const saveSubResult = await persistSave(submethodConfig, postFetchSubResult);
+                // save - sub
+                saveSubResult = await persistSave(submethodConfig, postFetchSubResult);
 
-            // save - parent
-            postFetchParentResult[property].push(saveSubResult._id);
-            await persistSave(methodConfig, postFetchParentResult);
+                // save - parent
+                postFetchParentResult[property].push(saveSubResult._id);
+                await persistSave(methodConfig, postFetchParentResult);
+            }
+            else {
+                // save - parent
+                postFetchParentResult[property].push(req.body);
+                const parentSaveResult = await persistSave(methodConfig, postFetchParentResult);
+                saveSubResult = parentSaveResult[property][parentSaveResult[property].length-1];
+            }
 
             // preSend - sub
             const preSendSubResult = await preSend(submethodConfig, req, saveSubResult);

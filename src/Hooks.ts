@@ -103,7 +103,7 @@ export async function persistSave<T extends Typegoose>(methodConfig: RestConfigu
     Promise<InstanceType<T>> {
 
     return methodConfig.persist ?
-        await (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as InstanceType<T> :
+        (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as Promise<InstanceType<T>> :
         entity.save();
 }
 

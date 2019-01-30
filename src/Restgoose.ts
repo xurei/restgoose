@@ -107,7 +107,7 @@ export class Restgoose {
             }
 
             // Alter the submodels so the type attribute matches the submodel and not the parent model. This is done here
-            // so that all classes are initialized before we call getModelForClass() internally
+            // so that all classes are initialized before we call buildSchema() internally
             // TODO find a way out of buildSchema() : typegoose caches it badly...
             const parentSchema = submodel.type.prototype.buildSchema(submodel.type, submodel.type.name);
             submodel = Object.assign({}, submodel);
