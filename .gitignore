@@ -6,6 +6,7 @@
 .jekyll-metadata
 _site
 coverage
+/lib
 
 # dependencies
 /node_modules
