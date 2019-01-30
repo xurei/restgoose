@@ -1,3 +1,8 @@
+## 0.0.12 - 2019-01-30
+Features:
+- Support for embedded submodels along with referenced ones
+- Restgoose.initialize() - added argument to initialize a subset of models
+
 ## 0.0.11 - 2019-01-25
 Features: 
 - Updates dependencies
