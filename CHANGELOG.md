@@ -1,3 +1,7 @@
+## 0.0.13 - 2019-01-30
+Bugfixes:
+- Fixed embedded submodels with a `ref` field wrongly considered as referenced. 
+
 ## 0.0.12 - 2019-01-30
 Features:
 - Support for embedded submodels along with referenced ones

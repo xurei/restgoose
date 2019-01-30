@@ -16,6 +16,11 @@ class SubItem extends Typegoose {
     title: string;
 }
 
+class TrickySubItem extends Typegoose {
+    @prop({required: true})
+    ref: string;
+}
+
 @rest({
     route: '/items',
     methods: [
@@ -38,6 +43,17 @@ class SubmodelEmbedded extends Typegoose {
     })
     @arrayProp({ items: SubItem })
     subitems: SubItem[];
+
+    @rest({
+        route: '/trickysubitems',
+        methods: [
+            all(),
+            //one(),
+            create(),
+        ],
+    })
+    @arrayProp({ items: TrickySubItem })
+    trickysubitems: TrickySubItem[];
 }
 
 app.use(Restgoose.initialize([SubmodelEmbedded]));
@@ -58,11 +74,19 @@ describe('Submodel - embedded', function() {
     before(() => {
         return (
             restTester.delete('/items')
-            .then(() => restTester.post('/items', { title: 'item1', subitems:[{ title: 'subitem1' }] }))
+            .then(() => restTester.post('/items', {
+                title: 'item1',
+                subitems:[{ title: 'subitem1' }],
+                trickysubitems:[{ ref: 'this-is-tricky' }],
+            }))
             .then(res => {
                 item1Id = res.body['_id'];
             })
-            .then(() => restTester.post('/items', { title: 'item2' }))
+            .then(() => restTester.post('/items', {
+                title: 'item2',
+                subitems:[{ title: 'subitem2' }],
+                trickysubitems:[{ ref: 'this-one-also' }],
+            }))
             .then(res => {
                 item2Id = res.body['_id'];
             })
@@ -72,14 +96,29 @@ describe('Submodel - embedded', function() {
     describe('GET /items/:id/subitems', () => {
         it('should return the subitems', () => {
             return (
-                restTester.get(`/items/${item1Id}/subitems`)
-                .then(res => {
-                    expect(res).to.have.status(200);
-                    expect(res.body).to.be.an('array');
-                    const body = (res.body as any).map(i => { delete i._id; return i; });
-                    expect(body).to.deep.eq([{ title: 'subitem1' }]);
-                    //item1Id = res.body._id;
-                })
+            restTester.get(`/items/${item1Id}/subitems`)
+            .then(res => {
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array');
+                const body = (res.body as any).map(i => { delete i._id; return i; });
+                expect(body).to.deep.eq([{ title: 'subitem1' }]);
+                //item1Id = res.body._id;
+            })
+            );
+        });
+    });
+
+    describe('GET /items/:id/trickysubitems', () => {
+        it('should return the subitems', () => {
+            return (
+            restTester.get(`/items/${item1Id}/trickysubitems`)
+            .then(res => {
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array');
+                const body = (res.body as any).map(i => { delete i._id; return i; });
+                expect(body).to.deep.eq([{ ref: 'this-is-tricky' }]);
+                //item1Id = res.body._id;
+            })
             );
         });
     });
@@ -92,7 +131,6 @@ describe('Submodel - embedded', function() {
                         wrong: 'data',
                     })
                     .then(res => {
-                        console.log(res.body);
                         expect(res).to.have.status(400);
                     })
                 );
@@ -102,28 +140,68 @@ describe('Submodel - embedded', function() {
         describe('with valid payload', () => {
             it('should return 201 and save the new data', () => {
                 return (
-                    restTester.post(`/items/${item1Id}/subitems`, {
-                        title: 'new item!',
-                        notmapped: 'field',
-                    })
-                    .then(res => {
-                        console.log(res.body);
-                        expect(res).to.have.status(201);
-                        expect(res.body).to.be.an('object');
-                        const body = Object.assign({}, res.body);
-                        delete body['_id'];
-                        expect(body).to.deep.eq({ title: 'new item!' });
-                        return true;
-                    })
-                    .then(() => restTester.get(`/items/${item1Id}/subitems`))
-                    .then(res => {
-                        expect(res).to.have.status(200);
-                        expect(res.body).to.be.an('array');
-                        const body = (res.body as any).map(i => { delete i._id; return i; });
-                        console.log(body);
-                        expect(body).to.deep.eq([{ title: 'subitem1' }, { title: 'new item!' }]);
-                        //item1Id = res.body._id;
-                    })
+                restTester.post(`/items/${item1Id}/subitems`, {
+                    title: 'new item!',
+                    notmapped: 'field',
+                })
+                .then(res => {
+                    expect(res).to.have.status(201);
+                    expect(res.body).to.be.an('object');
+                    const body = Object.assign({}, res.body);
+                    delete body['_id'];
+                    expect(body).to.deep.eq({ title: 'new item!' });
+                    return true;
+                })
+                .then(() => restTester.get(`/items/${item1Id}/subitems`))
+                .then(res => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    const body = (res.body as any).map(i => { delete i._id; return i; });
+                    expect(body).to.deep.eq([{ title: 'subitem1' }, { title: 'new item!' }]);
+                    //item1Id = res.body._id;
+                })
+                );
+            });
+        });
+    });
+
+    describe('POST /items/:id/trickysubitems', () => {
+        describe('with invalid payload', () => {
+            it('should return 400', () => {
+                return (
+                restTester.post(`/items/${item1Id}/trickysubitems`, {
+                    wrong: 'data',
+                })
+                .then(res => {
+                    expect(res).to.have.status(400);
+                })
+                );
+            });
+        });
+
+        describe('with valid payload', () => {
+            it('should return 201 and save the new data', () => {
+                return (
+                restTester.post(`/items/${item2Id}/trickysubitems`, {
+                    ref: 'new item!',
+                    notmapped: 'field',
+                })
+                .then(res => {
+                    expect(res).to.have.status(201);
+                    expect(res.body).to.be.an('object');
+                    const body = Object.assign({}, res.body);
+                    delete body['_id'];
+                    expect(body).to.deep.eq({ ref: 'new item!' });
+                    return true;
+                })
+                .then(() => restTester.get(`/items/${item2Id}/trickysubitems`))
+                .then(res => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    const body = (res.body as any).map(i => { delete i._id; return i; });
+                    expect(body).to.deep.eq([{ ref: 'this-one-also' }, { ref: 'new item!' }]);
+                    //item1Id = res.body._id;
+                })
                 );
             });
         });

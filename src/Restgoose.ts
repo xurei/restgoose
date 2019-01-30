@@ -111,7 +111,15 @@ export class Restgoose {
             // TODO find a way out of buildSchema() : typegoose caches it badly...
             const parentSchema = submodel.type.prototype.buildSchema(submodel.type, submodel.type.name);
             submodel = Object.assign({}, submodel);
-            submodel.type = parentSchema.tree[submodel.property][0].ref;
+            delete submodel.type;
+            const subtype = parentSchema.tree[submodel.property][0];
+            if (subtype.ref) {
+                const descriptor = Object.getOwnPropertyDescriptor(subtype, 'ref');
+                if (descriptor.value.prototype) {
+                    // This is a referenced submodel. We set its type in the definition
+                    submodel.type = parentSchema.tree[submodel.property][0].ref;
+                }
+            }
 
             const submethods = submodel.config.methods || [];
             submethods.forEach(method => {
