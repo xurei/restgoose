@@ -154,6 +154,7 @@ export function createWithin<T extends Typegoose>(
         else {
             const isReferenced = !!submodelEntry.type;
             let saveSubResult;
+            postFetchParentResult[property] = postFetchParentResult[property] || [];
             if (isReferenced) {
                 // getModel - sub
                 const submodelType = await getModel(submodelEntry, req);
