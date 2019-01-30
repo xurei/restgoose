@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { RestRequest } from './types';
 import { convertFields } from './convertFields';
+import { RestRequest } from './types';
 
 export function parseQuery(req: Request): RestRequest {
     const out: RestRequest = req;

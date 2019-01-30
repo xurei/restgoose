@@ -7,11 +7,11 @@ import {
     persistSave, postFetch, postFetchAll, preFetch, preSave,
     preSaveAll, preSend, preSendAll,
 } from './Hooks';
+import { parseQuery } from './parseQuery';
 import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod, RestError } from './rest';
 import { RestModelEntry } from './RestRegistry';
 import { RestRequest } from './types';
-import { parseQuery } from './parseQuery';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';

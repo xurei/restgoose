@@ -39,6 +39,6 @@ export type RestRequest = Request & {
     restgoose?: {
         query?: object
         projection?: object
-        options?: object
+        options?: object,
     };
 };
