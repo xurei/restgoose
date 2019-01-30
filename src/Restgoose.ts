@@ -5,6 +5,7 @@ import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from '
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
 import { RestModelEntry, RestRegistry } from './RestRegistry';
 import { Constructor, RestRequest } from './types';
+import { parseQuery } from './parseQuery';
 
 export class Restgoose {
     private static ROUTES = {
@@ -73,6 +74,10 @@ export class Restgoose {
      * NOTE : preFetch middlewares are NOT called
      */
     public static async getAll<T extends Typegoose>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
+        if (!req.restgoose) {
+            req = parseQuery(req);
+        }
+
         const model = RestRegistry.getModel(modelType);
         const methods = model.config.methods || [];
         const method = methods.find(m => m.method === 'all');

@@ -35,7 +35,7 @@ export async function fetchAll<T extends Typegoose>(modelType: Model<InstanceTyp
     const query = (
         methodConfig.fetch ?
             methodConfig.fetch(req, modelType) :
-            modelType.find(req.filter)
+            modelType.find(req.restgoose.query, req.restgoose.projection, req.restgoose.options)
     ) as Promise<InstanceType<T>[]>;
 
     return Promise.resolve(await query || []);

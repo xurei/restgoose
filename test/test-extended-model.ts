@@ -12,19 +12,6 @@ import { simpleServer } from './util/simple-server';
 const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
 const connectionA = mongoose.createConnection(mongoUri);
 
-export async function parseQuery(req: Request) {
-    if (req.query && req.query.q) {
-        try {
-            req['filter'] = JSON.parse(req.query.q);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    } else {
-        return true;
-    }
-}
-
 class InnerItem {
     innerTitle: string;
 }
@@ -40,9 +27,7 @@ class ParentItem extends Typegoose {
     },
     route: '/items',
     methods: [
-        all({
-            preFetch: parseQuery,
-        }), // GET /todos
+        all(), // GET /todos
         one(), // GET /todos/:id
         create(), // POST /todos
         update(), // PATCH /todos/:id

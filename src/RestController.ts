@@ -11,6 +11,7 @@ import { buildPayload } from './RequestUtil';
 import { RestConfigurationMethod, RestError } from './rest';
 import { RestModelEntry } from './RestRegistry';
 import { RestRequest } from './types';
+import { parseQuery } from './parseQuery';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -21,6 +22,8 @@ export const ERROR_BAD_FORMAT_CODE: string = 'BAD_FORMAT';
 
 export function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        req = parseQuery(req);
+
         // getModel
         const modelType = await getModel(modelEntry, req);
 
@@ -44,6 +47,8 @@ export function allWithin<T extends Typegoose>(
     modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
     submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        req = parseQuery(req);
+
         // getModel - parent
         const modelType = await getModel(modelEntry, req);
 
@@ -70,7 +75,7 @@ export function allWithin<T extends Typegoose>(
                 // Create filter from parent references
                 const refs = postFetchParentResult[property];
                 req = Object.assign({}, req);
-                req.filter = Object.assign({}, req.filter || {}, {
+                req.restgoose.query = Object.assign({}, req.restgoose.query || {}, {
                     _id: { $in: refs },
                 });
 
@@ -250,6 +255,8 @@ export function remove<T extends Typegoose>(modelEntry: RestModelEntry<T>, metho
 
 export function removeAll<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
+        req = parseQuery(req);
+
         // getModel
         const modelType = await getModel(modelEntry, req);
 

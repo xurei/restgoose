@@ -1,3 +1,8 @@
+## 0.0.15 - 2019-01-31
+Features: 
+- Added a `restgoose` field in `req` for typical use cases (projection, pagination...)
+- Automatic parsing of the query string `q`
+
 ## 0.0.14 - 2019-01-30
 Bugfixes:
 - createWithin - Ensure that the containing field is defined before pushing in it 

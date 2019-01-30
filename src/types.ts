@@ -36,5 +36,9 @@ export type HttpMethod = 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' 
 export type RestMethodName = 'all' | 'one' | 'create' | 'update' | 'remove' | 'removeAll' | 'custom';
 
 export type RestRequest = Request & {
-    filter?: object;
+    restgoose?: {
+        query?: object
+        projection?: object
+        options?: object
+    };
 };
