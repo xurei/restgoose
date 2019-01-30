@@ -1,3 +1,7 @@
+## 0.0.14 - 2019-01-30
+Bugfixes:
+- createWithin - Ensure that the containing field is defined before pushing in it 
+
 ## 0.0.13 - 2019-01-30
 Bugfixes:
 - Fixed embedded submodels with a `ref` field wrongly considered as referenced. 
