@@ -44,8 +44,6 @@ export class Todo extends Typegoose {
     @prop({required: true})
     name: string;
 }
-
-export const TodoModel = new Todo().getModelForClass(Todo);
 ```
 See the full example (with express/mongoose boilerplates) [in the examples directory](./examples)
 
