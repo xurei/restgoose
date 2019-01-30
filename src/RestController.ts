@@ -175,7 +175,7 @@ export function createWithin<T extends Typegoose>(
                 // save - parent
                 postFetchParentResult[property].push(req.body);
                 const parentSaveResult = await persistSave(methodConfig, postFetchParentResult);
-                saveSubResult = parentSaveResult[property][parentSaveResult[property].length-1];
+                saveSubResult = parentSaveResult[property][parentSaveResult[property].length - 1];
             }
 
             // preSend - sub
