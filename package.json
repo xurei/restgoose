@@ -18,9 +18,11 @@
   },
   "keywords": [
     "REST",
+    "restful",
     "mongodb",
     "decorators",
-    "framework"
+    "framework",
+    "backend"
   ],
   "repository": {
     "type": "git",
