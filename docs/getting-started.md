@@ -556,7 +556,7 @@ For example, if you want to get all the movies starting with 'The', you can quer
 ```
 The URL becomes, after url encoding:
 ```
-https://localhost:3000/movies?q=%7B%22name%22%3A%7B%22%24regex%22%3A%22%5EThe%22%7D%7D
+http://localhost:3000/movies?q=%7B%22name%22%3A%7B%22%24regex%22%3A%22%5EThe%22%7D%7D
 ```
 
 ### Pagination
@@ -590,10 +590,72 @@ Restgoose adds a `restgoose` property in the `req` object:
 We will create a `preFetch` hook that will add a `skip` and `limit` options in the `restgoose` object.
 
 **addpagination.ts:**
+```typescript
+import { RestRequest } from '@xureilab/restgoose';
+
+export async function addPagination(req: RestRequest): Promise<boolean> {
+    const query = req.query || {};
+    const skip = query.page * 20;
+
+    req.restgoose.options = Object.assign({}, req.restgoose.options, {
+        skip: skip,
+        limit: 20
+    });
+    return true;
+}
 ```
 
+This function limits the database requests to 20 objects, and uses the `page` query string.
+
+And we add this in the model definition:
+**src/movie.ts:**
+```typescript
+      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { Actor } from './actor';
+      import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
+      import { verifyToken } from './verifytoken';
+      import { keepFields } from './keepfields';
+/*+*/ import { addPagination } from './addpagination';
+        
+      @rest({
+          route: '/movies',
+          methods: [
+              all({       //GET    /movies
+/*+*/           preFetch: addPagination,
+                preSend: keepFields('_id', 'name')   
+              }),    
+              one(),    //GET    /movies/:id
+              create({  //POST   /movies
+                preFetch: verifyToken
+              }), 
+              update({  //PATCH  /movies/:id
+                preFetch: verifyToken
+              }), 
+              remove({  //DElETE /movies/:id
+                preFetch: verifyToken
+              }), 
+          ],
+      })
+      export class Movie extends Typegoose {
+          @prop({required: true})
+          name: string;
+          
+          @prop({required: true})
+          description: string;
+          
+          @arrayProp({itemsRef: {name: Actor}})
+          actors?: Ref<Actor>[];
+      }
+```  
+
+Now by doing `GET /movies`:
+```json
+[
+    {
+        "_id": "5c3e5c6499e0db258a00d087",
+        "name": "movie78"
+    },
+    /* and 19 other objects ... */
+]
 ```
-
-**TODO** 
-
 
