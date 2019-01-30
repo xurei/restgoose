@@ -9,7 +9,7 @@ import { Restgoose, all, create, one, remove, removeAll, rest, update, and, Rest
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
-openDatabase('restgoose-test-complex-api');
+openDatabase('restgoose-test-submodel-referenced');
 
 async function verifyToken(req: Request) {
     // !!! This is NOT safe !!! Just for the sake of the example
@@ -26,7 +26,7 @@ async function verifyToken(req: Request) {
         one({ preFetch: and(verifyToken) }), // GET /subitems/:id
     ],
 })
-export class SubItem extends Typegoose {
+export class SubItemReferenced extends Typegoose {
     @prop({required: true})
     name: string;
 
@@ -45,7 +45,7 @@ export class SubItem extends Typegoose {
         removeAll(),
     ],
 })
-export class Item extends Typegoose {
+export class SubmodelReferenced extends Typegoose {
     @prop({required: true})
     title: string;
 
@@ -56,11 +56,11 @@ export class Item extends Typegoose {
             create({ preFetch: verifyToken }),
         ],
     })
-    @arrayProp({itemsRef: {name: SubItem}})
-    subItems: Ref<SubItem>[];
+    @arrayProp({itemsRef: {name: SubItemReferenced}})
+    subItems: Ref<SubItemReferenced>[];
 }
 
-app.use(Restgoose.initialize());
+app.use(Restgoose.initialize([SubItemReferenced, SubmodelReferenced]));
 // ---------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
@@ -71,7 +71,7 @@ const restTester = new RestTester({
     app: app
 });
 
-describe('Complex API', function() {
+describe('Submodel - referenced', function() {
     this.timeout(20000); //20s timeout
 
     let itemIds = null;

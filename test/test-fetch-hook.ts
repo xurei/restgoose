@@ -21,7 +21,7 @@ openDatabase('restgoose-test-fetch-hook');
         removeAll(),
     ],
 })
-export class OtherItem extends Typegoose {
+export class FetchHook extends Typegoose {
     @prop({required: true})
     name: string;
 
@@ -32,16 +32,16 @@ export class OtherItem extends Typegoose {
     public: boolean;
 }
 
-export const OtherItemModel = new OtherItem().getModelForClass(OtherItem);
+export const FetchHookModel = new FetchHook().getModelForClass(FetchHook);
 
 async function otherItemFetchAll(req: Request) {
-    return OtherItemModel.find({ public: true });
+    return FetchHookModel.find({ public: true });
 }
 async function otherItemFetchOne(req: Request) {
-    return OtherItemModel.findOne({ public: true, _id: req.params.id });
+    return FetchHookModel.findOne({ public: true, _id: req.params.id });
 }
 
-app.use(Restgoose.initialize());
+app.use(Restgoose.initialize([FetchHook]));
 // ---------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);

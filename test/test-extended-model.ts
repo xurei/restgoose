@@ -50,7 +50,7 @@ class ParentItem extends Typegoose {
         removeAll(), // DELETE /todos
     ],
 })
-export class Item extends ParentItem {
+export class ExtendedModel extends ParentItem {
     @prop({})
     subtitle: string;
 
@@ -64,7 +64,7 @@ export class Item extends ParentItem {
 // Create the minimal express with CORS and bodyParser.json
 const app = simpleServer();
 
-app.use('/dba', Restgoose.initialize());
+app.use('/dba', Restgoose.initialize([ExtendedModel]));
 //----------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
@@ -76,7 +76,7 @@ const restTester = new RestTester({
 });
 
 describe('Extended model', function() {
-    it('prepare', function() {
+    before(() => {
         return Promise.resolve()
         // deletes everything
         .then(() => restTester.delete('/dba/items'))

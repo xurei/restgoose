@@ -29,7 +29,7 @@ export class Todo extends Typegoose {
     title: string;
 }
 
-app.use(Restgoose.initialize());
+app.use(Restgoose.initialize([Todo]));
 // ---------------------------------------------------------------------------------------------------------------------
 chai.use(dirtyChai);
 

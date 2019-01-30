@@ -21,11 +21,13 @@ export class Restgoose {
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
 
-    public static initialize() {
+    public static initialize(modelTypes?: Constructor<Typegoose>[]) {
         const models = RestRegistry.listModels();
         const router = Router();
         for (const model of models) {
-            router.use(model.config.route, this.createRestRoot(model));
+            if (!modelTypes || !!modelTypes.find(m => m.name === model.type.name)) {
+                router.use(model.config.route, this.createRestRoot(model));
+            }
         }
         return router as any;
     }
@@ -106,10 +108,10 @@ export class Restgoose {
 
             // Alter the submodels so the type attribute matches the submodel and not the parent model. This is done here
             // so that all classes are initialized before we call getModelForClass() internally
-            // TODO find a way out of getModelForClass() : typegoose caches it badly...
-            const parentModel = submodel.type.prototype.getModelForClass(submodel.type);
+            // TODO find a way out of buildSchema() : typegoose caches it badly...
+            const parentSchema = submodel.type.prototype.buildSchema(submodel.type, submodel.type.name);
             submodel = Object.assign({}, submodel);
-            submodel.type = parentModel.schema.tree[submodel.property][0].ref;
+            submodel.type = parentSchema.tree[submodel.property][0].ref;
 
             const submethods = submodel.config.methods || [];
             submethods.forEach(method => {

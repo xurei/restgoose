@@ -2,6 +2,11 @@ import { Typegoose } from 'typegoose';
 import { RestConfiguration } from './rest';
 import { Constructor } from './types';
 
+/*
+    TODO we should replace the RestRegistry maps by a set, and store all the models that way.
+    the name can be used by multiple models, this will overwrite the config of some
+*/
+
 export declare interface RestModelEntry<T extends Typegoose> {
     type: Constructor<T>;
     config: RestConfiguration<T>;

@@ -32,7 +32,7 @@ const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-
         removeAll(), // DELETE /todos
     ],
 })
-export class Item extends Typegoose {
+export class MultipleDb extends Typegoose {
     @prop({required: true})
     title: string;
 }
@@ -40,8 +40,8 @@ export class Item extends Typegoose {
 //export const ItemModel = new Item().getModelForClass(Item);
 const app = simpleServer();
 
-app.use('/dba', Restgoose.initialize());
-app.use('/dbb', Restgoose.initialize());
+app.use('/dba', Restgoose.initialize([MultipleDb]));
+app.use('/dbb', Restgoose.initialize([MultipleDb]));
 //----------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
