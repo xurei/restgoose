@@ -49,7 +49,9 @@ npm install typescript express typegoose mongoose body-parser @xureilab/restgoos
 npm install --save --dev @types/node @types/express @types/mongoose
 ```
 
-Add the `build` and `start` scripts in `package.json`:
+Add the `build` and `start` scripts.
+ 
+**package.json:**
 ```json
 {
   "scripts": {
@@ -59,7 +61,7 @@ Add the `build` and `start` scripts in `package.json`:
 }
 ``` 
 
-Create `tsconfig.json`:
+**tsconfig.json:**
 ```json
 {
   "compilerOptions": {
@@ -78,10 +80,10 @@ Create `tsconfig.json`:
   ]
 }
 ```
+Notice the presence of `experimentalDecorators` and `emitDecoratorMetadata`. 
+Those are important for restgoose to work.
 
-We are ready to write the code.
-
-Business as usual here: we setup express, connect to the database and listen on port 3000. 
+For the main file, business as usual: we setup express, connect to the database and listen on port 3000. 
 
 **src/server.ts:**
 ```typescript
@@ -457,7 +459,105 @@ Output:
 ```
 
 Perfect! Authorization is working.
-Add the same lines in `src/actor.ts` to get the same result for actors.
+Add the same lines in `src/actor.ts` 
+
+### Filtering properties
+For the `GET /movies` and `GET /actors` endpoints, we only need to return the `_id` and `name` properties.
+
+This time, we will use the `preSend` hook. Note that we can also use the `postFetch` hook as well in that case.
+
+**src/keepfields.ts:**
+```typescript
+import { Request } from 'express';
+import { Typegoose } from 'typegoose';
+
+export function keepFields<T extends Typegoose>(...fieldNames: string[]) {
+    return async function(req: Request, entity: T) {
+        const out = {};
+        fieldNames.forEach(name => {
+            out[name] = entity[name];
+        });
+        return out as T;
+    };
+}
+```
+Let's take a deeper look at this function.
+
+`keepFields` returns a function. 
+This is the generated hook built with the `fieldNames` argument.
+
+The function takes the `req` argument from express and an `entity` argument which is the returned object from the database.
+It returns a filtered object that contains only the fields listed in `fieldNames`.
+
+Let's use this function in our model:  
+
+**src/movie.ts:**
+```typescript
+      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { Actor } from './actor';
+      import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
+      import { verifyToken } from './verifytoken';
+/*+*/ import { keepFields } from './keepfields';
+        
+      @rest({
+          route: '/movies',
+          methods: [
+/*+*/         all({       //GET    /movies
+/*+*/           preSend: keepFields('_id', 'name')   
+/*+*/         }),    
+              one(),    //GET    /movies/:id
+              create({  //POST   /movies
+                preFetch: verifyToken
+              }), 
+              update({  //PATCH  /movies/:id
+                preFetch: verifyToken
+              }), 
+              remove({  //DElETE /movies/:id
+                preFetch: verifyToken
+              }), 
+          ],
+      })
+      export class Movie extends Typegoose {
+          @prop({required: true})
+          name: string;
+          
+          @prop({required: true})
+          description: string;
+          
+          @arrayProp({itemsRef: {name: Actor}})
+          actors?: Ref<Actor>[];
+      }
+```  
+
+Let's take a look on `GET /movies`:
+```json
+[
+  {
+    "_id": "5c3e524d3fb1491661482fd1",
+    "name": "The Lord of The Rings - The Fellowship of the Ring",
+  },
+  {
+    "_id": "5c3e524d3fb149161b97a8ef",
+    "name": "The Lord of The Rings - The Two Towers",
+  },
+  ...
+]
+```
+
+Do the same for the Actor model and we are done.
+
+### Queries
+
+By default, Restgoose adds a querying system with the query string `q`. 
+It takes a mongodb query object, urlencoded.
+For example, if you want to get all the movies starting with 'The', you can query it with:
+```json
+{ "name": { "$regex": "^The" } }
+```
+The URL becomes, after url encoding:
+```
+https://localhost:3000/movies?q=%7B%22name%22%3A%7B%22%24regex%22%3A%22%5EThe%22%7D%7D
+```
 
 ### Pagination
 In order to test pagination, let's add 500 movies in the database:
@@ -474,6 +574,26 @@ do
 done
 ```
 
-This time, we will use the `fetch` hook. 
+This time, we will use the `preFetch` hook again.
+
+Restgoose adds a `restgoose` property in the `req` object: 
+```js
+{
+    restgoose: {
+    	filter: { /* MongoDb query. This is populated by the ?q query string */ }
+    	options: { /* MongoDb options. See https://mongoosejs.com/docs/api.html#query_Query-setOptions */ }
+    	projection: { /* MongoDb projection */ }
+    }
+}
+```
+
+We will create a `preFetch` hook that will add a `skip` and `limit` options in the `restgoose` object.
+
+**addpagination.ts:**
+```
+
+```
+
+**TODO** 
 
 
