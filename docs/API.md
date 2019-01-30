@@ -244,11 +244,11 @@ or(and(middlewareA, middlewareB), and(middlewareA, middlewareC))
      /**
       * return the entity if the user is admin, throw 401 otherwise
       */
-     function isAdmin(req:Request) { /* ... */ }
+     function isAdmin<T extends Typegoose>(req:Request, entity: T) { /* ... */ }
      /**
       * return the entity if the owner field is the user, throw 401 otherwise
       */
-     function isOwner(req:Request) { /* ... */ }
+     function isOwner<T extends Typegoose>(req:Request, entity: T) { /* ... */ }
           
      @rest({
         route: '/items',
