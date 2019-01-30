@@ -39,7 +39,7 @@ Also, we want the movies to list its actors and the actors to list their filmogr
 ------
 
 ## 2. Setup the server
-First we need to setup a working server. Let's start a new typesciprt project.
+First we need to setup a working server. Let's start a new typescript project.
 
 ```bash
 mkdir restgoose-getting-started
