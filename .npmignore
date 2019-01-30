@@ -10,6 +10,8 @@ coverage
 .nyc_output
 src
 test
+Gemfile
+Gemfile.lock
 
 codecov.yml
 mocha.opts
@@ -17,3 +19,4 @@ mocha.opts
 wercker.yml
 _site
 .sass-cache
+lab
