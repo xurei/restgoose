@@ -7,7 +7,7 @@ import_css: getting-started.css
 This tutorial will walk through the initial steps to create a basic restgoose application.
 We will create a basic IMDB-like REST API listing movies and actors.
 
-The full code can be found at **TODO**. 
+The full code can be found there: [https://github.com/xurei/restgoose-getting-started](https://github.com/xurei/restgoose-getting-started)
 
 ## Prerequites
 We assume that you are already familiar with those concepts and technologies: 
