@@ -1,5 +1,5 @@
 # Restgoose
-Model-driven REST API framework
+Build REST APIs faster than ever.
 
 [![npm version](https://img.shields.io/npm/v/%40xureilab%2Frestgoose.svg)](https://www.npmjs.com/package/@xureilab/restgoose)
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/s/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
