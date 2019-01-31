@@ -7,10 +7,23 @@ import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
 import { Restgoose, all, create, one, removeAll, rest } from '../lib';
+import { Constructor } from '../lib/types';
 import { openDatabase } from './util/open-database';
+const sinon = require('sinon');
 
 const app = simpleServer();
 openDatabase('restgoose-test-fetch-hook');
+
+async function otherItemFetchAll(req: Request) {
+    return FetchHookModel.find({ public: true });
+}
+async function otherItemFetchOne(req: Request) {
+    return FetchHookModel.findOne({ public: true, _id: req.params.id });
+}
+async function _otherItemFetchCreate<T extends Typegoose>(req: Request, modelType: Constructor<T>) {
+    return new modelType({public: false, value: 0, name: req.body.name});
+}
+const otherItemFetchCreate = sinon.spy(_otherItemFetchCreate);
 
 @rest({
     route: '/otheritems',
@@ -32,16 +45,29 @@ export class FetchHook extends Typegoose {
     public: boolean;
 }
 
+@rest({
+    route: '/otheritems2',
+    methods: [
+        all(),
+        one(),
+        create({ fetch: otherItemFetchCreate }),
+        removeAll(),
+    ],
+})
+export class FetchHook2 extends Typegoose {
+    @prop({required: true})
+    name: string;
+
+    @prop({required: true})
+    value: number;
+
+    @prop({required: true, default: false})
+    public: boolean;
+}
+
 export const FetchHookModel = new FetchHook().getModelForClass(FetchHook);
 
-async function otherItemFetchAll(req: Request) {
-    return FetchHookModel.find({ public: true });
-}
-async function otherItemFetchOne(req: Request) {
-    return FetchHookModel.findOne({ public: true, _id: req.params.id });
-}
-
-app.use(Restgoose.initialize([FetchHook]));
+app.use(Restgoose.initialize([FetchHook, FetchHook2]));
 // ---------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
@@ -57,11 +83,10 @@ describe('Fetch hook', function() {
 
     let itemIds = null;
     it('prepare', function() {
+        console.log('BEFORE');
         return Promise.resolve()
-
         // deletes everything
         .then(() => restTester.delete('/otheritems'))
-
         .then(res => {
             const body = res.body as any;
             const status = res.status as number;
@@ -76,7 +101,6 @@ describe('Fetch hook', function() {
             expect(body).to.deep.eq([]);
             return true;
         })
-
         // populates items
         .then(() => Promise.all([
             restTester.post('/otheritems', { name: 'item1', value: 1, public: true }),
@@ -123,6 +147,30 @@ describe('Fetch hook', function() {
                 const body = res.body as any;
                 const status = res.status as number;
                 expect(status).to.eq(404);
+                return true;
+            });
+        });
+    });
+
+    describe('create()', function() {
+        it('should create the new item with the custom method defined', function () {
+            return Promise.resolve()
+            .then(() => restTester.post('/otheritems2', {
+                name: 'test'
+            }))
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                console.log(body);
+                expect(status).to.eq(201);
+                delete body._id;
+                expect(body).to.deep.eq({
+                    __v: 0,
+                    name: 'test',
+                    public: false,
+                    value: 0,
+                });
+                expect(otherItemFetchCreate.callCount).to.eq(1);
                 return true;
             });
         });

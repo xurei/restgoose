@@ -122,7 +122,7 @@ describe('Submodel - referenced', function() {
         describe('with invalid parent id', function() {
             it('GET should return 404', function() {
                 return Promise.resolve()
-                .then(() => restTester.as('admin').get('/items/wrong/subitems'))
+                .then(() => restTester.as('admin').get('/items/000000000000000000000000/subitems'))
                 .then(res => {
                     const status = res.status as number;
                     expect(status).to.eq(404);
@@ -131,7 +131,7 @@ describe('Submodel - referenced', function() {
             });
             it('POST should return 404', function() {
                 return Promise.resolve()
-                .then(() => restTester.as('admin').post('/items/wrong/subitems', {
+                .then(() => restTester.as('admin').post('/items/000000000000000000000000/subitems', {
                     never: 'mind'
                 }))
                 .then(res => {
