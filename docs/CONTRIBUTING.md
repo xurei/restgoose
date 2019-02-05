@@ -18,9 +18,9 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
 
 ## Ground Rules
 ### Technical
-* Don't add any classes to the codebase unless absolutely needed. Err on the side of using functions.
-* Keep feature versions as small as possible, preferably one new feature per version. If it does too much, break it up into smaller PRs.
-* Ensure that code that goes into core meets all requirements in this checklist: 
+- Don't add any classes to the codebase unless absolutely needed. Err on the side of using functions.
+- Keep feature versions as small as possible, preferably one new feature per version. If it does too much, break it up into smaller PRs.
+- Ensure that code that goes into core meets all requirements in this checklist: 
     - General
         - [ ] Is this change useful to me, or something that I think will benefit others greatly?
         - [ ] Check for overlap with other PRs. If another PR exists, please explain why yours is different and/or better. 
@@ -42,8 +42,8 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
         - [ ] Copy and paste title and PR number into `CHANGELOG.md`.
 
 ### Community
-* Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
-* Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [code of conduct](./CODE_OF_CONDUCT.md).
+- Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
+- Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [code of conduct](./CODE_OF_CONDUCT.md).
 
 
 [//]: # # Your First Contribution
