@@ -1,3 +1,10 @@
+## 0.0.16 - Work in progress
+Features:
+- ... 
+
+Bugfixes:
+- ...
+
 ## 0.0.15 - 2019-01-31
 Features: 
 - Added a `restgoose` field in `req` for typical use cases (projection, pagination...)

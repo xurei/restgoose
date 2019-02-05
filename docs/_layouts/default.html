@@ -49,12 +49,27 @@
 
 <div class="wrapper">
     <nav>
-        <ul>
+        <ul class="toc">
             <li>
                 <a href="{{ '/' | relative_url }}">↵ Index</a>
             </li>
             <li>
                 <noscript>Enable javascript to show the Table of Contents</noscript>
+            </li>
+        </ul>
+
+        <ul>
+            <li class="tag-h1">
+                <strong>About the project</strong>
+            </li>
+            <li class="tag-h2 external">
+                <a href="{{ '/CODE_OF_CONDUCT.html' | relative_url }}">Code of Conduct</a>
+            </li>
+            <li class="tag-h2 external">
+                <a href="{{ '/CONTRIBUTING.html' | relative_url }}">Contribution Guide</a>
+            </li>
+            <li class="tag-h2 external">
+                <a href="{{ '/AUTHORS.html' | relative_url }}">Authors</a>
             </li>
         </ul>
     </nav>

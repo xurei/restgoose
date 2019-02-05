@@ -18,6 +18,10 @@ a {
     &:hover {
         text-decoration: underline;
     }
+
+    &:not(.button) strong {
+        color: $green;
+    }
 }
 
 h2, h3 {
@@ -65,8 +69,7 @@ section {
         width: 100%;
         margin-top: 105px;
         margin-bottom: 0;
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
+        border-radius: 0;
     }
 
     @media screen and (max-width: 480px) {
@@ -163,6 +166,10 @@ nav {
         display: none;
     }
 
+    ul.toc {
+        //margin-bottom: 0;
+    }
+
     ul {
         list-style: none;
         padding-left: 15px;
@@ -255,6 +262,23 @@ ul {
         position: absolute;
         //color: $green;
     }
+}
+
+.task-list-item {
+    padding-left: 15px;
+    &:before {
+        content: '';
+    }
+}
+.task-list-item-checkbox {
+    margin-right: 5px;
+    vertical-align: baseline;
+    position: relative;
+    top: 1px;
+}
+
+blockquote {
+    border-left-color: $green;
 }
 //----------------------------------------------------------------------------------------------------------------------
 

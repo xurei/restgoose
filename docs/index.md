@@ -35,6 +35,11 @@ export class Todo extends Typegoose {
 - ### [Rest endpoint lifecycle](./rest-lifecycle.md)
 - ### [Development Roadmap](./roadmap.md)
 
+## Contributing
+You want to help to make restgoose even better? Great! 
+
+Check out our [code of conduct](./CODE_OF_CONDUCT.md) and our [contributing guidelines](./CONTRIBUTING.md) for more information.
+
 ## The Philosophy behind Restgoose
 Restgoose takes its inspiration from Typegoose and Loopback.
 We also had some objectives in mind while writing Restgoose :
@@ -45,3 +50,4 @@ We also had some objectives in mind while writing Restgoose :
   complex endpoints without Restgoose if necessary
 - The framework should be small and provide as little middlewares as necessary. 
   Plugins will be created for better cherry-picking. 
+

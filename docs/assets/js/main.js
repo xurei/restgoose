@@ -4,7 +4,7 @@ var sectionHeight = function() {
     
     if ($section.outerHeight(true) < total) {
         var margin = $section.outerHeight(true) - $section.height();
-        $section.height(total - margin - 20);
+        $section.height(total - margin);
     } else {
         $section.css('height', 'auto');
     }
@@ -22,7 +22,7 @@ $(function() {
             extraClass = 'external';
         }
         
-        $('nav ul').append('<li class="tag-' + section.nodeName + ' ' + extraClass+'"><a href="' + link + '">' + text + '</a></li>');
+        $('nav ul.toc').append('<li class="tag-' + section.nodeName + ' ' + extraClass+'"><a href="' + link + '">' + text + '</a></li>');
         $(this).attr('id', section.hash);
     }
     
@@ -44,13 +44,13 @@ $(function() {
         addTOC(section);
     });
     
-    $('nav ul li:first-child a').parent().addClass('active');
+    $('nav ul.toc li:first-child a').parent().addClass('active');
     
-    $('nav ul li').on('click', 'a', function(event) {
+    $('nav ul.toc li').on('click', 'a', function(event) {
         var position = $($(this).attr('href')).offset().top - 150;
         $('html, body').animate({scrollTop: position}, 400);
         event.preventDefault();
-        //$("nav ul li a").parent().removeClass("active");
+        //$("nav ul.toc li a").parent().removeClass("active");
         //$(this).parent().addClass("active");
     });
     
