@@ -8,7 +8,7 @@ Build REST APIs faster than ever.
 
 [![CII Best Practices](https://img.shields.io/cii/summary/2181.svg)](https://bestpractices.coreinfrastructure.org/projects/2181)
 [![npms score](https://badges.npms.io/%40xureilab%2Frestgoose.svg)](https://npms.io/search?q=%40xureilab%2Frestgoose)
-[![reddit](https://img.shields.io/badge/reddit-r%2Frestgoose-red.svg?logo=reddit&logoColor=white)](https://npms.io/search?q=%40xureilab%2Frestgoose)
+[![reddit](https://img.shields.io/badge/reddit-r%2Frestgoose-red.svg?logo=reddit&logoColor=white)](https://www.reddit.com/r/restgoose)
 
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/m/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
 
