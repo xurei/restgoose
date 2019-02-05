@@ -66,4 +66,4 @@ We are looking for collaborators to test the framework in real-world situations,
 Check out the [roadmap](https://xurei.github.io/restgoose/roadmap.html) to see what's going on.  
 
 ## Community
-Reddit: https://www.reddit.com/r/restgoose/
+Reddit: [https://www.reddit.com/r/restgoose/](https://www.reddit.com/r/restgoose/)
