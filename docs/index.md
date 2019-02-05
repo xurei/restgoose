@@ -7,8 +7,8 @@ Restgoose exposes your MongoDB database through a REST API with ease.
 It is driven by the model itself, which reduces the boilerplate code necessary to write simple endpoints.
 It is open for extension, so you can add complex logic easily too.
 
-# Installation & basic usage
-```
+## Installation & basic usage
+```bash
 npm install @xureilab/restgoose
 ```
 
@@ -28,14 +28,14 @@ export class Todo extends Typegoose {
 }
 ```
 
-# Documentation
+## Documentation
 
-- ## [Getting started](./getting-started.md)
-- ## [API Reference](./API.md)
-- ## [Rest endpoint lifecycle](./rest-lifecycle.md)
-- ## [Development Roadmap](./roadmap.md)
+- ### [Getting started](./getting-started.md)
+- ### [API Reference](./API.md)
+- ### [Rest endpoint lifecycle](./rest-lifecycle.md)
+- ### [Development Roadmap](./roadmap.md)
 
-# The Philosophy behind Restgoose
+## The Philosophy behind Restgoose
 Restgoose takes its inspiration from Typegoose and Loopback.
 We also had some objectives in mind while writing Restgoose :
 - Simple, common behaviors should be really easy to write,
