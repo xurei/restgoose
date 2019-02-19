@@ -31,6 +31,7 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
         - [ ] Review the changes carefully, line by line. Make sure your changes are as small as possible (for example, don't fix a typo in portions of code you don't modify otherwise).
         - [ ] Take the time to get things right. PRs almost always require additional improvements to meet the bar for quality. Be very strict about quality. The better the quality in your original PR, the faster it can get merged in the master branch. 
     - Tests    
+        - [ ] If any new features are added, it must be tested.
         - [ ] Does it have tests? If not, explain why there is none ("I don't know what to test" is a valid answer, as long as you explain why it's not done).
         - [ ] Do the tests pass ? If not, write a note in the PR, or fix them yourself.
         - [ ] **NEVER** disable a test before discussing it in an issue.

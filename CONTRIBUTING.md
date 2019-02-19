@@ -18,9 +18,9 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
 
 ## Ground Rules
 ### Technical
-* Don't add any classes to the codebase unless absolutely needed. Err on the side of using functions.
-* Keep feature versions as small as possible, preferably one new feature per version. If it does too much, break it up into smaller PRs.
-* Ensure that code that goes into core meets all requirements in this checklist: 
+- Don't add any classes to the codebase unless absolutely needed. Err on the side of using functions.
+- Keep feature versions as small as possible, preferably one new feature per version. If it does too much, break it up into smaller PRs.
+- Ensure that code that goes into core meets all requirements in this checklist: 
     - General
         - [ ] Is this change useful to me, or something that I think will benefit others greatly?
         - [ ] Check for overlap with other PRs. If another PR exists, please explain why yours is different and/or better. 
@@ -31,6 +31,7 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
         - [ ] Review the changes carefully, line by line. Make sure your changes are as small as possible (for example, don't fix a typo in portions of code you don't modify otherwise).
         - [ ] Take the time to get things right. PRs almost always require additional improvements to meet the bar for quality. Be very strict about quality. The better the quality in your original PR, the faster it can get merged in the master branch. 
     - Tests    
+        - [ ] If any new features are added, it must be tested.
         - [ ] Does it have tests? If not, explain why there is none ("I don't know what to test" is a valid answer, as long as you explain why it's not done).
         - [ ] Do the tests pass ? If not, write a note in the PR, or fix them yourself.
         - [ ] **NEVER** disable a test before discussing it in an issue.
@@ -42,8 +43,8 @@ There are many ways to contribute, from writing tutorials or blog posts, improvi
         - [ ] Copy and paste title and PR number into `CHANGELOG.md`.
 
 ### Community
-* Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
-* Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [code of conduct](./CODE_OF_CONDUCT.md).
+- Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
+- Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [code of conduct](./CODE_OF_CONDUCT.md).
 
 
 [//]: # # Your First Contribution
