@@ -3,10 +3,9 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
-import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, removeAll, rest, getModel } from '../lib';
+import { Restgoose, RestgooseModel, prop, all, create, one, removeAll, rest, getModel } from '../lib';
 import { Constructor } from '../lib/types';
 import { openDatabase } from './util/open-database';
 const sinon = require('sinon');
@@ -19,7 +18,7 @@ async function otherItemFetchAll(req: Request) {
 async function otherItemFetchOne(req: Request) {
     return FetchHookModel.findOne({ public: true, _id: req.params.id });
 }
-async function _otherItemFetchCreate<T extends Typegoose>(req: Request, modelType: Constructor<T>) {
+async function _otherItemFetchCreate<T extends RestgooseModel>(req: Request, modelType: Constructor<T>) {
     return new modelType({public: false, value: 0, name: req.body.name});
 }
 const otherItemFetchCreate = sinon.spy(_otherItemFetchCreate);
@@ -33,7 +32,7 @@ const otherItemFetchCreate = sinon.spy(_otherItemFetchCreate);
         removeAll(),
     ],
 })
-export class FetchHook extends Typegoose {
+export class FetchHook extends RestgooseModel {
     @prop({required: true})
     name: string;
 
@@ -53,7 +52,7 @@ export class FetchHook extends Typegoose {
         removeAll(),
     ],
 })
-export class FetchHook2 extends Typegoose {
+export class FetchHook2 extends RestgooseModel {
     @prop({required: true})
     name: string;
 

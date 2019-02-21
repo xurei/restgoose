@@ -16,7 +16,7 @@ import {
 import { RestgooseModel } from '../restgoose-model';
 
 export function rest<T extends RestgooseModel>(config: RestConfiguration<T>) {
-    return (target: Constructor<T>, propertyKey?: string) => {
+    return (target: T | Constructor<T>, propertyKey?: string) => {
         if (!propertyKey) {
             RestRegistry.registerModel(target as Constructor<T>, config);
         }

@@ -1,11 +1,11 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { Ref } from 'typegoose';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
+import { Restgoose, RestgooseModel, prop, arrayProp, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
@@ -25,7 +25,7 @@ async function verifyToken(req: Request) {
         one({ preFetch: and(verifyToken) }), // GET /subitems/:id
     ],
 })
-export class SubItemReferenced extends Typegoose {
+export class SubItemReferenced extends RestgooseModel {
     @prop({required: true})
     name: string;
 
@@ -44,7 +44,7 @@ export class SubItemReferenced extends Typegoose {
         removeAll(),
     ],
 })
-export class SubmodelReferenced extends Typegoose {
+export class SubmodelReferenced extends RestgooseModel {
     @prop({required: true})
     title: string;
 
@@ -55,7 +55,7 @@ export class SubmodelReferenced extends Typegoose {
             create({ preFetch: verifyToken }),
         ],
     })
-    @arrayProp({itemsRef: {name: SubItemReferenced}})
+    @arrayProp({items: SubItemReferenced, ref: true})
     subItems: Ref<SubItemReferenced>[];
 }
 

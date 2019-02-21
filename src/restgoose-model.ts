@@ -1,10 +1,24 @@
 import * as mongoose from 'mongoose';
 import { RestRegistry } from './rest-registry';
-import { Constructor } from './types';
+import { Constructor, Dic } from './types';
+import { Restgoose } from './restgoose';
 
 const schemas = {};
 
 const isPrimitive = (Type) => !!Type && ['String', 'Number', 'Boolean', 'Date', 'Decimal128'].find(n => Type.name === n);
+const isArray = (Type) => !!Type && Type.name === 'Array';
+const isObject = (Type) => {
+    let prototype = Type.prototype;
+    let name = Type.name;
+    while (name) {
+        if (name === 'Object') {
+            return true;
+        }
+        prototype = Object.getPrototypeOf(prototype);
+        name = prototype ? prototype.constructor.name : null;
+    }
+    return false;
+};
 const isNumber = (Type) => !!Type && Type.name === 'Number';
 const isString = (Type) => !!Type && Type.name === 'String';
 const isBoolean = (Type) => !!Type && Type.name === 'Boolean';
@@ -18,10 +32,8 @@ export class RestgooseModel {
 
         if (!sch) {
             sch = schemaOptions ?
-            new Schema(schemas[name], schemaOptions) :
-            new Schema(schemas[name]);
-        } else {
-            sch.add(schemas[name]);
+            new Schema({}, schemaOptions) :
+            new Schema({});
         }
 
         const props = RestRegistry.listPropertiesOf(this.constructor as Constructor<RestgooseModel>);
@@ -30,11 +42,37 @@ export class RestgooseModel {
             //prop.
             //sch.add
             const schProp = {};
-            schProp[prop.name] = prop.type.name;
-            sch.add(schProp);
+            //schProp[prop.name] = prop.type;
+
+            const config: Dic = {
+                required: prop.config.required || false,
+                default: prop.config.default,
+            };
+
+            if (Array.isArray(prop.type)) {
+                if (isPrimitive(prop.type[0])) {
+                    config.type = prop.type;
+                }
+                else {
+                    const Type = prop.type[0] as Constructor<RestgooseModel>;
+                    const subSchema = Type.prototype.buildSchema();
+                    config.type = [subSchema];
+                }
+            }
+            else if (!isPrimitive(prop.type) && isObject(prop.type)) {
+                // TODO check that this works
+                config.type = Object;
+            }
+            else {
+                config.type = prop.type;
+            }
+
+            const s = {};
+            s[prop.name] = config;
+            sch.add(s);
         }
 
-        console.log(props);
+        //console.log(props);
 
         /*const indices = Reflect.getMetadata('typegoose:indices', t) || [];
         for (const index of indices) {

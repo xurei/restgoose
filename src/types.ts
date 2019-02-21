@@ -5,6 +5,9 @@ import * as mongoose from 'mongoose';
 
 export type InstanceType<T> = T & mongoose.Document;
 export type Constructor<T> = new(...args: any[]) => T;
+export interface Dic {
+    [key: string]: any;
+}
 
 export type Promisable<T> = T | Promise<T>;
 export type Middleware = (req: Request, ...args: any[]) => Promisable<any>;

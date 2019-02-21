@@ -1,7 +1,6 @@
 import * as express from 'express';
-import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
+import { Restgoose, RestgooseModel, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
@@ -11,12 +10,12 @@ import { simpleServer } from './util/simple-server';
 const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
 const connectionA = mongoose.createConnection(mongoUri);
 
-class InnerItem extends Typegoose {
+class InnerItem extends RestgooseModel {
     @prop({required: true})
     innerTitle: string;
 }
 
-class ParentItem extends Typegoose {
+class ParentItem extends RestgooseModel {
     @prop({required: true})
     title: string;
 }

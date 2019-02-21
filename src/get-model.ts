@@ -23,7 +23,7 @@ export function getModel<T extends RestgooseModel>(model: Constructor<T>, connec
         // iterate through all parents
         while (parentCtor && parentCtor.name !== 'RestgooseModel' && parentCtor.name !== 'Object') {
             // extend schema
-            schema = model.prototype.buildSchema(schemaOptions, schema);
+            schema = parentCtor.prototype.buildSchema(schemaOptions, schema);
             // next parent
             parentCtor = Object.getPrototypeOf(parentCtor);
         }
