@@ -6,7 +6,7 @@ import { RestTester } from './util/rest-tester';
 import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, removeAll, rest } from '../lib';
+import { Restgoose, all, create, one, removeAll, rest, getModel } from '../lib';
 import { Constructor } from '../lib/types';
 import { openDatabase } from './util/open-database';
 const sinon = require('sinon');
@@ -65,7 +65,7 @@ export class FetchHook2 extends Typegoose {
     public: boolean;
 }
 
-export const FetchHookModel = new FetchHook().getModelForClass(FetchHook);
+export const FetchHookModel = getModel(FetchHook);
 
 app.use(Restgoose.initialize([FetchHook, FetchHook2]));
 // ---------------------------------------------------------------------------------------------------------------------

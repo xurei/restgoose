@@ -1,4 +1,5 @@
 import { Connection, Model } from 'mongoose';
+import { connection as defaultConnection } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
 import { RestRegistry } from './rest-registry';
 import { Constructor } from './types';
@@ -8,7 +9,10 @@ import { Constructor } from './types';
  * @param connection
  * @param model
  */
-export function getModel<T extends Typegoose>(model: Constructor<T>, connection: Connection): Model<InstanceType<T>> {
+export function getModel<T extends Typegoose>(model: Constructor<T>, connection?: Connection): Model<InstanceType<T>> {
+    if (!connection) {
+        connection = defaultConnection;
+    }
     const modelEntry = RestRegistry.getModel(model);
     const schemaOptions = modelEntry && modelEntry.config ? modelEntry.config.schemaOptions : undefined;
 
