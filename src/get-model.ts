@@ -8,7 +8,7 @@ import { Constructor } from './types';
  * @param connection
  * @param model
  */
-export function getModel<T extends Typegoose>(connection: Connection, model: Constructor<T>): Model<InstanceType<T>> {
+export function getModel<T extends Typegoose>(model: Constructor<T>, connection: Connection): Model<InstanceType<T>> {
     const modelEntry = RestRegistry.getModel(model);
     const schemaOptions = modelEntry && modelEntry.config ? modelEntry.config.schemaOptions : undefined;
 

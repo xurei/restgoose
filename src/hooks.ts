@@ -17,7 +17,7 @@ export async function getModel<T extends Typegoose>(modelEntry: RestModelEntry<T
     const connection = modelEntry.config.getConnection ? await modelEntry.config.getConnection(req) as any : mongoose;
     const model = modelEntry.type;
 
-    return getModelForConnection(connection, model);
+    return getModelForConnection(model, connection);
 }
 
 export async function preFetch<T extends Typegoose>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
