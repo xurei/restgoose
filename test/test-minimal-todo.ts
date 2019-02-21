@@ -5,9 +5,8 @@ import { RestTester } from './util/rest-tester';
 
 import * as MockReq from 'mock-req';
 
-import { prop, Typegoose } from 'typegoose';
 import { simpleServer } from './util/simple-server';
-import { Restgoose, all, create, one, remove, removeAll, rest, update } from '../lib';
+import { Restgoose, RestgooseModel, prop, all, create, one, remove, removeAll, rest, update } from '../lib';
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
@@ -23,7 +22,7 @@ const app = simpleServer();
         removeAll(), // DELETE /todos
     ],
 })
-export class Todo extends Typegoose {
+export class Todo extends RestgooseModel {
     @prop({required: true})
     title: string;
 }

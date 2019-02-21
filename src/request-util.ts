@@ -1,13 +1,14 @@
 import { Model } from 'mongoose';
-import { InstanceType, Typegoose } from 'typegoose';
 import { RestRequest } from './types';
+import { InstanceType } from './types';
+import { RestgooseModel } from './restgoose-model';
 
-export function buildPayload<T extends Typegoose>(req: RestRequest, modelType: Model<InstanceType<T>>) {
+export function buildPayload<T extends RestgooseModel>(req: RestRequest, modelType: Model<InstanceType<T>>) {
     const payload = {};
     // FIXME as any
     const properties = Object.keys((modelType.schema as any).tree);
     properties.forEach((prop: string) => {
-        // TODO: search for typegoose annotations and process them?
+        // TODO: search for RestgooseModel annotations and process them?
         if (typeof(req.body[prop]) !== 'undefined') {
             payload[prop] = req.body[prop];
         }

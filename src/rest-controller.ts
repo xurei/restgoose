@@ -1,6 +1,5 @@
 import { Response } from 'express';
 import { CastError } from 'mongoose';
-import { Typegoose } from 'typegoose';
 import {
     fetchAll, fetchCreate, fetchOne, getModel,
     persistDeleteAll, persistDeleteOne,
@@ -9,9 +8,10 @@ import {
 } from './hooks';
 import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
-import { RestConfigurationMethod, RestError } from './rest';
+import { RestConfigurationMethod, RestError } from './decorators/rest';
 import { RestModelEntry } from './rest-registry';
 import { RestRequest } from './types';
+import { RestgooseModel } from './restgoose-model';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -20,7 +20,7 @@ export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
 export const ERROR_VALIDATION_NAME: string = 'ValidationError';
 export const ERROR_BAD_FORMAT_CODE: string = 'BAD_FORMAT';
 
-export function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
@@ -43,7 +43,7 @@ export function all<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodCo
     });
 }
 
-export function allWithin<T extends Typegoose>(
+export function allWithin<T extends RestgooseModel>(
     modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
     submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
@@ -100,7 +100,7 @@ export function allWithin<T extends Typegoose>(
     });
 }
 
-export function create<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
@@ -134,7 +134,7 @@ export function create<T extends Typegoose>(modelEntry: RestModelEntry<T>, metho
     });
 }
 
-export function createWithin<T extends Typegoose>(
+export function createWithin<T extends RestgooseModel>(
     modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
     submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
@@ -192,7 +192,7 @@ export function createWithin<T extends Typegoose>(
     });
 }
 
-export function one<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
@@ -221,7 +221,7 @@ export function one<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodCo
     });
 }
 
-export function remove<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
@@ -253,7 +253,7 @@ export function remove<T extends Typegoose>(modelEntry: RestModelEntry<T>, metho
     });
 }
 
-export function removeAll<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
@@ -279,7 +279,7 @@ export function removeAll<T extends Typegoose>(modelEntry: RestModelEntry<T>, me
     });
 }
 
-export function update<T extends Typegoose>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
+export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);

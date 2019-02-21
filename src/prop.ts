@@ -1,1 +1,0 @@
-export { prop } from 'typegoose';
