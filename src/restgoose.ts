@@ -1,10 +1,10 @@
 import { Response, Router } from 'express';
 import { InstanceType, Typegoose } from 'typegoose';
 import { debug } from './debug';
-import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './Hooks';
-import { parseQuery } from './parseQuery';
-import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './RestController';
-import { RestModelEntry, RestRegistry } from './RestRegistry';
+import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './hooks';
+import { parseQuery } from './parse-query';
+import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './rest-controller';
+import { RestModelEntry, RestRegistry } from './rest-registry';
 import { Constructor, RestRequest } from './types';
 
 export class Restgoose {

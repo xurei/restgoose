@@ -1,10 +1,10 @@
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
-import { getModel as getModelForConnection } from './getModel';
-import { buildPayload } from './RequestUtil';
+import { getModel as getModelForConnection } from './get-model';
+import { buildPayload } from './request-util';
 import { RestConfigurationMethod } from './rest';
-import { RestModelEntry } from './RestRegistry';
+import { RestModelEntry } from './rest-registry';
 import {
     MiddlewarePersistDeleteAll,
     MiddlewarePersistDeleteOne,

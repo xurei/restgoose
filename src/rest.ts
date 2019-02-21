@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { Connection } from 'mongoose';
 import { SchemaOptions } from 'mongoose';
 import { Typegoose } from 'typegoose';
-import { RestRegistry } from './RestRegistry';
+import { RestRegistry } from './rest-registry';
 import {
     Constructor,
     HttpMethod,

@@ -6,11 +6,11 @@ import {
     persistDeleteAll, persistDeleteOne,
     persistSave, postFetch, postFetchAll, preFetch, preSave,
     preSaveAll, preSend, preSendAll,
-} from './Hooks';
-import { parseQuery } from './parseQuery';
-import { buildPayload } from './RequestUtil';
+} from './hooks';
+import { parseQuery } from './parse-query';
+import { buildPayload } from './request-util';
 import { RestConfigurationMethod, RestError } from './rest';
-import { RestModelEntry } from './RestRegistry';
+import { RestModelEntry } from './rest-registry';
 import { RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { convertFields } from './convertFields';
+import { convertFields } from './convert-fields';
 import { RestRequest } from './types';
 
 export function parseQuery(req: Request): RestRequest {

@@ -1,6 +1,6 @@
 export * from './rest';
 export * from './prop';
-export * from './Restgoose';
+export * from './restgoose';
 export * from './middleware-composers';
-export { getModel } from './getModel';
+export { getModel } from './get-model';
 export { RestRequest } from './types';

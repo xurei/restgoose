@@ -1,6 +1,6 @@
 import { Connection, Model } from 'mongoose';
 import { InstanceType, Typegoose } from 'typegoose';
-import { RestRegistry } from './RestRegistry';
+import { RestRegistry } from './rest-registry';
 import { Constructor } from './types';
 
 /**
