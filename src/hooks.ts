@@ -1,16 +1,16 @@
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { RestConfigurationMethod } from './decorators/rest';
 import { getModel as getModelForConnection } from './get-model';
 import { buildPayload } from './request-util';
-import { RestConfigurationMethod } from './decorators/rest';
 import { RestModelEntry } from './rest-registry';
+import { RestgooseModel } from './restgoose-model';
 import {
     MiddlewarePersistDeleteAll,
     MiddlewarePersistDeleteOne,
     MiddlewarePersistSave,
     RestRequest,
 } from './types';
-import { RestgooseModel } from './restgoose-model';
 import { InstanceType } from './types';
 
 export async function getModel<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
@@ -81,7 +81,7 @@ export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestC
 }
 
 export async function preSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: InstanceType<T>,
-                                                   newEntity: InstanceType<T>):
+                                                        newEntity: InstanceType<T>):
     Promise<InstanceType<T>> {
 
     const promise: Promise<any> = Promise.resolve(newEntity);
@@ -92,7 +92,7 @@ export async function preSave<T extends RestgooseModel>(methodConfig: RestConfig
 }
 
 export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: InstanceType<T>[],
-                                                      newEntities: InstanceType<T>[]):
+                                                           newEntities: InstanceType<T>[]):
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSave ?
@@ -109,7 +109,7 @@ export async function persistSave<T extends RestgooseModel>(methodConfig: RestCo
 }
 
 export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                            entities: InstanceType<T>[]):
+                                                                 entities: InstanceType<T>[]):
     Promise<boolean> {
 
     const out = entities.filter(e => !!e);
@@ -120,7 +120,7 @@ export async function persistDeleteAll<T extends RestgooseModel>(modelType: Mode
 }
 
 export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                            entity: InstanceType<T>):
+                                                                 entity: InstanceType<T>):
     Promise<boolean> {
 
     return methodConfig.persist ?

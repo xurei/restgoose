@@ -1,15 +1,13 @@
 import { Request } from 'express';
 import { Model } from 'mongoose';
-import { RestgooseModel } from './restgoose-model';
 import * as mongoose from 'mongoose';
+import { RestgooseModel } from './restgoose-model';
 
 export type InstanceType<T> = T & mongoose.Document;
 export type Constructor<T> = new(...args: any[]) => T;
 export interface Dic {
     [key: string]: any;
 }
-
-export type Embeddable<T extends RestgooseModel> = T | Number | String | Boolean | Date
 
 export type Promisable<T> = T | Promise<T>;
 export type Middleware = (req: Request, ...args: any[]) => Promisable<any>;

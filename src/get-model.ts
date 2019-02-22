@@ -1,7 +1,7 @@
-import { Connection, Model, connection as defaultConnection } from 'mongoose';
+import { Connection, connection as defaultConnection, Model } from 'mongoose';
 import { RestRegistry } from './rest-registry';
-import { Constructor, InstanceType } from './types';
 import { RestgooseModel } from './restgoose-model';
+import { Constructor, InstanceType } from './types';
 
 /**
  * Get or builds the model for a specific connection

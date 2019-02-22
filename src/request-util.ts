@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
+import { RestgooseModel } from './restgoose-model';
 import { RestRequest } from './types';
 import { InstanceType } from './types';
-import { RestgooseModel } from './restgoose-model';
 
 export function buildPayload<T extends RestgooseModel>(req: RestRequest, modelType: Model<InstanceType<T>>) {
     const payload = {};

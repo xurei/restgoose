@@ -1,24 +1,22 @@
 import * as mongoose from 'mongoose';
 import { RestRegistry } from './rest-registry';
-import { Constructor, Dic } from './types';
 import { Restgoose } from './restgoose';
 import { isObject, isPrimitive } from './type-checks';
+import { Constructor, Dic } from './types';
 
 const schemas = {};
 
 export class RestgooseModel {
     public buildSchema(schemaOptions?, sch?: mongoose.Schema) {
-
-        //TODO cache this
-
-        const Schema = mongoose.Schema;
-        const t = Object.getPrototypeOf(this);
         const name = this.constructor.name;
+        if (schemas[name]) {
+            return schemas[name];
+        }
 
         if (!sch) {
             sch = schemaOptions ?
-            new Schema({}, schemaOptions) :
-            new Schema({});
+            new mongoose.Schema({}, schemaOptions) :
+            new mongoose.Schema({});
         }
 
         const props = RestRegistry.listPropertiesOf(this.constructor as Constructor<RestgooseModel>);
@@ -26,7 +24,7 @@ export class RestgooseModel {
         for (const prop of props) {
             if (!prop.config) {
                 // TODO create a specific error class for Restgoose init errors
-                throw new Error(`Property '${prop.name}' is missing a configuration. You probably forgot to add @prop() on it.`)
+                throw new Error(`Property '${prop.name}' is missing a configuration. You probably forgot to add @prop() on it.`);
             }
 
             const config: Dic = {
@@ -64,6 +62,7 @@ export class RestgooseModel {
             sch.index(index.fields, index.options);
         }*/
 
+        schemas[name] = sch;
         return sch;
     }
 }

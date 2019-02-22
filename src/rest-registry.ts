@@ -1,8 +1,8 @@
-import { RestConfiguration } from './decorators/rest';
-import { Constructor } from './types';
-import { RestgooseModel } from './restgoose-model';
-import { PropConfiguration } from './decorators/prop';
 import { ArrayPropConfiguration } from './decorators/array-prop';
+import { PropConfiguration } from './decorators/prop';
+import { RestConfiguration } from './decorators/rest';
+import { RestgooseModel } from './restgoose-model';
+import { Constructor } from './types';
 
 /*
     TODO we should replace the RestRegistry maps by a set, and store all the models that way.
@@ -15,6 +15,7 @@ export declare interface RestModelEntry<T extends RestgooseModel> {
 }
 
 export declare interface RestPropEntry<T extends RestgooseModel> {
+    // tslint:disable-next-line
     type: Constructor<T | Number | String | Boolean | Date>;
     config: PropConfiguration<T>;
     name: string;
@@ -36,12 +37,13 @@ const RestRegistry = {
         });
     },
 
-    registerProperty<T extends RestgooseModel, S extends RestgooseModel>(modelType: Constructor<T>, propertyKey: string, Type: any, config: PropConfiguration<T> | ArrayPropConfiguration<T, S>) {
+    registerProperty<T extends RestgooseModel, S extends RestgooseModel>(modelType: Constructor<T>, propertyKey: string,
+                                                                         Type: any, config: PropConfiguration<T> | ArrayPropConfiguration<T, S>) {
         if (!properties.has(modelType.name)) {
             properties.set(modelType.name, new Map<string, RestPropEntry<any>>());
         }
         const entry: RestPropEntry<T> = properties.get(modelType.name).get(propertyKey) || {
-            type: modelType,
+            type: Type,
             name: propertyKey,
             config: null,
         };

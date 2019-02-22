@@ -4,8 +4,9 @@ import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from '
 import { parseQuery } from './parse-query';
 import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './rest-controller';
 import { RestModelEntry, RestRegistry } from './rest-registry';
-import { Constructor, RestRequest, InstanceType } from './types';
 import { RestgooseModel } from './restgoose-model';
+import { isPrimitive } from './type-checks';
+import { Constructor, InstanceType, RestRequest } from './types';
 
 export class Restgoose {
     private static ROUTES = {
@@ -105,6 +106,7 @@ export class Restgoose {
 
         const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
         const submodels = RestRegistry.listSubrestsOf(model.type);
+        const schema = model.type.prototype.buildSchema();
         for (let submodel of submodels) {
             if (!methodOne) {
                 // TODO create a specific error class for Restgoose init errors
@@ -113,15 +115,20 @@ export class Restgoose {
 
             // Alter the submodels so the type attribute matches the submodel and not the parent model. This is done here
             // so that all classes are initialized before we call buildSchema() internally
-            // TODO find a way out of buildSchema() : typegoose caches it badly...
-            const parentSchema = submodel.type.prototype.buildSchema();
-            submodel = Object.assign({}, submodel);
-            const subtype = parentSchema.tree[submodel.name][0];
-            if (subtype && subtype.ref) {
-                const descriptor = Object.getOwnPropertyDescriptor(subtype, 'ref');
-                if (descriptor.value.prototype) {
-                    // This is a referenced submodel. We set its type in the definition
-                    submodel.type = parentSchema.tree[submodel.name][0].ref;
+            console.log(submodel.name);
+            if (isPrimitive(submodel.type[0])) {
+                console.log('primitive');
+            }
+            else {
+                //const parentSchema = submodel.type[0].prototype.buildSchema();
+                submodel = Object.assign({}, submodel);
+                const subtype = schema.tree[submodel.name][0];
+                if (subtype && subtype.ref) {
+                    const descriptor = Object.getOwnPropertyDescriptor(subtype, 'ref');
+                    if (descriptor.value.prototype) {
+                        // This is a referenced submodel. We set its type in the definition
+                        submodel.type = schema.tree[submodel.name][0].ref;
+                    }
                 }
             }
 

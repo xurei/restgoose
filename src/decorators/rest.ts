@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { Connection } from 'mongoose';
 import { SchemaOptions } from 'mongoose';
 import { RestRegistry } from '../rest-registry';
+import { RestgooseModel } from '../restgoose-model';
 import {
     Constructor,
     HttpMethod,
@@ -13,7 +14,6 @@ import {
     MiddlewarePreSend,
     RestMethodName,
 } from '../types';
-import { RestgooseModel } from '../restgoose-model';
 
 export function rest<T extends RestgooseModel>(config: RestConfiguration<T>) {
     return (target: T | Constructor<T>, propertyKey?: string) => {

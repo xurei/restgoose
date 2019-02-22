@@ -1,7 +1,7 @@
 import { Request } from 'express';
+import { RestgooseModel } from './restgoose-model';
 import { Middleware, MiddlewarePostFetch } from './types';
 import { InstanceType } from './types';
-import { RestgooseModel } from './restgoose-model';
 
 /**
  * Compose several middlewares with a logical OR operation.

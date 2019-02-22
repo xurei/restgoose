@@ -1,5 +1,7 @@
 import { Response } from 'express';
 import { CastError } from 'mongoose';
+import { ArrayPropConfiguration } from './decorators/array-prop';
+import { RestConfigurationMethod, RestError } from './decorators/rest';
 import {
     fetchAll, fetchCreate, fetchOne, getModel,
     persistDeleteAll, persistDeleteOne,
@@ -8,11 +10,9 @@ import {
 } from './hooks';
 import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
-import { RestConfigurationMethod, RestError } from './decorators/rest';
 import { RestModelEntry, RestPropEntry } from './rest-registry';
-import { Constructor, RestRequest } from './types';
 import { RestgooseModel } from './restgoose-model';
-import { ArrayPropConfiguration } from './decorators/array-prop';
+import { Constructor, RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -84,7 +84,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
                 // getModel - sub
                 const submodelEntry: RestModelEntry<S> = {
                     type: propEntry.type as Constructor<S>,
-                    restConfig: propEntry.restConfig
+                    restConfig: propEntry.restConfig,
                 };
                 const submodelType = await getModel(submodelEntry, req);
 
@@ -170,7 +170,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 // getModel - sub
                 const submodelEntry: RestModelEntry<S> = {
                     type: propEntry.type as Constructor<S>,
-                    restConfig: propEntry.restConfig
+                    restConfig: propEntry.restConfig,
                 };
                 const submodelType = await getModel(submodelEntry, req);
 
