@@ -2,6 +2,7 @@
   "name": "@xureilab/restgoose",
   "version": "0.0.15",
   "description": "Model-driven REST API framework",
+  "homepage": "https://xurei.github.io/restgoose",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
