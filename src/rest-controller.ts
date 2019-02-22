@@ -169,7 +169,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
             if (isReferenced) {
                 // getModel - sub
                 const submodelEntry: RestModelEntry<S> = {
-                    type: propEntry.type as Constructor<S>,
+                    type: propEntry.type[0] as Constructor<S>,
                     restConfig: propEntry.restConfig,
                 };
                 const submodelType = await getModel(submodelEntry, req);

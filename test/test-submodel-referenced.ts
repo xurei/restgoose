@@ -7,6 +7,7 @@ import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
 import { Restgoose, RestgooseModel, prop, arrayProp, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
 import { openDatabase } from './util/open-database';
+import { ObjectId } from 'bson';
 
 const app = simpleServer();
 
@@ -56,7 +57,7 @@ export class SubmodelReferenced extends RestgooseModel {
         ],
     })
     @arrayProp({items: SubItemReferenced, ref: true})
-    subItems: Ref<SubItemReferenced>[];
+    subItems: ObjectId[];
 }
 
 app.use(Restgoose.initialize([SubItemReferenced, SubmodelReferenced]));
@@ -160,6 +161,7 @@ describe('Submodel - referenced', function() {
                     .then(() => restTester.as('admin').post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
                     .then(res => {
                         const body = res.body as any;
+                        console.log(body);
                         const status = res.status as number;
                         expect(status).to.eq(201);
                     })
