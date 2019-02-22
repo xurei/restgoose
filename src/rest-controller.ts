@@ -9,9 +9,10 @@ import {
 import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
-import { RestModelEntry } from './rest-registry';
-import { RestRequest } from './types';
+import { RestModelEntry, RestPropEntry } from './rest-registry';
+import { Constructor, RestRequest } from './types';
 import { RestgooseModel } from './restgoose-model';
+import { ArrayPropConfiguration } from './decorators/array-prop';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -43,9 +44,9 @@ export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
     });
 }
 
-export function allWithin<T extends RestgooseModel>(
-    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
-    submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
+export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
+    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
+    propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
@@ -68,32 +69,37 @@ export function allWithin<T extends RestgooseModel>(
             });
         }
         else {
-            const isReferenced = !!submodelEntry.type;
+            const isReferenced = (propEntry.config as ArrayPropConfiguration<T, S>).ref; //!!submodelEntry.restConfig.ref;
+            const isPrimitive = false;
 
             let fetchSubResult;
             if (isReferenced) {
                 // Create filter from parent references
-                const refs = postFetchParentResult[property];
+                const refs = postFetchParentResult[propEntry.name];
                 req = Object.assign({}, req);
                 req.restgoose.query = Object.assign({}, req.restgoose.query || {}, {
                     _id: { $in: refs },
                 });
 
                 // getModel - sub
+                const submodelEntry: RestModelEntry<S> = {
+                    type: propEntry.type as Constructor<S>,
+                    restConfig: propEntry.restConfig
+                };
                 const submodelType = await getModel(submodelEntry, req);
 
                 // fetch - sub
                 fetchSubResult = await fetchAll(submodelType, submethodConfig, req);
             }
             else {
-                fetchSubResult = postFetchParentResult[property];
+                fetchSubResult = postFetchParentResult[propEntry.name];
             }
 
             // postFetch - sub
             const postFetchSubResult = await postFetchAll(submethodConfig, req, fetchSubResult);
 
             // preSend - sub
-            const preSendSubResult = await preSendAll(methodConfig, req, postFetchSubResult);
+            const preSendSubResult = await preSendAll(submethodConfig, req, postFetchSubResult);
 
             return res.status(200).json(preSendSubResult);
         }
@@ -134,9 +140,9 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
     });
 }
 
-export function createWithin<T extends RestgooseModel>(
-    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>, property: string,
-    submodelEntry: RestModelEntry<T>, submethodConfig: RestConfigurationMethod<T>) {
+export function createWithin<T extends RestgooseModel, S extends RestgooseModel>(
+    modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
+    propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel - parent
         const modelType = await getModel(modelEntry, req);
@@ -157,11 +163,15 @@ export function createWithin<T extends RestgooseModel>(
             });
         }
         else {
-            const isReferenced = !!submodelEntry.type;
+            const isReferenced = (propEntry.config as ArrayPropConfiguration<T, S>).ref;
             let saveSubResult;
-            postFetchParentResult[property] = postFetchParentResult[property] || [];
+            postFetchParentResult[propEntry.name] = postFetchParentResult[propEntry.name] || [];
             if (isReferenced) {
                 // getModel - sub
+                const submodelEntry: RestModelEntry<S> = {
+                    type: propEntry.type as Constructor<S>,
+                    restConfig: propEntry.restConfig
+                };
                 const submodelType = await getModel(submodelEntry, req);
 
                 // fetch - sub
@@ -174,14 +184,14 @@ export function createWithin<T extends RestgooseModel>(
                 saveSubResult = await persistSave(submethodConfig, postFetchSubResult);
 
                 // save - parent
-                postFetchParentResult[property].push(saveSubResult._id);
+                postFetchParentResult[propEntry.name].push(saveSubResult._id);
                 await persistSave(methodConfig, postFetchParentResult);
             }
             else {
                 // save - parent
-                postFetchParentResult[property].push(req.body);
+                postFetchParentResult[propEntry.name].push(req.body);
                 const parentSaveResult = await persistSave(methodConfig, postFetchParentResult);
-                saveSubResult = parentSaveResult[property][parentSaveResult[property].length - 1];
+                saveSubResult = parentSaveResult[propEntry.name][parentSaveResult[propEntry.name].length - 1];
             }
 
             // preSend - sub

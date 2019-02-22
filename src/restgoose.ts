@@ -27,7 +27,7 @@ export class Restgoose {
         const router = Router();
         for (const model of models) {
             if (!modelTypes || !!modelTypes.find(m => m.name === model.type.name)) {
-                router.use(model.config.route, this.createRestRoot(model));
+                router.use(model.restConfig.route, this.createRestRoot(model));
             }
         }
         return router as any;
@@ -40,7 +40,7 @@ export class Restgoose {
      */
     public static async getOne<T extends RestgooseModel>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
         const model = RestRegistry.getModel(modelType);
-        const methods = model.config.methods || [];
+        const methods = model.restConfig.methods || [];
         const method = methods.find(m => m.method === 'one');
         if (!method) {
             throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
@@ -57,7 +57,7 @@ export class Restgoose {
         modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest,
         res: Response, status: number = 200): Promise<any> /* TODO change any if possible */ {
         const model = RestRegistry.getModel(modelType);
-        const methods = model.config.methods || [];
+        const methods = model.restConfig.methods || [];
         const method = methods.find(m => m.method === 'one');
         if (!method) {
             throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
@@ -79,7 +79,7 @@ export class Restgoose {
         }
 
         const model = RestRegistry.getModel(modelType);
-        const methods = model.config.methods || [];
+        const methods = model.restConfig.methods || [];
         const method = methods.find(m => m.method === 'all');
         if (!method) {
             throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
@@ -94,7 +94,7 @@ export class Restgoose {
 
         debug(`Building routes for model ${model.type.name}`);
 
-        const methods = model.config.methods || [];
+        const methods = model.restConfig.methods || [];
         methods.forEach(method => {
             const route = this.ROUTES[method.method];
             const routerFn = router[route.httpMethod].bind(router);
@@ -104,11 +104,11 @@ export class Restgoose {
         });
 
         const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
-        const submodels = RestRegistry.listSubmodelsOf(model.type);
+        const submodels = RestRegistry.listSubrestsOf(model.type);
         for (let submodel of submodels) {
             if (!methodOne) {
-                throw new Error(`In model '${model.type.name}' : a nested REST route cannot be defined ` +
-                `without a root 'one' route`);
+                // TODO create a specific error class for Restgoose init errors
+                throw new Error(`In model '${model.type.name}' : a nested REST route cannot be defined without a root 'one' route`);
             }
 
             // Alter the submodels so the type attribute matches the submodel and not the parent model. This is done here
@@ -116,21 +116,21 @@ export class Restgoose {
             // TODO find a way out of buildSchema() : typegoose caches it badly...
             const parentSchema = submodel.type.prototype.buildSchema();
             submodel = Object.assign({}, submodel);
-            const subtype = parentSchema.tree[submodel.property][0];
+            const subtype = parentSchema.tree[submodel.name][0];
             if (subtype && subtype.ref) {
                 const descriptor = Object.getOwnPropertyDescriptor(subtype, 'ref');
                 if (descriptor.value.prototype) {
                     // This is a referenced submodel. We set its type in the definition
-                    submodel.type = parentSchema.tree[submodel.property][0].ref;
+                    submodel.type = parentSchema.tree[submodel.name][0].ref;
                 }
             }
 
-            const submethods = submodel.config.methods || [];
+            const submethods = submodel.restConfig.methods || [];
             submethods.forEach(method => {
                 const route = this.ROUTES_EMBED[method.method];
                 const routerFn = router[route.httpMethod].bind(router);
-                const routePath = `/:id${submodel.config.route}${route.path}`;
-                const controllerFn = route.fn(model, methodOne, submodel.property, submodel, method);
+                const routePath = `/:id${submodel.restConfig.route}${route.path}`;
+                const controllerFn = route.fn(model, methodOne, submodel, method);
                 debug(`  ${route.httpMethod.toUpperCase()} ${routePath}`);
                 routerFn(routePath, controllerFn);
             });

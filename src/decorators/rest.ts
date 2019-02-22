@@ -21,7 +21,7 @@ export function rest<T extends RestgooseModel>(config: RestConfiguration<T>) {
             RestRegistry.registerModel(target as Constructor<T>, config);
         }
         else {
-            RestRegistry.registerSubmodel(target.constructor as Constructor<T>, propertyKey, config);
+            RestRegistry.registerSubrest(target.constructor as Constructor<T>, propertyKey, config);
         }
     };
 }

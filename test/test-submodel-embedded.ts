@@ -167,15 +167,15 @@ describe('Submodel - embedded', function() {
             it('should return 201 and save the new data', () => {
                 return (
                     restTester.post(`/items/${item1Id}/subitems`, {
-                        title: 'new item!',
+                        subtitle: 'new item!',
                         notmapped: 'field',
                     })
                     .then(res => {
+                        console.log(res.body);
                         expect(res).to.have.status(201);
                         expect(res.body).to.be.an('object');
-                        const body = Object.assign({}, res.body);
-                        delete body['_id'];
-                        expect(body).to.deep.eq({ subtitle: 'new item!' });
+                        const body: any = Object.assign({}, res.body);
+                        expect(body.subtitle).to.eq('new item!');
                         return true;
                     })
                     .then(() => restTester.get(`/items/${item1Id}/subitems`))

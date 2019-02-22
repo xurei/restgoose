@@ -15,7 +15,7 @@ import { InstanceType } from './types';
 
 export async function getModel<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
     // FIXME as any
-    const connection = modelEntry.config.getConnection ? await modelEntry.config.getConnection(req) as any : mongoose;
+    const connection = modelEntry.restConfig.getConnection ? await modelEntry.restConfig.getConnection(req) as any : mongoose;
     const model = modelEntry.type;
 
     return getModelForConnection(model, connection);

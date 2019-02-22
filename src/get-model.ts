@@ -13,7 +13,7 @@ export function getModel<T extends RestgooseModel>(model: Constructor<T>, connec
         connection = defaultConnection;
     }
     const modelEntry = RestRegistry.getModel(model);
-    const schemaOptions = modelEntry && modelEntry.config ? modelEntry.config.schemaOptions : undefined;
+    const schemaOptions = modelEntry && modelEntry.restConfig ? modelEntry.restConfig.schemaOptions : undefined;
 
     if (!connection.models[model.name]) {
         // get schema of current model

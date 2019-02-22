@@ -82,6 +82,7 @@ describe('Extended model', function() {
                 .then(res => {
                     const body = res.body as any;
                     const status = res.status as number;
+                    console.log(body);
                     expect(status).to.eq(400);
                     expect(body).to.deep.eq({
                         code: 'BAD_FORMAT',

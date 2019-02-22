@@ -9,6 +9,8 @@ export interface Dic {
     [key: string]: any;
 }
 
+export type Embeddable<T extends RestgooseModel> = T | Number | String | Boolean | Date
+
 export type Promisable<T> = T | Promise<T>;
 export type Middleware = (req: Request, ...args: any[]) => Promisable<any>;
 export type Doc<T> = T | InstanceType<T>;

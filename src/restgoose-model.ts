@@ -2,30 +2,15 @@ import * as mongoose from 'mongoose';
 import { RestRegistry } from './rest-registry';
 import { Constructor, Dic } from './types';
 import { Restgoose } from './restgoose';
+import { isObject, isPrimitive } from './type-checks';
 
 const schemas = {};
 
-const isPrimitive = (Type) => !!Type && ['String', 'Number', 'Boolean', 'Date', 'Decimal128'].find(n => Type.name === n);
-const isArray = (Type) => !!Type && Type.name === 'Array';
-const isObject = (Type) => {
-    let prototype = Type.prototype;
-    let name = Type.name;
-    while (name) {
-        if (name === 'Object') {
-            return true;
-        }
-        prototype = Object.getPrototypeOf(prototype);
-        name = prototype ? prototype.constructor.name : null;
-    }
-    return false;
-};
-const isNumber = (Type) => !!Type && Type.name === 'Number';
-const isString = (Type) => !!Type && Type.name === 'String';
-const isBoolean = (Type) => !!Type && Type.name === 'Boolean';
-const isDate = (Type) => !!Type && Type.name === 'Date';
-
 export class RestgooseModel {
     public buildSchema(schemaOptions?, sch?: mongoose.Schema) {
+
+        //TODO cache this
+
         const Schema = mongoose.Schema;
         const t = Object.getPrototypeOf(this);
         const name = this.constructor.name;
@@ -39,10 +24,10 @@ export class RestgooseModel {
         const props = RestRegistry.listPropertiesOf(this.constructor as Constructor<RestgooseModel>);
 
         for (const prop of props) {
-            //prop.
-            //sch.add
-            const schProp = {};
-            //schProp[prop.name] = prop.type;
+            if (!prop.config) {
+                // TODO create a specific error class for Restgoose init errors
+                throw new Error(`Property '${prop.name}' is missing a configuration. You probably forgot to add @prop() on it.`)
+            }
 
             const config: Dic = {
                 required: prop.config.required || false,
