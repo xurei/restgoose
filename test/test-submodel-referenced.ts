@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import { Ref } from 'typegoose';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
