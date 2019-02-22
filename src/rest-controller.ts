@@ -70,7 +70,6 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
         }
         else {
             const isReferenced = (propEntry.config as ArrayPropConfiguration<T, S>).ref; //!!submodelEntry.restConfig.ref;
-            const isPrimitive = false;
 
             let fetchSubResult;
             if (isReferenced) {
@@ -83,7 +82,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
 
                 // getModel - sub
                 const submodelEntry: RestModelEntry<S> = {
-                    type: propEntry.type as Constructor<S>,
+                    type: propEntry.type[0] as Constructor<S>,
                     restConfig: propEntry.restConfig,
                 };
                 const submodelType = await getModel(submodelEntry, req);

@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestRegistry } from './rest-registry';
 import { Restgoose } from './restgoose';
 import { isObject, isPrimitive } from './type-checks';
@@ -35,6 +36,9 @@ export class RestgooseModel {
             if (Array.isArray(prop.type)) {
                 if (isPrimitive(prop.type[0])) {
                     config.type = prop.type;
+                }
+                else if ((prop.config as ArrayPropConfiguration<any, any>).ref === true) {
+                    config.type = [mongoose.Schema.Types.ObjectId];
                 }
                 else {
                     const Type = prop.type[0] as Constructor<RestgooseModel>;
