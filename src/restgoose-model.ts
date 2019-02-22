@@ -34,6 +34,9 @@ export class RestgooseModel {
                 unique: prop.config.unique || false,
                 default: prop.config.default,
             };
+            if (prop.config.validate) {
+                config.validate = prop.config.validate;
+            }
 
             if (Array.isArray(prop.type)) {
                 if (isPrimitive(prop.type[0])) {

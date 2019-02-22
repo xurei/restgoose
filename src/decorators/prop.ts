@@ -8,6 +8,8 @@ export interface PropConfiguration<T extends RestgooseModel> {
     index?: boolean;
     unique?: boolean;
     default?: any;
+
+    validate?: (value: any) => boolean;
 }
 
 export function prop<T extends RestgooseModel>(config: PropConfiguration<T> = {}) {
