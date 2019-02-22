@@ -1,9 +1,6 @@
-## 0.0.16 - Work in progress
+## 0.1.0 - 2019-02-22
 Features:
-- ... 
-
-Bugfixes:
-- ...
+- **BREAKING CHANGE** getModel(): reordered method arguments and allow using the default mongoose connection.
 
 ## 0.0.15 - 2019-01-31
 Features: 
