@@ -157,6 +157,7 @@ describe('Submodel - embedded', function() {
                         wrong: 'data',
                     })
                     .then(res => {
+                        console.log(res.body);
                         expect(res).to.have.status(400);
                     })
                 );
