@@ -31,6 +31,7 @@ export class RestgooseModel {
             const config: Dic = {
                 required: prop.config.required || false,
                 index: prop.config.index || false,
+                unique: prop.config.unique || false,
                 default: prop.config.default,
             };
 

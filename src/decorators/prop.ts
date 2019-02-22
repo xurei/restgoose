@@ -6,6 +6,7 @@ import { Constructor } from '../types';
 export interface PropConfiguration<T extends RestgooseModel> {
     required?: boolean;
     index?: boolean;
+    unique?: boolean;
     default?: any;
 }
 
