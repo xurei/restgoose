@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import { convertOid, convertDate, convertFields } from '../lib/convertFields';
+import { convertOid, convertDate, convertFields } from '../lib/convert-fields';
 import { ObjectId } from 'bson';
 
 chai.use(dirtyChai);
