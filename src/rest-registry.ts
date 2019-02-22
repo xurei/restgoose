@@ -22,6 +22,14 @@ export declare interface RestPropEntry<T extends RestgooseModel> {
     restConfig?: RestConfiguration<T>;
 }
 
+export declare interface HookEntry {
+    type: 'pre' | 'post';
+    action: string;
+    method: (...args) => any;
+}
+
+const hooks: Map<string, HookEntry[]> =
+    new Map<string, HookEntry[]>();
 const models: Map<string, RestModelEntry<any>> =
     new Map<string, RestModelEntry<any>>();
 const properties: Map<string, Map<string, RestPropEntry<any>>> =
@@ -51,6 +59,19 @@ const RestRegistry = {
         properties.get(modelType.name).set(propertyKey, entry);
     },
 
+    registerHook<T extends RestgooseModel>(modelType: Constructor<T>, type: 'pre' | 'post', action: string, method: (...args) => any) {
+        if (!hooks.has(modelType.name)) {
+            hooks.set(modelType.name, []);
+        }
+
+        const hooksArray = hooks.get(modelType.name);
+        hooksArray.push({
+            type: type,
+            action: action,
+            method: method,
+        });
+    },
+
     registerSubrest<T extends RestgooseModel>(modelType: Constructor<T>, propertyKey: string, config: RestConfiguration<T>) {
         if (!properties.has(modelType.name)) {
             properties.set(modelType.name, new Map<string, RestPropEntry<any>>());
@@ -72,10 +93,15 @@ const RestRegistry = {
         return models.values();
     },
 
+    listHooksOf<T extends RestgooseModel>(modelType: Constructor<T>): Iterable<HookEntry> {
+        const map = hooks.get(modelType.name);
+        return map || [];
+    },
+
     listPropertiesOf<T extends RestgooseModel>(modelType: Constructor<T>): Iterable<RestPropEntry<RestgooseModel>> {
         const map = properties.get(modelType.name);
         if (map) {
-            return properties.get(modelType.name).values();
+            return map.values();
         }
         else {
             return [];
@@ -86,7 +112,7 @@ const RestRegistry = {
         const map = properties.get(modelType.name);
         if (map) {
             const out = [];
-            for (const entry of properties.get(modelType.name).values()) {
+            for (const entry of map.values()) {
                 if (entry.restConfig) {
                     out.push(entry);
                 }

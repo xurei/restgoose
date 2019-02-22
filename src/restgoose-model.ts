@@ -21,7 +21,6 @@ export class RestgooseModel {
         }
 
         const props = RestRegistry.listPropertiesOf(this.constructor as Constructor<RestgooseModel>);
-
         for (const prop of props) {
             if (!prop.config) {
                 // TODO create a specific error class for Restgoose init errors
@@ -62,6 +61,23 @@ export class RestgooseModel {
             const s = {};
             s[prop.name] = config;
             sch.add(s);
+        }
+
+        const hooks = RestRegistry.listHooksOf(this.constructor as Constructor<RestgooseModel>);
+        for (const hook of hooks) {
+            console.log(hook);
+
+            const hookType = hook.type;
+            switch (hookType) {
+                case 'pre': {
+                    sch.pre(hook.action, hook.method);
+                    break;
+                }
+                case 'post': {
+
+                    break;
+                }
+            }
         }
 
         //console.log(props);

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Model } from 'mongoose';
+import { Model, MongooseDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { RestgooseModel } from './restgoose-model';
 
@@ -8,6 +8,9 @@ export type Constructor<T> = new(...args: any[]) => T;
 export interface Dic {
     [key: string]: any;
 }
+export type CallbackFn = (err?: Error) => void;
+
+export type RestgooseDocument<T extends RestgooseModel> = T & MongooseDocument;
 
 export type Promisable<T> = T | Promise<T>;
 export type Middleware = (req: Request, ...args: any[]) => Promisable<any>;
