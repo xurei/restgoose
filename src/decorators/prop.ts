@@ -9,12 +9,12 @@ export interface PropConfiguration<T extends RestgooseModel> {
     unique?: boolean;
     default?: any;
 
-    validate?: (value: any) => boolean;
+    validate?: (value: any) => boolean; // TODO add support for other validate definitions (see mongoose docs)
 }
 
 export function prop<T extends RestgooseModel>(config: PropConfiguration<T> = {}) {
     return (target: T, key: string) => {
-        const Type = (Reflect as any).getMetadata('design:type', target, key);
+        const Type = Reflect.getMetadata('design:type', target, key);
         RestRegistry.registerProperty(target.constructor as Constructor<T>, key, Type, config);
     };
 }

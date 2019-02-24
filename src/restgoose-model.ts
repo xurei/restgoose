@@ -54,8 +54,13 @@ export class RestgooseModel {
                 }
             }
             else if (!isPrimitive(prop.type) && isObject(prop.type)) {
+                const Type = prop.type as Constructor<RestgooseModel>;
+                if (!Type.prototype.buildSchema) {
+                    console.error(`In ${name} - ${prop.name}: ${Type} does not seem to be a restgoose type`);
+                }
+                const subSchema = Type.prototype.buildSchema();
                 // TODO check that this works
-                config.type = Object;
+                config.type = subSchema;
             }
             else {
                 config.type = prop.type;
