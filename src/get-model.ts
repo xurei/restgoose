@@ -17,16 +17,7 @@ export function getModel<T extends RestgooseModel>(model: Constructor<T>, connec
 
     if (!connection.models[model.name]) {
         // get schema of current model
-        let schema = model.prototype.buildSchema(schemaOptions);
-        // get parents class name
-        let parentCtor = Object.getPrototypeOf(model);
-        // iterate through all parents
-        while (parentCtor && parentCtor.name !== 'RestgooseModel' && parentCtor.name !== 'Object') {
-            // extend schema
-            schema = parentCtor.prototype.buildSchema(schemaOptions, schema);
-            // next parent
-            parentCtor = Object.getPrototypeOf(parentCtor);
-        }
+        const schema = model.prototype.buildSchema(schemaOptions);
         const newModel: Model<InstanceType<T>> = connection.model(model.name, schema);
         newModel.init();
         newModel.ensureIndexes();

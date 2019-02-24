@@ -1,23 +1,26 @@
 import * as mongoose from 'mongoose';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestRegistry } from './rest-registry';
-import { Restgoose } from './restgoose';
 import { isObject, isPrimitive } from './type-checks';
 import { Constructor, Dic } from './types';
 
 const schemas = {};
 
 export class RestgooseModel {
-    public buildSchema(schemaOptions?, sch?: mongoose.Schema) {
+    public buildSchema(schemaOptions?) {
         const name = this.constructor.name;
         if (schemas[name]) {
             return schemas[name];
         }
 
-        if (!sch) {
-            sch = schemaOptions ?
-            new mongoose.Schema({}, schemaOptions) :
-            new mongoose.Schema({});
+        let sch: mongoose.Schema;
+        const parentCtor = Object.getPrototypeOf(this);
+        if (parentCtor && parentCtor.constructor.name !== 'RestgooseModel' && parentCtor.constructor.name !== 'Object') {
+            const parentSchema = parentCtor.buildSchema(schemaOptions);
+            sch = parentSchema.clone();
+        }
+        else {
+            sch = schemaOptions ? new mongoose.Schema({}, schemaOptions) : new mongoose.Schema({});
         }
 
         const props = RestRegistry.listPropertiesOf(this.constructor as Constructor<RestgooseModel>);
@@ -79,8 +82,6 @@ export class RestgooseModel {
                 }
             }
         }
-
-        //console.log(props);
 
         /*const indices = Reflect.getMetadata('typegoose:indices', t) || [];
         for (const index of indices) {

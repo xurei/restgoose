@@ -96,14 +96,17 @@ describe('Submodel - referenced', function() {
         // populates items
         .then(() => Promise.all([
             restTester.post('/items', { title: 'item1' }),
-            restTester.post('/items', { title: 'item2' }),
+            restTester.post('/items', { title: 'item2', subItems: ['000000000000000000000001'] }),
             restTester.post('/items', { title: 'item3' }),
             restTester.post('/items', { title: 'item4' }),
             restTester.post('/items', { title: 'item5' }),
             restTester.post('/items', { title: 'item6' })
         ]))
         .then((items) => {
-            itemIds = items.map(i => (i.body as any)._id);
+            itemIds = items.map(i => {
+                console.log(i.body);
+                return (i.body as any)._id;
+            });
             return true;
         })
         .then(() => restTester.get('/items'))

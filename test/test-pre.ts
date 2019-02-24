@@ -5,7 +5,7 @@ import { RestTester } from './util/rest-tester';
 import { Model, MongooseDocument } from 'mongoose';
 
 import { simpleServer } from './util/simple-server';
-import { Restgoose, RestgooseModel, prop, create, one, removeAll, rest, update, pre } from '../lib';
+import { Restgoose, RestgooseModel, RestgooseDocument, prop, create, one, removeAll, rest, update, pre } from '../lib';
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
