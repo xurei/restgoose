@@ -52,6 +52,10 @@ class SubmodelEmbedded extends RestgooseModel {
     @arrayProp({ items: SubItem })
     subitems: SubItem[];
 
+
+    @prop()
+    uniqueSubitem: SubItem;
+
     @rest({
         route: '/trickysubitems',
         methods: [

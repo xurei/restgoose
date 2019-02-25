@@ -8,6 +8,7 @@ export interface PropConfiguration<T extends RestgooseModel> {
     index?: boolean;
     unique?: boolean;
     default?: any;
+    enum?: string[] | object;
 
     validate?: (value: any) => boolean; // TODO add support for other validate definitions (see mongoose docs)
 }

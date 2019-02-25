@@ -9,7 +9,6 @@ import { Restgoose, RestgooseModel, RestgooseDocument, prop, create, one, remove
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
-openDatabase('restgoose-test-pre');
 
 @rest({
     route: '/items',
@@ -53,7 +52,8 @@ describe('@pre', function() {
 
     before(() => {
         return (
-            restTester.delete('/items')
+            openDatabase('restgoose-test-pre')
+            .then(() => restTester.delete('/items'))
             .then(res => {
                 const status = res.status as number;
                 expect(status).to.eq(204);

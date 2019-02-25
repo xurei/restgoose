@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestRegistry } from './rest-registry';
-import { isObject, isPrimitive } from './type-checks';
+import { isArray, isObject, isObjectLitteral, isPrimitive } from './type-checks';
 import { Constructor, Dic } from './types';
 
 const schemas = {};
@@ -39,6 +39,14 @@ export class RestgooseModel {
             if (prop.config.validate) {
                 config.validate = prop.config.validate;
             }
+            if (prop.config.enum) {
+                if (typeof(prop.config.enum) === 'object') {
+                    config.enum = Object.keys(prop.config.enum).map(k => prop.config.enum[k]);
+                }
+                else {
+                    config.enum = prop.config.enum;
+                }
+            }
 
             if (Array.isArray(prop.type)) {
                 if (isPrimitive(prop.type[0])) {
@@ -53,14 +61,17 @@ export class RestgooseModel {
                     config.type = [subSchema];
                 }
             }
-            else if (!isPrimitive(prop.type) && isObject(prop.type)) {
-                const Type = prop.type as Constructor<RestgooseModel>;
-                if (!Type.prototype.buildSchema) {
-                    console.error(`In ${name} - ${prop.name}: ${Type} does not seem to be a restgoose type`);
+            else if (!isPrimitive(prop.type) && !isArray(prop.type) && isObject(prop.type)) {
+                if (isObjectLitteral(prop.type)) {
+                    config.type = Object;
                 }
-                const subSchema = Type.prototype.buildSchema();
-                // TODO check that this works
-                config.type = subSchema;
+                else {
+                    const Type = prop.type as Constructor<RestgooseModel>;
+                    if (!Type.prototype.buildSchema) {
+                        throw new Error(`In ${name} - ${prop.name}: ${Type} does not seem to be a restgoose type`);
+                    }
+                    config.type = Type.prototype.buildSchema();
+                }
             }
             else {
                 config.type = prop.type;

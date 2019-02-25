@@ -11,12 +11,6 @@ import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
 
-enum FieldValues {
-    A = "a",
-    B = "b",
-    C = "c"
-}
-
 @rest({
     route: '/items',
     methods: [
@@ -25,12 +19,12 @@ enum FieldValues {
         removeAll(), // DELETE /todos
     ],
 })
-export class EnumField extends RestgooseModel {
-    @prop({required: true, enum: FieldValues})
-    title: FieldValues;
+export class ArrayField extends RestgooseModel {
+    @prop({required: true})
+    data: string[];
 }
 
-app.use(Restgoose.initialize([EnumField]));
+app.use(Restgoose.initialize([ArrayField]));
 // ---------------------------------------------------------------------------------------------------------------------
 chai.use(dirtyChai);
 
@@ -40,54 +34,44 @@ const restTester = new RestTester({
     app: app
 });
 
-describe('Field: enum', function() {
+describe('Field: Array', function() {
     this.timeout(20000); //20s timeout
 
     let id = null;
 
     before(function () {
-        return openDatabase('restgoose-test-enum-fields')
-        .then(() => restTester.delete('/items'))
-        .then(res => {
-            expect(res.status).to.eq(204);
-            return true;
-        })
-        .then(() => restTester.post('/items', {
-            title: 'a'
-        }))
-        .then(res => {
-            const status = res.status as number;
-            expect(status).to.eq(201);
-            id = res.body['_id'];
-            return true;
-        });
+        return (
+            openDatabase('restgoose-test-array-field')
+            .then(() => restTester.delete('/items'))
+            .then(res => {
+                expect(res.status).to.eq(204);
+                return true;
+            })
+            .then(() => restTester.post('/items', {
+                data: ['a', 'b', 'c']
+            }))
+            .then(res => {
+                console.log(res.body);
+                const status = res.status as number;
+                expect(status).to.eq(201);
+                id = res.body['_id'];
+                return true;
+            })
+        );
     });
 
     describe('/items', function() {
         describe('create()', function () {
-            describe('with an invalid enum value', function () {
-                it('should reject', function () {
-                    return restTester.post('/items', {
-                        title: 'wrong'
-                    })
-                    .then(res => {
-                        const body = res.body as any;
-                        const status = res.status as number;
-                        expect(status).to.eq(400);
-                        return true;
-                    })
-                });
-            });
             it('works', function () {
                 let newId = null;
                 return restTester.post('/items', {
-                    title: 'b'
+                    data: ['a', 'b', 'c']
                 })
                 .then(res => {
                     const body = res.body as any;
                     const status = res.status as number;
                     expect(status).to.eq(201);
-                    expect(body.title).to.eq('b');
+                    expect(body.data).to.deep.eq(['a', 'b', 'c']);
                     newId = body._id;
                     return true;
                 })
@@ -96,7 +80,7 @@ describe('Field: enum', function() {
                     const body = res.body as any;
                     const status = res.status as number;
                     expect(status).to.eq(200);
-                    expect(body.title).to.eq('b');
+                    expect(body.data).to.deep.eq(['a', 'b', 'c']);
                     return true;
                 });
             });
