@@ -27,7 +27,7 @@ export class RestgooseModel {
         for (const prop of props) {
             if (!prop.config) {
                 // TODO create a specific error class for Restgoose init errors
-                throw new Error(`Property '${prop.name}' is missing a configuration. You probably forgot to add @prop() on it.`);
+                throw new Error(`In ${name}: Property '${prop.name}' is missing a configuration. You probably forgot to add @prop() on it.`);
             }
 
             const config: Dic = {
@@ -44,7 +44,7 @@ export class RestgooseModel {
                     config.enum = Object.keys(prop.config.enum).map(k => prop.config.enum[k]);
                 }
                 else {
-                    config.enum = prop.config.enum;
+                    throw new Error(`In ${name}: Option 'enum' must be an array, object litteral, or enum type`);
                 }
             }
 
