@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
@@ -12,7 +11,8 @@ import { simpleServer } from './util/simple-server';
 const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
 const connectionA = mongoose.createConnection(mongoUri);
 
-class InnerItem {
+class InnerItem extends Typegoose {
+    @prop({required: true})
     innerTitle: string;
 }
 
@@ -104,7 +104,7 @@ describe('Extended model', function() {
                 expect(body).to.be.an('array');
                 expect(body.map(i => i.title)).to.deep.eq(['Item 0 from DB A']);
                 expect(body.map(i => i.subtitle)).to.deep.eq(['this is a subtitle']);
-                expect(body.map(i => i.inner)).to.deep.eq([{innerTitle: 'my inner title'}]);
+                expect(body.map(i => i.inner.innerTitle)).to.deep.eq(['my inner title']);
                 return true;
             })
         });

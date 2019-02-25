@@ -11,7 +11,6 @@ import { Restgoose, all, create, one, remove, removeAll, rest, update } from '..
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
-openDatabase('restgoose-test-minimal-todo');
 
 @rest({
     route: '/todos',
@@ -42,6 +41,10 @@ const restTester = new RestTester({
 describe('Minimal TODO API', function() {
     this.timeout(20000); //20s timeout
 
+    before(() => {
+        return openDatabase('restgoose-test-minimal-todo');
+    });
+
     describe('/todos', function() {
         describe('deleteAll()', function() {
             it('works', function () {
@@ -64,6 +67,20 @@ describe('Minimal TODO API', function() {
         });
 
         describe('create()', function () {
+            describe('with missing fields payload', function () {
+                it('should reject the creation', function () {
+                    return (
+                        restTester.post('/todos', {})
+                        .then(res => {
+                            const body = res.body as any;
+                            console.log(body);
+                            const status = res.status as number;
+                            expect(status).to.eq(400);
+                        })
+                    );
+                });
+            });
+
             it('works', function () {
                 let newId = null;
                 return restTester.post('/todos', {

@@ -9,7 +9,6 @@ import { Restgoose, all, create, one, remove, removeAll, rest, update } from '..
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
-openDatabase('restgoose-test-submodel-embedded');
 
 class SubItem extends Typegoose {
     @prop({required: true})
@@ -27,6 +26,7 @@ class TrickySubItem extends Typegoose {
         all(),
         one(),
         create(),
+        removeAll(),
     ],
 })
 class SubmodelEmbedded extends Typegoose {
@@ -73,7 +73,12 @@ describe('Submodel - embedded', function() {
     let item2Id;
     before(() => {
         return (
-            restTester.delete('/items')
+            openDatabase('restgoose-test-submodel-embedded')
+            .then(() => restTester.delete('/items'))
+            .then(res => {
+                expect(res).to.have.status(204);
+                return true;
+            })
             .then(() => restTester.post('/items', {
                 title: 'item1',
                 subitems:[{ title: 'subitem1' }],

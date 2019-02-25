@@ -9,7 +9,6 @@ import { Restgoose, all, create, one, remove, removeAll, rest, update, and, Rest
 import { openDatabase } from './util/open-database';
 
 const app = simpleServer();
-openDatabase('restgoose-test-submodel-referenced');
 
 async function verifyToken(req: Request) {
     // !!! This is NOT safe !!! Just for the sake of the example
@@ -76,8 +75,7 @@ describe('Submodel - referenced', function() {
 
     let itemIds = null;
     before(function() {
-        return Promise.resolve()
-
+        return openDatabase('restgoose-test-submodel-referenced')
         // deletes everything
         .then(() => restTester.delete('/items'))
         .then(res => {

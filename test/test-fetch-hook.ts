@@ -12,7 +12,6 @@ import { openDatabase } from './util/open-database';
 const sinon = require('sinon');
 
 const app = simpleServer();
-openDatabase('restgoose-test-fetch-hook');
 
 async function otherItemFetchAll(req: Request) {
     return FetchHookModel.find({ public: true });
@@ -80,6 +79,10 @@ const restTester = new RestTester({
 
 describe('Fetch hook', function() {
     this.timeout(20000); //20s timeout
+
+    before(() => {
+        return openDatabase('restgoose-test-fetch-hook');
+    });
 
     let itemIds = null;
     it('prepare', function() {
