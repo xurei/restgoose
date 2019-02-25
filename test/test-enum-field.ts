@@ -28,6 +28,9 @@ enum FieldValues {
 export class EnumField extends RestgooseModel {
     @prop({required: true, enum: FieldValues})
     title: FieldValues;
+
+    @prop({required: true, enum: ['a', 'b', 'c']})
+    title2: string;
 }
 
 app.use(Restgoose.initialize([EnumField]));
@@ -53,7 +56,7 @@ describe('Field: enum', function() {
             return true;
         })
         .then(() => restTester.post('/items', {
-            title: 'a'
+            title: 'a', title2: 'a'
         }))
         .then(res => {
             const status = res.status as number;
@@ -68,9 +71,23 @@ describe('Field: enum', function() {
             describe('with an invalid enum value', function () {
                 it('should reject', function () {
                     return restTester.post('/items', {
-                        title: 'wrong'
+                        title: 'wrong', title2: 'b'
                     })
                     .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(400);
+                        return true;
+                    })
+                });
+            });
+            describe('with an invalid enum value (2)', function () {
+                it('should reject', function () {
+                    return restTester.post('/items', {
+                        title: 'a', title2: 'wrong'
+                    })
+                    .then(res => {
+                        console.log(res.body);
                         const body = res.body as any;
                         const status = res.status as number;
                         expect(status).to.eq(400);
@@ -81,7 +98,7 @@ describe('Field: enum', function() {
             it('works', function () {
                 let newId = null;
                 return restTester.post('/items', {
-                    title: 'b'
+                    title: 'b', title2: 'c'
                 })
                 .then(res => {
                     const body = res.body as any;
