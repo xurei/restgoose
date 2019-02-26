@@ -12,6 +12,7 @@ src
 test
 Gemfile
 Gemfile.lock
+renovate.json
 
 codecov.yml
 mocha.opts
