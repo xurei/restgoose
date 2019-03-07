@@ -106,7 +106,7 @@ export class Restgoose {
 
         const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
         const submodels = RestRegistry.listSubrestsOf(model.type);
-        const schema = model.type.prototype.buildSchema();
+        const schema = model.type.prototype.buildSchema(model.restConfig.schemaOptions);
         for (let submodel of submodels) {
             if (!methodOne) {
                 // TODO create a specific error class for Restgoose init errors

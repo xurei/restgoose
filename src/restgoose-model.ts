@@ -57,7 +57,7 @@ export class RestgooseModel {
                 }
                 else {
                     const Type = prop.type[0] as Constructor<RestgooseModel>;
-                    const subSchema = Type.prototype.buildSchema();
+                    const subSchema = Type.prototype.buildSchema(); //No schemaOptions ??
                     config.type = [subSchema];
                 }
             }
@@ -70,7 +70,7 @@ export class RestgooseModel {
                     if (!Type.prototype.buildSchema) {
                         throw new Error(`In ${name} - ${prop.name}: ${Type} does not seem to be a restgoose type`);
                     }
-                    config.type = Type.prototype.buildSchema();
+                    config.type = Type.prototype.buildSchema(); //No schemaOptions ??
                 }
             }
             else {
