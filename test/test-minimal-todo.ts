@@ -265,6 +265,8 @@ describe('Minimal TODO API', function() {
                     const body = res.body as any;
                     const status = res.status as number;
                     expect(status).to.eq(200);
+                    console.log(body);
+                    expect(body).to.have.length(1);
                     //TODO check the content
                 });
             });
