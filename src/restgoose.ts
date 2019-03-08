@@ -115,11 +115,7 @@ export class Restgoose {
 
             // Alter the submodels so the type attribute matches the submodel and not the parent model. This is done here
             // so that all classes are initialized before we call buildSchema() internally
-            console.log(submodel.name);
-            if (isPrimitive(submodel.type[0])) {
-                console.log('primitive');
-            }
-            else {
+            if (!isPrimitive(submodel.type[0])) {
                 //const parentSchema = submodel.type[0].prototype.buildSchema();
                 submodel = Object.assign({}, submodel);
                 const subtype = schema.tree[submodel.name][0];

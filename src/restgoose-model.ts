@@ -84,8 +84,6 @@ export class RestgooseModel {
 
         const hooks = RestRegistry.listHooksOf(this.constructor as Constructor<RestgooseModel>);
         for (const hook of hooks) {
-            console.log(hook);
-
             const hookType = hook.type;
             switch (hookType) {
                 case 'pre': {
