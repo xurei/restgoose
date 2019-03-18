@@ -67,3 +67,7 @@ Check out the [roadmap](https://xurei.github.io/restgoose/roadmap.html) to see w
 
 ## Community
 Reddit: [https://www.reddit.com/r/restgoose/](https://www.reddit.com/r/restgoose/)
+
+## Support on Beerpay
+[![Beerpay](https://beerpay.io/xurei/restgoose/badge.svg?style=beer-square)](https://beerpay.io/xurei/restgoose)
+[![Beerpay](https://beerpay.io/xurei/restgoose/make-wish.svg?style=flat-square)](https://beerpay.io/xurei/restgoose?focus=wish)
