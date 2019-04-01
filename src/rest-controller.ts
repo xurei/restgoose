@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { CastError, Types } from 'mongoose';
+import { debug } from './debug';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
 import {
@@ -365,6 +366,7 @@ function wrapException(fn: (req: RestRequest, res: Response) => void): (req: Res
                     });
                 }
                 else {
+                    debug(error);
                     return res.status(400).json({
                         code: ERROR_BAD_FORMAT_CODE,
                         field: error.path,
@@ -372,10 +374,11 @@ function wrapException(fn: (req: RestRequest, res: Response) => void): (req: Res
                 }
             }
             else if (error.name === ERROR_VALIDATION_NAME) {
+                debug(error);
                 return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });
             }
             else {
-                console.error(error);
+                debug(error);
                 return res.status(500).end();
             }
         }
