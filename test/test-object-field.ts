@@ -66,7 +66,7 @@ describe('Field: Object', function() {
 
     describe('/items', function() {
         describe('create()', function () {
-            describe.skip('with an data value', function () {
+            describe.skip('with an invalid data value', function () {
                 // TODO Restgoose cannot validate data inside object litterals. It's probably impossible to change, but worth investigation
                 it('should reject', function () {
                     return restTester.post('/items', {
@@ -82,35 +82,38 @@ describe('Field: Object', function() {
                     })
                 });
             });
-            it('works', function () {
-                let newId = null;
-                return restTester.post('/items', {
-                    data: {
-                        name: 'hello',
-                        value: 'world'
-                    }
-                })
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(201);
-                    expect(body.data).to.deep.eq({
-                        name: 'hello',
-                        value: 'world'
+
+            describe('with a valid data value', function () {
+                it('works', function () {
+                    let newId = null;
+                    return restTester.post('/items', {
+                        data: {
+                            name: 'hello',
+                            value: 'world'
+                        }
+                    })
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(201);
+                        expect(body.data).to.deep.eq({
+                            name: 'hello',
+                            value: 'world'
+                        });
+                        newId = body._id;
+                        return true;
+                    })
+                    .then(() => restTester.get('/items/' + newId))
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(200);
+                        expect(body.data).to.deep.eq({
+                            name: 'hello',
+                            value: 'world'
+                        });
+                        return true;
                     });
-                    newId = body._id;
-                    return true;
-                })
-                .then(() => restTester.get('/items/' + newId))
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(200);
-                    expect(body.data).to.deep.eq({
-                        name: 'hello',
-                        value: 'world'
-                    });
-                    return true;
                 });
             });
         });

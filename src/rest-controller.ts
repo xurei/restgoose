@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CastError } from 'mongoose';
+import { CastError, Types } from 'mongoose';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
 import {
@@ -12,7 +12,7 @@ import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
 import { RestModelEntry, RestPropEntry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
-import { Constructor, RestRequest } from './types';
+import { Constructor, Dic, InstanceType, RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -312,10 +312,13 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             // merge
             const payload = buildPayload(req, modelType);
             const prev = postFetchResult.toObject();
-            const mergeResult = Object.assign(postFetchResult, payload);
+            //const mergeResult = Object.assign({}, postFetchResult, payload);
+
+            // updates doc
+            updateDocument(postFetchResult, payload);
 
             // preSave
-            const preSaveResult = await preSave(methodConfig, req, prev, mergeResult);
+            const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
             const saveResult = await persistSave(methodConfig, preSaveResult);
@@ -326,6 +329,20 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             return res.status(200).json(preSendResult);
         }
     });
+}
+
+/**
+ * Deeply updates a mongoose document with a JSON object
+ */
+function updateDocument<T extends RestgooseModel>(entity: InstanceType<T>, payload: Dic) {
+    for (const key in payload) {
+        if (entity[key] instanceof Types.Subdocument) {
+            updateDocument(entity[key], payload[key]);
+        }
+        else {
+            entity[key] = payload[key];
+        }
+    }
 }
 
 // Centralize exception management

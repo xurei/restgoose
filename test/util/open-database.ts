@@ -6,8 +6,8 @@ export function openDatabase(database: string) {
     console.log('Mongo Host:', mongoHost);
     return (
         mongoose.connect(mongoHost)
-        .then(database => {
-            console.info('Connected to database '+database);
+        .then(() => {
+            console.info('Connected to database ', database);
         })
         .catch(e => {
             console.error('MongoDB Connection Error:');
