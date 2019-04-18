@@ -5,13 +5,19 @@ import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { openDatabase } from './util/open-database';
 
-import { Restgoose, RestgooseModel, prop, arrayProp, all, create, one, rest, removeAll } from '../lib';
+import { Restgoose, RestgooseModel, prop, arrayProp, all, create, update, one, rest, removeAll } from '../lib';
 
 const app = simpleServer();
 
 class SubItem extends RestgooseModel {
     @prop({required: true})
     subtitle: string;
+
+    @prop()
+    type: {
+        name: string;
+        options: any[];
+    }
 }
 
 class TrickySubItem extends RestgooseModel {
@@ -25,6 +31,7 @@ class TrickySubItem extends RestgooseModel {
         all(),
         one(),
         create(),
+        update(),
         removeAll(),
     ],
 })
@@ -235,6 +242,41 @@ describe('Submodel - embedded', function() {
                     })
                 );
             });
+        });
+    });
+
+    describe('PATCH /items/:id', () => {
+        it('should update the subitems', () => {
+            return (
+                restTester.patch(`/items/${item1Id}`, {
+                    subitems: [
+                        {
+                            subtitle: 'first!',
+                            bla: null,
+                            type: { name: 'range', options: ['oui', 'non'] },
+                        },
+                        {
+                            subtitle: 'second... :-('
+                        },
+                    ]
+                })
+                .then(res => {
+                    expect(res).to.have.status(200);
+                    const body = res.body as any;
+                    expect(body.subitems).to.be.an('array');
+                    const subitems = body.subitems.map(i => { delete i._id; return i; });
+                    expect(subitems).to.deep.eq([
+                        {
+                            subtitle: 'first!',
+                            type: { name: 'range', options: ['oui', 'non'] },
+                        },
+                        {
+                            subtitle: 'second... :-('
+                        }
+                    ]);
+                    //item1Id = res.body._id;
+                })
+            );
         });
     });
 });
