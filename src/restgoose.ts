@@ -2,7 +2,7 @@ import { Response, Router } from 'express';
 import { debug } from './debug';
 import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './hooks';
 import { parseQuery } from './parse-query';
-import { all, allWithin, create, createWithin, one, remove, removeAll, update } from './rest-controller';
+import { all, allWithin, create, createWithin, one, oneWithin, remove, removeAll, update } from './rest-controller';
 import { RestModelEntry, RestRegistry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
@@ -20,6 +20,7 @@ export class Restgoose {
     };
     private static ROUTES_EMBED = {
         all: { httpMethod: 'get', path: '/', fn: allWithin },
+        one: { httpMethod: 'get', path: '/', fn: oneWithin },
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
 

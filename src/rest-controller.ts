@@ -231,6 +231,61 @@ export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
     });
 }
 
+export function oneWithin<T extends RestgooseModel, S extends RestgooseModel>(
+modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
+propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
+    return wrapException(async (req: RestRequest, res: Response) => {
+        req = parseQuery(req);
+
+        // getModel - parent
+        const modelType = await getModel(modelEntry, req);
+
+        // preFetch - parent
+        await preFetch(submethodConfig, req);
+
+        // fetch - parent
+        const fetchParentResult = await fetchOne(modelType, methodConfig, req);
+
+        // postFetch - parent
+        const postFetchParentResult = await postFetch(methodConfig, req, fetchParentResult);
+
+        // Check parent
+        if (!postFetchParentResult) {
+            return res.status(404).json({
+                code: ERROR_NOT_FOUND_CODE,
+            });
+        }
+        else {
+            const isReferenced = (propEntry.config as ArrayPropConfiguration<T, S>).ref; //!!submodelEntry.restConfig.ref;
+
+            if (isReferenced) {
+                // Create filter from parent references
+                const refs = postFetchParentResult[propEntry.name];
+
+                const entityExists = refs.contains(req.params.id);
+
+                if (entityExists) {
+                    return one({
+                        type: propEntry.type as Constructor<S>,
+                        restConfig: propEntry.restConfig,
+                    }, submethodConfig)
+                }
+            }
+            else {
+                const fetchSubResult = postFetchParentResult[propEntry.name].find(item => item._id === req.params.id);
+
+                // postFetch - sub
+                const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
+
+                // preSend - sub
+                const preSendSubResult = await preSend(submethodConfig, req, postFetchSubResult);
+
+                return res.status(200).json(preSendSubResult);
+            }
+        }
+    });
+}
+
 export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(async (req: RestRequest, res: Response) => {
         // getModel
