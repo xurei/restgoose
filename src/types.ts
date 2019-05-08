@@ -45,8 +45,8 @@ export type RestMethodName = 'all' | 'one' | 'create' | 'update' | 'remove' | 'r
 
 export type RestRequest = Request & {
     restgoose?: {
-        query?: object
-        projection?: object
-        options?: object,
+        query?: Dic;
+        projection?: Dic;
+        options?: Dic;
     };
 };
