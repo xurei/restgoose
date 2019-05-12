@@ -120,14 +120,23 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
         // postFetch
         const postFetchResult = await postFetch(methodConfig, req, fetchResult);
 
+        // Check
         if (!postFetchResult) {
             return res.status(404).json({
                 code: ERROR_NOT_FOUND_CODE,
             });
         }
         else {
+            // merge
+            const payload = buildPayload(req, modelType);
+            const prev = postFetchResult.toObject();
+            //const mergeResult = Object.assign({}, postFetchResult, payload);
+
+            // updates initial doc
+            updateDocument(postFetchResult, payload);
+
             // preSave
-            const preSaveResult = await preSave(methodConfig, req, null, postFetchResult);
+            const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
             const saveResult = await persistSave(methodConfig, preSaveResult);

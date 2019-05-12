@@ -47,7 +47,7 @@ export async function fetchCreate<T extends RestgooseModel>(modelType: Model<Ins
 
     return methodConfig.fetch ?
         methodConfig.fetch(req, modelType) as Promise<InstanceType<T>> :
-        Promise.resolve(new modelType(buildPayload(req, modelType)));
+        Promise.resolve(new modelType({}));
 }
 
 export async function fetchOne<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
