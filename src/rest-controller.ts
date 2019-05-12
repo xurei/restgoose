@@ -277,7 +277,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
                     return one({
                         type: propEntry.type as Constructor<S>,
                         restConfig: propEntry.restConfig,
-                    }, submethodConfig)
+                    }, submethodConfig);
                 }
             }
             else {
