@@ -25,7 +25,8 @@ export function convertDate(data: Dic) {
 }
 
 export function convertOid(data: {[key: string]: any}) {
-    return convertField(data, '$oid', field => ([new ObjectId(field), field]));
+    //return convertField(data, '$oid', field => ([new ObjectId(field), field]));
+    return convertField(data, '$oid', field => new ObjectId(field));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

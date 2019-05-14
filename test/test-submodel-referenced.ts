@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
+import { Restgoose, RestgooseModel, prop, arrayProp, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
 import { openDatabase } from './util/open-database';
+import { ObjectId } from 'bson';
 
 const app = simpleServer();
 
@@ -25,7 +25,7 @@ async function verifyToken(req: Request) {
         one({ preFetch: and(verifyToken) }), // GET /subitems/:id
     ],
 })
-export class SubItemReferenced extends Typegoose {
+export class SubItemReferenced extends RestgooseModel {
     @prop({required: true})
     name: string;
 
@@ -44,7 +44,7 @@ export class SubItemReferenced extends Typegoose {
         removeAll(),
     ],
 })
-export class SubmodelReferenced extends Typegoose {
+export class SubmodelReferenced extends RestgooseModel {
     @prop({required: true})
     title: string;
 
@@ -55,8 +55,8 @@ export class SubmodelReferenced extends Typegoose {
             create({ preFetch: verifyToken }),
         ],
     })
-    @arrayProp({itemsRef: {name: SubItemReferenced}})
-    subItems: Ref<SubItemReferenced>[];
+    @arrayProp({items: SubItemReferenced, ref: true})
+    subItems: ObjectId[];
 }
 
 app.use(Restgoose.initialize([SubItemReferenced, SubmodelReferenced]));
@@ -96,14 +96,17 @@ describe('Submodel - referenced', function() {
         // populates items
         .then(() => Promise.all([
             restTester.post('/items', { title: 'item1' }),
-            restTester.post('/items', { title: 'item2' }),
+            restTester.post('/items', { title: 'item2', subItems: ['000000000000000000000001'] }),
             restTester.post('/items', { title: 'item3' }),
             restTester.post('/items', { title: 'item4' }),
             restTester.post('/items', { title: 'item5' }),
             restTester.post('/items', { title: 'item6' })
         ]))
         .then((items) => {
-            itemIds = items.map(i => (i.body as any)._id);
+            itemIds = items.map(i => {
+                console.log(i.body);
+                return (i.body as any)._id;
+            });
             return true;
         })
         .then(() => restTester.get('/items'))
@@ -160,6 +163,7 @@ describe('Submodel - referenced', function() {
                     .then(() => restTester.as('admin').post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
                     .then(res => {
                         const body = res.body as any;
+                        console.log(body);
                         const status = res.status as number;
                         expect(status).to.eq(201);
                     })

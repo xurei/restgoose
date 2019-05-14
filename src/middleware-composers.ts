@@ -1,6 +1,7 @@
 import { Request } from 'express';
-import { InstanceType, Typegoose } from 'typegoose';
+import { RestgooseModel } from './restgoose-model';
 import { Middleware, MiddlewarePostFetch } from './types';
+import { InstanceType } from './types';
 
 /**
  * Compose several middlewares with a logical OR operation.
@@ -8,7 +9,7 @@ import { Middleware, MiddlewarePostFetch } from './types';
  * Otherwise, the returned value is passed through.
  * If all the middlewares are rejected, the error thrown from the last one will be passed through.
  */
-export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
+export function or<T extends RestgooseModel, F extends Middleware>(...fns: F[]): F {
     return ((req: Request, entity: T | boolean = true, oldEntity?: T): Promise<InstanceType<T>> => {
         let promises: Promise<InstanceType<T>> = Promise.reject(null);
         fns.forEach(fn => {
@@ -26,7 +27,7 @@ export function or<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
  * All middlewares must pass for the entity to be returned.
  * If any middleware is rejected, the error thrown is passed through.
  */
-export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
+export function and<T extends RestgooseModel, F extends Middleware>(...fns: F[]): F {
     return ((req: Request, entity: T | boolean = true, oldEntity?: T): Promise<InstanceType<T>> => {
         let promises: Promise<any> = Promise.resolve(entity);
         fns.forEach(m => {
@@ -44,7 +45,7 @@ export function and<T extends Typegoose, F extends Middleware>(...fns: F[]): F {
  * Use it  with the 'all' method so you can use one middleware for both getting all the items
  * (with asFilter) and getting only one (without it, throwing errors).
  */
-export function asFilter<T extends Typegoose>(fn: MiddlewarePostFetch<T>): MiddlewarePostFetch<T> {
+export function asFilter<T extends RestgooseModel>(fn: MiddlewarePostFetch<T>): MiddlewarePostFetch<T> {
     return (req: Request, entity: T, oldEntity?: T): Promise<InstanceType<T>> => {
         return Promise.resolve()
         .then(() => fn(req, entity, oldEntity))

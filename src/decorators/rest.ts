@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import { Connection } from 'mongoose';
 import { SchemaOptions } from 'mongoose';
-import { Typegoose } from 'typegoose';
-import { RestRegistry } from './rest-registry';
+import { RestRegistry } from '../rest-registry';
+import { RestgooseModel } from '../restgoose-model';
 import {
     Constructor,
     HttpMethod,
@@ -13,20 +13,20 @@ import {
     MiddlewarePreSave,
     MiddlewarePreSend,
     RestMethodName,
-} from './types';
+} from '../types';
 
-export function rest<T extends Typegoose>(config: RestConfiguration<T>) {
+export function rest<T extends RestgooseModel>(config: RestConfiguration<T>) {
     return (target: T | Constructor<T>, propertyKey?: string) => {
         if (!propertyKey) {
             RestRegistry.registerModel(target as Constructor<T>, config);
         }
         else {
-            RestRegistry.registerSubModel(target.constructor as Constructor<T>, propertyKey, config);
+            RestRegistry.registerSubrest(target.constructor as Constructor<T>, propertyKey, config);
         }
     };
 }
 
-function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, config: RestConfigurationMethod<T>):
+function defaultMethod<T extends RestgooseModel>(name: RestMethodName, path: string, config: RestConfigurationMethod<T>):
     RestConfigurationMethodWithPath<T> {
 
     return Object.assign({}, config, {
@@ -35,42 +35,42 @@ function defaultMethod<T extends Typegoose>(name: RestMethodName, path: string, 
     }) as RestConfigurationMethodWithPath<T>;
 }
 
-export function all<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function all<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('all', '/', config);
 }
 
-export function one<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function one<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('one', '/:id', config);
 }
 
-export function create<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function create<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('create', '/', config);
 }
 
-export function update<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function update<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('update', '/:id', config);
 }
 
-export function remove<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function remove<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('remove', '/:id', config);
 }
 
-export function removeAll<T extends Typegoose>(config: RestConfigurationMethod<T> = {}) {
+export function removeAll<T extends RestgooseModel>(config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('removeAll', '/', config);
 }
 
-export function custom<T extends Typegoose>(httpMethod: string, path: HttpMethod, config: RestConfigurationMethod<T> = {}) {
+export function custom<T extends RestgooseModel>(httpMethod: string, path: HttpMethod, config: RestConfigurationMethod<T> = {}) {
     return defaultMethod('custom', path, config);
 }
 
-export interface RestConfiguration<T extends Typegoose> {
+export interface RestConfiguration<T extends RestgooseModel> {
     route: string;
     schemaOptions?: SchemaOptions;
     getConnection?: (req: Request) => Promise<Connection>;
     methods?: RestConfigurationMethodWithPath<T>[];
 }
 
-export interface RestConfigurationMethod<T extends Typegoose> {
+export interface RestConfigurationMethod<T extends RestgooseModel> {
     preFetch?: MiddlewarePreFetch;
     fetch?: MiddlewareFetch<T>;
     postFetch?: MiddlewarePostFetch<T>;
@@ -79,7 +79,7 @@ export interface RestConfigurationMethod<T extends Typegoose> {
     preSend?: MiddlewarePreSend<T>;
 }
 
-export interface RestConfigurationMethodWithPath<T extends Typegoose> extends RestConfigurationMethod<T> {
+export interface RestConfigurationMethodWithPath<T extends RestgooseModel> extends RestConfigurationMethod<T> {
     path: string;
     method: RestMethodName;
 }

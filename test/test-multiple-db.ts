@@ -1,7 +1,6 @@
 import * as express from 'express';
-import { Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
-import { Restgoose, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
+import { Restgoose, RestgooseModel, prop, all, create, one, remove, removeAll, rest, update } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
@@ -32,7 +31,7 @@ const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-
         removeAll(), // DELETE /todos
     ],
 })
-export class MultipleDb extends Typegoose {
+export class MultipleDb extends RestgooseModel {
     @prop({required: true})
     title: string;
 }
