@@ -11,7 +11,6 @@
     "build-examples": "node_modules/.bin/tsc -p examples",
     "serve-doc": "sh scripts/serve-doc.sh",
     "prepublishOnly": "npm run build",
-    "postinstall": "[ -d lib ] || npx -p typescript@^3 tsc -p .",
     "tslint": "node_modules/.bin/tslint -p .",
     "test": "node_modules/.bin/nyc mocha --opts ./mocha.opts test/*.ts",
     "coverage": "node_modules/.bin/nyc report --reporter=json --reporter=lcov",

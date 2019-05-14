@@ -1,3 +1,4 @@
+tsconfig.json
 .editorconfig
 *.iml
 tslint.json
@@ -7,6 +8,7 @@ examples-build
 docs
 coverage
 .nyc_output
+src
 test
 Gemfile
 Gemfile.lock
