@@ -130,7 +130,6 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             // merge
             const payload = buildPayload(req, modelType);
             const prev = postFetchResult.toObject();
-            //const mergeResult = Object.assign({}, postFetchResult, payload);
 
             // updates initial doc
             updateDocument(postFetchResult, payload);
@@ -189,8 +188,18 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 // postFetch - sub
                 const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
 
+                // merge
+                const payload = buildPayload(req, submodelType);
+                const prev = postFetchSubResult.toObject();
+
+                // updates initial sub doc
+                updateDocument(postFetchSubResult, payload);
+
+                // preSave
+                const preSaveSubResult = await preSave(submethodConfig, req, prev, postFetchSubResult);
+
                 // save - sub
-                saveSubResult = await persistSave(submethodConfig, postFetchSubResult);
+                saveSubResult = await persistSave(submethodConfig, preSaveSubResult);
 
                 // save - parent
                 postFetchParentResult[propEntry.name].push(saveSubResult._id);
