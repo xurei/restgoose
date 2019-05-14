@@ -13,7 +13,7 @@ Modern REST API framework. [https://xurei.github.io/restgoose](https://xurei.git
 [![wercker status](https://app.wercker.com/status/8ae5627cc2fb406638c44d6784b02815/m/master "wercker status")](https://app.wercker.com/project/byKey/8ae5627cc2fb406638c44d6784b02815)
 
 
-#### MongoDB + Typegoose + Restgoose = ❤️️
+#### MongoDB + Typescript + Restgoose = ❤️️
 
 Restgoose exposes your MongoDB database through a REST API with ease. 
 It is driven by the model itself, which reduces the boilerplate code necessary to write simple endpoints.

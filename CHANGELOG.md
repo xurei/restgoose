@@ -1,3 +1,15 @@
+## 1.0.0 - 2019-05-14
+**BREAKING CHANGE** restgoose does not use typegoose anymore. A subset of it has been ported inside restgoose for
+better stability.
+
+Changes:
+- Removed typegoose
+- Aligned create() on update(), so a fetchOrCreate pattern is easier with create()
+- parseQuery now converts `${oid: 'xxxx'}` to `ObjectId('xxxx')` instead of `{$in: [ ObjectId('xxxx'), 'xxxx' ]}`
+
+Features: 
+- Add support for submodel one()
+
 ## 0.1.0 - 2019-02-22
 Features:
 - **BREAKING CHANGE** getModel(): reordered method arguments and allow using the default mongoose connection.
