@@ -28,8 +28,7 @@ npm install @xureilab/restgoose
 ## Minimal usage
 This creates the typical CRUD endpoints on a model : 
 ```typescript
-import { prop, Typegoose } from 'typegoose';
-import { all, create, one, remove, rest, update } from '@xureilab/restgoose';
+import { Restgoose, RestgooseModel, all, create, one, prop, remove, rest, update } from '@xureilab/restgoose';
 
 @rest({
     route: '/todos',
@@ -41,7 +40,7 @@ import { all, create, one, remove, rest, update } from '@xureilab/restgoose';
         remove(), // DELETE /todos/:id
     ],
 })
-export class Todo extends Typegoose {
+export class Todo extends RestgooseModel {
     @prop({required: true})
     name: string;
 }
