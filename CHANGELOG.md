@@ -1,3 +1,10 @@
+## 1.1.0 - 2019-06-13
+**BREAKING CHANGE** 
+Unified middlewares `preFetch`, `postFetch`, `preSave`, `preSend`. 
+Now, all middlewares can be written as `function <T extends RestgooseModel>(req: Request, entity: T): Promise<T>`.
+
+`preFetch` middlewares should now return `null` instead of `true`.
+
 ## 1.0.0 - 2019-05-14
 **BREAKING CHANGE** restgoose does not use typegoose anymore. A subset of it has been ported inside restgoose for
 better stability.
