@@ -1,4 +1,4 @@
-import { MongooseDocument } from 'mongoose';
+import { Document } from 'mongoose';
 import { RestRegistry } from '../rest-registry';
 import { RestgooseModel } from '../restgoose-model';
 import { CallbackFn, RestgooseDocument } from '../types';
@@ -19,7 +19,7 @@ const hooks: PreHooks = {
         const fn = args[1] as DocumentPreFn<T>;
         return (constructor: any) => {
             RestRegistry.registerHook(constructor, 'pre', action, function () {
-                const doc = this as MongooseDocument & T;
+                const doc = this as T & Document;
                 return fn(doc);
             });
         };

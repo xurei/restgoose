@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CastError, Types } from 'mongoose';
+import { CastError, Document, Types } from 'mongoose';
 import { debug } from './debug';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
@@ -13,7 +13,7 @@ import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
 import { RestModelEntry, RestPropEntry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
-import { Constructor, Dic, InstanceType, RestRequest } from './types';
+import { Constructor, Dic, RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
 export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
@@ -408,7 +408,7 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
 /**
  * Deeply updates a mongoose document with a JSON object
  */
-function updateDocument<T extends RestgooseModel>(entity: InstanceType<T>, payload: Dic) {
+function updateDocument<T extends RestgooseModel>(entity: T & Document, payload: Dic) {
     for (const key in payload) {
         if (entity[key] instanceof Types.Subdocument) {
             updateDocument(entity[key], payload[key]);

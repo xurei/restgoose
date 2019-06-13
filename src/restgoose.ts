@@ -1,4 +1,5 @@
 import { Response, Router } from 'express';
+import { Document } from 'mongoose';
 import { debug } from './debug';
 import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './hooks';
 import { parseQuery } from './parse-query';
@@ -6,7 +7,7 @@ import { all, allWithin, create, createWithin, one, oneWithin, remove, removeAll
 import { RestModelEntry, RestRegistry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
-import { Constructor, InstanceType, RestRequest } from './types';
+import { Constructor, RestRequest } from './types';
 
 export class Restgoose {
     private static ROUTES = {
@@ -56,7 +57,7 @@ export class Restgoose {
      * Passes the entity through the preSend of its one() primivite
      */
     public static async sendOne<T extends RestgooseModel>(
-        modelType: Constructor<T>, entity: InstanceType<T>, req: RestRequest,
+        modelType: Constructor<T>, entity: T & Document, req: RestRequest,
         res: Response, status: number = 200): Promise<any> /* TODO change any if possible */ {
         const model = RestRegistry.getModel(modelType);
         const methods = model.restConfig.methods || [];

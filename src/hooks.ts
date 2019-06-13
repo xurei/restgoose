@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { RestConfigurationMethod } from './decorators/rest';
 import { getModel as getModelForConnection } from './get-model';
@@ -10,9 +10,8 @@ import {
     MiddlewarePersistSave,
     RestRequest,
 } from './types';
-import { InstanceType } from './types';
 
-export async function getModel<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<InstanceType<T>>> {
+export async function getModel<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, req: RestRequest): Promise<Model<T & Document>> {
     // FIXME as any
     const connection = modelEntry.restConfig.getConnection ? await modelEntry.restConfig.getConnection(req) as any : mongoose;
     const model = modelEntry.type;
@@ -28,37 +27,37 @@ export async function preFetch<T extends RestgooseModel>(methodConfig: RestConfi
         Promise.resolve(null);
 }
 
-export async function fetchAll<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
-    Promise<InstanceType<T>[]> {
+export async function fetchAll<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<(T & Document)[]> {
 
     // TODO: getAll() remove req.filter from the default behaviour ?
     const query = (
         methodConfig.fetch ?
             methodConfig.fetch(req, modelType) :
             modelType.find(req.restgoose.query, req.restgoose.projection, req.restgoose.options)
-    ) as Promise<InstanceType<T>[]>;
+    ) as Promise<(T & Document)[]>;
 
     return Promise.resolve(await query || []);
 }
 
-export async function fetchCreate<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
-    Promise<InstanceType<T>> {
+export async function fetchCreate<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<T & Document> {
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req, modelType) as Promise<InstanceType<T>> :
+        methodConfig.fetch(req, modelType) as Promise<T & Document> :
         Promise.resolve(new modelType({}));
 }
 
-export async function fetchOne<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
-    Promise<InstanceType<T>> {
+export async function fetchOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
+    Promise<T & Document> {
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req, modelType) as Promise<InstanceType<T>> :
+        methodConfig.fetch(req, modelType) as Promise<T & Document> :
         modelType.findById(req.params.id);
 }
 
 export async function postFetch<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
-    Promise<InstanceType<T>> {
+    Promise<T & Document> {
 
     const promise: Promise<any> = Promise.resolve(entity);
 
@@ -67,11 +66,11 @@ export async function postFetch<T extends RestgooseModel>(methodConfig: RestConf
         promise;
 }
 
-export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]):
-    Promise<InstanceType<T>[]> {
+export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: (T & Document)[]):
+    Promise<(T & Document)[]> {
 
     if (methodConfig.postFetch) {
-        const out = await Promise.all(entities.map(async entity => entity && methodConfig.postFetch(req, entity) as InstanceType<T>));
+        const out = await Promise.all(entities.map(async entity => entity && methodConfig.postFetch(req, entity) as T & Document));
         return out.filter(e => !!e);
     }
     else {
@@ -79,9 +78,9 @@ export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestC
     }
 }
 
-export async function preSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: InstanceType<T>,
-                                                        newEntity: InstanceType<T>):
-    Promise<InstanceType<T>> {
+export async function preSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T & Document,
+                                                        newEntity: T & Document):
+    Promise<T & Document> {
 
     const promise: Promise<any> = Promise.resolve(newEntity);
 
@@ -90,25 +89,25 @@ export async function preSave<T extends RestgooseModel>(methodConfig: RestConfig
         promise;
 }
 
-export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: InstanceType<T>[],
-                                                           newEntities: InstanceType<T>[]):
-    Promise<InstanceType<T>[]> {
+export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: (T & Document)[],
+                                                           newEntities: (T & Document)[]):
+    Promise<(T & Document)[]> {
 
     return methodConfig.preSave ?
-        Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, oldEntities[index], newEntity) as Promise<InstanceType<T>>)) :
+        Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, oldEntities[index], newEntity) as Promise<T & Document>)) :
         Promise.resolve(newEntities);
 }
 
-export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, entity: InstanceType<T>):
-    Promise<InstanceType<T>> {
+export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, entity: T & Document):
+    Promise<T & Document> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as Promise<InstanceType<T>> :
+        (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as Promise<T & Document> :
         entity.save();
 }
 
-export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entities: InstanceType<T>[]):
+export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
+                                                                 entities: (T & Document)[]):
     Promise<boolean> {
 
     const out = entities.filter(e => !!e);
@@ -118,8 +117,8 @@ export async function persistDeleteAll<T extends RestgooseModel>(modelType: Mode
             modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
 }
 
-export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entity: InstanceType<T>):
+export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
+                                                                 entity: T & Document):
     Promise<boolean> {
 
     return methodConfig.persist ?
@@ -127,8 +126,8 @@ export async function persistDeleteOne<T extends RestgooseModel>(modelType: Mode
         modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 
-export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: InstanceType<T>):
-    Promise<InstanceType<T>> {
+export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T & Document):
+    Promise<T & Document> {
 
     const promise: Promise<any> = Promise.resolve(entity);
 
@@ -137,10 +136,10 @@ export async function preSend<T extends RestgooseModel>(methodConfig: RestConfig
         promise;
 }
 
-export async function preSendAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: InstanceType<T>[]):
-    Promise<InstanceType<T>[]> {
+export async function preSendAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: (T & Document)[]):
+    Promise<(T & Document)[]> {
 
     return methodConfig.preSend ?
-        Promise.all(entities.map(async entity => methodConfig.preSend(req, entity) as Promise<InstanceType<T>>)) :
+        Promise.all(entities.map(async entity => methodConfig.preSend(req, entity) as Promise<T & Document>)) :
         Promise.resolve(entities);
 }

@@ -1,7 +1,6 @@
 import { Request } from 'express';
 import { RestgooseModel } from './restgoose-model';
-import { MiddlewarePreFetch, MiddlewarePostFetch, MiddlewarePreSave  } from './types';
-import { InstanceType } from './types';
+import { MiddlewarePostFetch, MiddlewarePreFetch, MiddlewarePreSave  } from './types';
 
 type MiddlewarePrePost<T extends RestgooseModel> = MiddlewarePreFetch | MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
 
@@ -13,18 +12,11 @@ type MiddlewarePrePost<T extends RestgooseModel> = MiddlewarePreFetch | Middlewa
  */
 export function or<T extends RestgooseModel>(...fns: MiddlewarePrePost<T>[]): MiddlewarePrePost<T> {
     return async (req: Request, entity: T = null, oldEntity?: T): Promise<T> => {
-        /*let promises: Promise<InstanceType<T>> = Promise.reject(null);
-        fns.forEach(fn => {
-            promises = promises.then(
-                v => v ? v : fn(req, entity, oldEntity),
-                () => fn(req, entity, oldEntity),
-            );
-        });*/
         let lastError = null;
 
-        for (let i=0; i< fns.length; ++i) {
+        for (const fn of fns) {
             try {
-                const out = (await fns[i](req, entity, oldEntity)) as T;
+                const out = (await fn(req, entity, oldEntity)) as T;
                 return Promise.resolve(out);
             }
             catch (e) {
@@ -42,7 +34,7 @@ export function or<T extends RestgooseModel>(...fns: MiddlewarePrePost<T>[]): Mi
  * If any middleware is rejected, the error thrown is passed through.
  */
 export function and<T extends RestgooseModel>(...fns: MiddlewarePrePost<T>[]): MiddlewarePrePost<T> {
-    return ((req: Request, entity: InstanceType<T> = null, oldEntity?: InstanceType<T>): Promise<InstanceType<T>> => {
+    return ((req: Request, entity: T & Document = null, oldEntity?: T & Document): Promise<T & Document> => {
         let promises: Promise<any> = Promise.resolve(entity);
         fns.forEach(m => {
             promises = promises.then(entity => {
@@ -60,7 +52,7 @@ export function and<T extends RestgooseModel>(...fns: MiddlewarePrePost<T>[]): M
  * (with asFilter) and getting only one (without it, throwing errors).
  */
 export function asFilter<T extends RestgooseModel>(fn: MiddlewarePrePost<T>): MiddlewarePrePost<T> {
-    return (req: Request, entity?: InstanceType<T>, oldEntity?: InstanceType<T>): Promise<InstanceType<T>> => {
+    return (req: Request, entity?: T & Document, oldEntity?: T & Document): Promise<T & Document> => {
         return Promise.resolve()
         .then(() => fn(req, entity, oldEntity))
         .catch(() => {
