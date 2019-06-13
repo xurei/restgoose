@@ -11,7 +11,6 @@ import {
     MiddlewarePostFetch,
     MiddlewarePreFetch,
     MiddlewarePreSave,
-    MiddlewarePreSend,
     RestMethodName,
 } from '../types';
 
@@ -71,12 +70,12 @@ export interface RestConfiguration<T extends RestgooseModel> {
 }
 
 export interface RestConfigurationMethod<T extends RestgooseModel> {
-    preFetch?: MiddlewarePreFetch;
+    preFetch?: MiddlewarePreFetch | MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
     fetch?: MiddlewareFetch<T>;
-    postFetch?: MiddlewarePostFetch<T>;
-    preSave?: MiddlewarePreSave<T>;
+    postFetch?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
+    preSave?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
     persist?: MiddlewarePersist<T>;
-    preSend?: MiddlewarePreSend<T>;
+    preSend?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
 }
 
 export interface RestConfigurationMethodWithPath<T extends RestgooseModel> extends RestConfigurationMethod<T> {

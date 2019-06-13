@@ -2,7 +2,6 @@ import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { RestConfigurationMethod } from './decorators/rest';
 import { getModel as getModelForConnection } from './get-model';
-import { buildPayload } from './request-util';
 import { RestModelEntry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
 import {
@@ -25,8 +24,8 @@ export async function preFetch<T extends RestgooseModel>(methodConfig: RestConfi
     Promise<boolean> {
 
     return methodConfig.preFetch ?
-        methodConfig.preFetch(req) :
-        Promise.resolve(true);
+        methodConfig.preFetch(req, null) :
+        Promise.resolve(null);
 }
 
 export async function fetchAll<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
@@ -96,7 +95,7 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSave ?
-        Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, oldEntities[index], newEntity, methodConfig.preSave))) :
+        Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, oldEntities[index], newEntity) as Promise<InstanceType<T>>)) :
         Promise.resolve(newEntities);
 }
 
@@ -142,6 +141,6 @@ export async function preSendAll<T extends RestgooseModel>(methodConfig: RestCon
     Promise<InstanceType<T>[]> {
 
     return methodConfig.preSend ?
-        Promise.all(entities.map(async entity => methodConfig.preSend(req, entity, postFetch))) :
+        Promise.all(entities.map(async entity => methodConfig.preSend(req, entity) as Promise<InstanceType<T>>)) :
         Promise.resolve(entities);
 }

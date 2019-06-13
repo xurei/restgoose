@@ -3,7 +3,8 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 const sinon = require('sinon');
 import * as sinonChai from 'sinon-chai';
-import { and, or, asFilter, RestError } from '../lib';
+import { and, or, asFilter, RestError, RestgooseModel } from '../lib';
+import { Document } from 'mongoose';
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -11,14 +12,17 @@ chai.use(sinonChai);
 const expect = chai.expect;
 const spy = sinon.spy;
 
-async function preSuccess(req: Request) {
-    return true;
+async function preSuccess(req: Request): Promise<any> {
+    console.log('success');
+    return null;
 }
-async function preFalse(req: Request) {
-    return false;
-}
-async function preFail(req: Request) {
+async function preFail(req: Request): Promise<any> {
+    console.log('fail');
     throw new RestError(418, "I'm a teapot");
+}
+async function preFail2(req: Request): Promise<any> {
+    console.log('fail2');
+    throw new RestError(418, "I'm a teapot 2");
 }
 
 async function postSuccess(req: Request, entity: object) {
@@ -36,7 +40,7 @@ describe('and()', function() {
             it('should call all of them and return', function () {
                 const spy1 = spy(preSuccess);
                 const spy2 = spy(preSuccess);
-                return and(spy1, spy2)(null)
+                return Promise.resolve(and(spy1, spy2)(null, null))
                 .then(() => {
                     expect(spy1).to.have.been.calledOnce(null);
                     expect(spy2).to.have.been.calledOnce(null);
@@ -51,7 +55,7 @@ describe('and()', function() {
                 const spyFail = spy(preFail);
                 const spy3 = spy(preSuccess);
                 const spy4 = spy(preSuccess);
-                return and(spy1, spy2, spyFail, spy3, spy4)(null)
+                return Promise.resolve(and(spy1, spy2, spyFail, spy3, spy4)(null, null))
                 .then(() => {
                     expect.fail('Expected and() to throw a RestError');
                 })
@@ -81,11 +85,11 @@ describe('or()', function() {
             it('should call only the first one', function () {
                 const spy1 = spy(preSuccess);
                 const spy2 = spy(preSuccess);
-                return or(spy1, spy2)(null)
+                return Promise.resolve(or(spy1, spy2)(null, null))
                 .then((result) => {
                     expect(spy1).to.have.been.calledOnce(null);
                     expect(spy2).to.have.not.been.called(null);
-                    expect(result).to.eq(true);
+                    expect(result).to.eq(null);
                 });
             });
         });
@@ -96,13 +100,35 @@ describe('or()', function() {
                 const spy2 = spy(preFail);
                 const spy3 = spy(preSuccess);
                 const spy4 = spy(preSuccess);
-                return or(spy1, spy2, spy3, spy4)(null)
+                return Promise.resolve(or(spy1, spy2, spy3, spy4)(null, null))
                 .then((result) => {
                     expect(spy1).to.have.been.calledOnce(null);
                     expect(spy2).to.have.been.calledOnce(null);
                     expect(spy3).to.have.been.calledOnce(null);
-                    expect(result).to.eq(true);
+                    expect(result).to.eq(null);
                     expect(spy4).to.have.not.been.called(null);
+                })
+            });
+        });
+
+        describe('all middlewares fail', () => {
+            it('should call all middlewares and throw an error', function () {
+                const spy1 = spy(preFail);
+                const spy2 = spy(preFail);
+                const spy3 = spy(preFail);
+                const spy4 = spy(preFail2);
+                return Promise.resolve(or(spy1, spy2, spy3, spy4)(null, null))
+                .then(() => {
+                    expect.fail('Method should not succeed.')
+                })
+                .catch((e) => {
+                    expect(spy1).to.have.been.calledOnce(null);
+                    expect(spy2).to.have.been.calledOnce(null);
+                    expect(spy3).to.have.been.calledOnce(null);
+                    expect(spy4).to.have.been.calledOnce(null);
+
+                    expect(e.httpCode).to.eq(418);
+                    expect(e.errorData).to.eq("I'm a teapot 2");
                 });
             });
         });
@@ -110,15 +136,15 @@ describe('or()', function() {
         describe('first middlewares fail, next returns false', () => {
             it('should call those before, not those after the first success, and return true', function () {
                 const spy1 = spy(preFail);
-                const spy2 = spy(preFalse);
+                const spy2 = spy(preFail);
                 const spy3 = spy(preSuccess);
                 const spy4 = spy(preSuccess);
-                return or(spy1, spy2, spy3, spy4)(null)
+                return Promise.resolve(or(spy1, spy2, spy3, spy4)(null, null))
                 .then((result) => {
                     expect(spy1).to.have.been.calledOnce(null);
                     expect(spy2).to.have.been.calledOnce(null);
                     expect(spy3).to.have.been.calledOnce(null);
-                    expect(result).to.eq(true);
+                    expect(result).to.eq(null);
                     expect(spy4).to.have.not.been.called(null);
                 });
             });
@@ -133,11 +159,11 @@ describe('or()', function() {
 describe('asFilter()', function() {
     describe('with middleware success', () => {
         it('should return the same value', function () {
-            const entity = { plop: 'plup' };
+            const entity = ({ plop: 'plup' } as any) as RestgooseModel & Document;
             const spy1 = spy(postSuccess);
             return postSuccess(null, entity)
             .then(expected => {
-                return asFilter(spy1)(null, entity)
+                return Promise.resolve(asFilter(spy1)(null, entity))
                 .then(returned => {
                     expect(spy1).to.have.been.calledOnce(null);
                     expect(returned).to.deep.eq(expected);
@@ -148,9 +174,9 @@ describe('asFilter()', function() {
 
     describe('with middleware failure', () => {
         it('should return null', function () {
-            const entity = { plop: 'plup' };
+            const entity = ({ plop: 'plup' } as any) as RestgooseModel & Document;
             const spy1 = spy(postFail);
-            return asFilter(spy1)(null, entity)
+            return Promise.resolve(asFilter(spy1)(null, entity))
             .then(returned => {
                 expect(spy1).to.have.been.calledOnce(null);
                 expect(returned).to.eq(null);
