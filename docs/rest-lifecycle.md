@@ -2,7 +2,7 @@
 
 ## Overview
 All the REST endpoints follow the same lifecycle. 
-The `@rest` decorator provides lifecycle hooks to all steps. 
+The `@rest` decorator provides lifecycle middlewares to all steps. 
 
 1. [preFetch](#prefetch)
 1. (submodels only) [fetchParent](#fetchparent-submodels-only)
@@ -23,7 +23,7 @@ This is usually where the authentication and validation are done.
 This step is the actual call to the database. 
 It is responsible of the creation of the MongoDB query with [mongoose](https://mongoosejs.com/).
 
-It executes the query returned by the `fetch` hook, or uses the default behaviour 
+It executes the query returned by the `fetch` middleware, or uses the default behaviour 
 (see the [reference table](#reference-table) below).
 
 ### postFetch
@@ -38,7 +38,7 @@ It can also be used to trigger some events (e.g. sending an email).
 This step is the actual call to the database when a persistence call is required 
 (i.e. `create()`, `update()`, `remove()`, `removeAll()`).
  
-This step does not have a lifecycle hook.
+This step does not have a lifecycle middleware.
 
 The following table shows the mongoose function that are called for each pre-defined method:
 
@@ -68,7 +68,7 @@ submodel that the enpoint points to.
 
 ## Reference table
 The following table shows the mongoose functions that are called at fetch and persist step, 
-and indicates if hooks are called or not.
+and indicates if middlewares are called or not.
 
 | method        | preFetch |   fetch                       | postFetch | persist              | preSend |
 |---------------|----------|-------------------------------|-----------|----------------------|---------|

@@ -24,7 +24,7 @@ First, let's create the models with typegoose.
 ```typescript
 import { Typegoose, prop } from 'typegoose';
 
-export class User extends Typegoose {
+export class User extends RestgooseModel {
     @prop({required: true, unique: true})
     nickname: string;
     
@@ -39,7 +39,7 @@ export const UserModel = new User().getModelForClass(User, {schemaOptions: {time
 import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
 import { Message } from './Message';
 
-export class Topic extends Typegoose {
+export class Topic extends RestgooseModel {
     @prop({required: true})
     title: string;
     
@@ -54,7 +54,7 @@ export const TopicModel = new Topic().getModelForClass(Topic, {schemaOptions: {t
 import { Typegoose, prop, Ref } from 'typegoose';
 import { User } from './User';
 
-export class Message extends Typegoose {
+export class Message extends RestgooseModel {
     @prop({ required: true, ref: User, index: true })
     author: Ref<User>;
     
@@ -101,7 +101,7 @@ import { all, and, asFilter, create, one, remove, rest, RestError, update } from
         all()
     ],
 })
-export class User extends Typegoose {
+export class User extends RestgooseModel {
     @prop({required: true, unique: true})
     nickname: string;
     

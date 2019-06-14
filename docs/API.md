@@ -82,7 +82,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
             throw new RestError(403, 'Unauthorized');
         }
         else {
-            //In case of success, you MUST return true in a preFetch hook.
+            //In case of success, you MUST return true in a preFetch middleware.
             return true;
         }
     }
@@ -97,7 +97,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
             })
         ]
     })
-    export class Item extends Typegoose {
+    export class Item extends RestgooseModel {
         /* ... */
     } 
     ```
@@ -121,7 +121,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
             all({ fetch: itemFetchAll }),
         ],
     })
-    export class Item extends Typegoose {
+    export class Item extends RestgooseModel {
         /* ... */
     }
     export const ItemModel = new Item().getModelForClass(Item);
@@ -176,7 +176,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
                })
            ]
        })
-       export class Item extends Typegoose {
+       export class Item extends RestgooseModel {
            /* ... */
        }
        ```
@@ -209,7 +209,7 @@ or on top of a property in such a class (see [Using @rest() on submodels](#using
                })
            ]
        })
-       export class User extends Typegoose {
+       export class User extends RestgooseModel {
            @prop({required: true})
            password: string;
            /* ... */
@@ -228,7 +228,7 @@ complex logic :
 or(and(middlewareA, middlewareB), and(middlewareA, middlewareC))
 ```
 
-**NOTE** : middleware composition does NOT work with the `fetch` or `persist` hooks.
+**NOTE** : middleware composition does NOT work with the `fetch` or `persist` middlewares.
 
 - ### or(...fns)
     Compose several middlewares with a logical OR operation.
@@ -244,11 +244,11 @@ or(and(middlewareA, middlewareB), and(middlewareA, middlewareC))
     /**
      * return the entity if the user is admin, throw 401 otherwise
      */
-    function isAdmin<T extends Typegoose>(req:Request, entity: T) { /* ... */ }
+    function isAdmin<T extends RestgooseModel>(req:Request, entity: T) { /* ... */ }
     /**
      * return the entity if the owner field is the user, throw 401 otherwise
      */
-    function isOwner<T extends Typegoose>(req:Request, entity: T) { /* ... */ }
+    function isOwner<T extends RestgooseModel>(req:Request, entity: T) { /* ... */ }
       
     @rest({
         route: '/items',
@@ -309,7 +309,7 @@ function myPostFetchFn(req, item) {
        })
    ]
 })
-export class Item extends Typegoose {
+export class Item extends RestgooseModel {
    /* ... */
 }
 ```

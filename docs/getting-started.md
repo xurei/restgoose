@@ -14,9 +14,8 @@ We assume that you are already familiar with those concepts and technologies:
 - Node.js
 - Express
 - Typescript
-- [Typegoose](https://github.com/szokodiakos/typegoose)
 - MongoDB
-- How RESTful APIs work, specifically how HTTP methods should be used  
+- How RESTful APIs work, specifically how HTTP methods should be used and which status code to use.
 
 ------
 
@@ -34,7 +33,7 @@ Our API should expose those endpoints:
 Same goes for actors.
 
 We will use a simple authorization for the sake of simplicity: a secret key to provide in the header of the requests. 
-Also, we want the movies to list its actors and the actors to list their filmography. 
+Also, we want the movies to contain a list of its actors and the actors a list of their respective filmography. 
 
 ------
 
@@ -45,7 +44,7 @@ First we need to setup a working server. Let's start a new typescript project.
 mkdir restgoose-getting-started
 cd restgoose-getting-started
 npm init -y
-npm install typescript express typegoose mongoose body-parser @xureilab/restgoose reflect-metadata
+npm install typescript express mongoose body-parser @xureilab/restgoose reflect-metadata
 npm install --save --dev @types/node @types/express @types/mongoose
 ```
 
@@ -88,7 +87,6 @@ For the main file, business as usual: we setup express, connect to the database 
 **src/server.ts:**
 ```typescript
 import * as express from 'express';
-import { prop, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
 
@@ -135,38 +133,48 @@ Our API will contain two models: Movie and Actor.
 
 **src/movie.ts:**
 ```typescript
-import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
+import { ObjectId } from 'mongodb';
 import { Actor } from './actor';
 
-export class Movie extends Typegoose {
+export class Movie extends RestgooseModel {
     @prop({required: true})
     name: string;
-    
+
     @prop({required: true})
     description: string;
-    
-    @arrayProp({itemsRef: {name: Actor}})
-    actors?: Ref<Actor>[];
+
+    @arrayProp({items: Actor, ref: true})
+    actors?: ObjectId[];
 }
 ```
 
 **src/actor.ts:**
 ```typescript
-import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
+import { ObjectId } from 'mongodb';
 import { Movie } from './movie';
 
-export class Actor extends Typegoose {
+export class Actor extends RestgooseModel {
     @prop({required: true})
     name: string;
-    
-    @arrayProp({itemsRef: {name: Movie}})
-    movies?: Ref<Movie>[];
+
+    @arrayProp({items: Movie, ref: true})
+    movies?: ObjectId[];
 }
 ```
 
-Alright, the models are ready. 
+The `RestgooseModel` is the main class of any model using Restgoose. 
 
-Now we need to create the endpoints. 
+The `@prop` decorator indicates that the field is a property that should be persisted. 
+You can pass options in the decorator to change the behaviour of the field. 
+See the [decorators](./decorators.md) section.  
+
+The `@arrayProp` decorator indicates that the field is an array that should be persisted. 
+It is basically the same thing as `@prop`, except that it is persisted as an array of items.  
+
+Alright, the models are ready. Now we need to create the endpoints.
+ 
 We will take care of that in the next step. 
 
 ------
@@ -174,15 +182,17 @@ We will take care of that in the next step.
 ## 4. Decorate the models with the `@rest()` decorator
 Restgoose is Model-driven. 
 It means that the endpoints and their behavior are defined by the models and their decorators. 
+
 A pure restgoose server can live without any controller or router. 
 In fact, restgoose will create them for you.
 
 The main decorator of restgoose is `@rest()`. 
 It defines the rest endpoint that we want to create on a model.
 
-`@rest()` takes one argument in the form of an object with at least two properties : 
-- `route`: the path where the endpoint(s) will be created (`/models` in the example).
-- `methods`: an array with the methods that you want to be created. One or several from this list:
+It takes one argument in the form of an object with at least two properties : 
+- `route`: the path where the endpoint(s) will be created (`/models` in the example below).
+- `methods`: an array with the methods that you want to be created. 
+  One or several from this list:
     - `all()`: `GET /models`
     - `one()`: `GET /models/:id`
     - `create()`: `POST /models`
@@ -190,11 +200,14 @@ It defines the rest endpoint that we want to create on a model.
     - `remove()`: `DELETE /models/:id`
     - `removeAll()`: `DELETE /models`
 
+These magic methods are defined in restgoose and will create the endpoints we want. 
+
 To add the REST endpoints, we just need to add this decorator on top of the model's definitions:
 
 **src/movie.ts:**
 ```typescript
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
+      import { ObjectId } from 'mongodb';
       import { Actor } from './actor';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
         
@@ -208,21 +221,22 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 /*+*/         remove(), //DElETE /movies/:id
 /*+*/     ],
 /*+*/ })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
-          
+      
           @prop({required: true})
           description: string;
-          
-          @arrayProp({itemsRef: {name: Actor}})
-          actors?: Ref<Actor>[];
+      
+          @arrayProp({items: Actor, ref: true})
+          actors?: ObjectId[];
       }
 ```
 
 **src/actor.ts:**
 ```typescript        
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
+      import { ObjectId } from 'mongodb';
       import { Movie } from './movie';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
 
@@ -236,21 +250,20 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 /*+*/         remove(), //DElETE /actors/:id
 /*+*/     ],
 /*+*/ })
-      export class Actor extends Typegoose {
+      export class Actor extends RestgooseModel {
           @prop({required: true})
           name: string;
-          
-          @arrayProp({itemsRef: {name: Movie}})
-          movies?: Ref<Movie>[];
+      
+          @arrayProp({items: Movie, ref: true})
+          movies?: ObjectId[];
       }
 ```
 
-Then, we need to initialize the controllers in your express app:
+Okay, now we need to import the models in the server and initialize Restgoose:
 
 **src/server.ts:**
 ```typescript
       import * as express from 'express';
-      import { prop, Typegoose } from 'typegoose';
       import * as mongoose from 'mongoose';
       import * as bodyParser from 'body-parser';
 /*+*/ import { Restgoose } from '@xureilab/restgoose';
@@ -286,8 +299,6 @@ Then, we need to initialize the controllers in your express app:
       server = server.listen(3000, function () {
           console.log('Example app listening on port 3000!')
       });
-      
-      export { app, server };
 ```
 
 We now have a working REST API! 
@@ -308,10 +319,9 @@ curl -X POST http://localhost:3000/movies \
    }'
 ```
 
-You should get this result:
+You should get something like this:
 ```json
 {
-  "actors": [],
   "_id": "5c3e524d3fb1491661482fd1",
   "name": "The Lord of The Rings - The Fellowship of the Ring",
   "description": "A meek Hobbit from the Shire and eight companions set out on a journey ...",
@@ -323,7 +333,6 @@ Let's go back to GET `http://localhost:3000/movies` and voilà! The server retur
 ```json
 [
   {
-    "actors": [],
     "_id": "5c3e524d3fb1491661482fd1",
     "name": "The Lord of The Rings - The Fellowship of the Ring",
     "description": "A meek Hobbit from the Shire and eight companions set out on a journey ...",
@@ -335,10 +344,10 @@ Let's go back to GET `http://localhost:3000/movies` and voilà! The server retur
 You can try all the endpoints we defined in the requirements.
 They should all be there and working.
 
-OK, nice, but what about pagination and authorization ? 
-Right now we have none of these. 
+OK, but what about pagination, authorization... all that stuff that make an API actually useful ? 
+We still have none of these. 
 
-We will see that in the next step.
+Let's deal with that in the next step.
 
 ------
 
@@ -346,41 +355,56 @@ We will see that in the next step.
 At this point, we have a basic REST API with the endpoints we want. 
 They still need some logic to work as expected.
 
-Restgoose provides hooks that you can use to alter its behavior. 
-They are all defined in the [Rest endpoint lifecycle](./rest-lifecycle.md).
-We are going to use these hooks to add the logic we want. 
+Restgoose provides middlewares that you can use to alter the behavior of a specific endpoint. 
+We are going to use these middlewares to add the logic we want.
+
+A complete description of the middlewares can be found in the [Rest endpoint lifecycle](./rest-lifecycle.md).
 
 ### Authorization
 We want POST, PATCH and DELETE operations to be secured with a token in the header.
 
-According to the [Rest endpoint lifecycle](./rest-lifecycle.md), the `preFetch` hook is typically used in this case.
+According to the [Rest endpoint lifecycle](./rest-lifecycle.md), the `preFetch` middleware is typically used in this case:
+we don't want to do anything with the database before authentication of the request.
 
-This hooks is trigerred before any call to the database. 
-This is indeed the earliest hook than can be trigerred. 
+The `preFetch` middleware is trigerred before any call to the database. 
+This is indeed the earliest middleware than can be trigerred. 
 We should stop the execution as soon as possible if the user does not have access. 
 
 **src/verifytoken.ts:**
 ```typescript
 import { Request } from 'express';
-import { RestError } from '@xureilab/restgoose';
+import { RestError, RestgooseModel } from '@xureilab/restgoose';
 
-export async function verifyToken(req: Request): Promise<boolean> {
+export async function verifyToken(req: Request, entity: RestgooseModel): Promise<RestgooseModel> {
     if (!(req.headers && req.headers['authorization'])) {
         throw new RestError(401, { code: 'UNAUTHENTICATED' });
     }
     else {
+        // WARNING : THIS IS **NOT** SAFE ! It has been simplified for the simplicity of this article.
+        // DO NOT USE IN PRODUCTION !
         if (req.headers['authorization'] === 'super-secret') {
-            return true;
+            // If it returns, the flow will continue.
+            return entity;  
         }
         else {
+            // If it throws, the flow will be stopped.
             throw new RestError(401, { code: 'UNAUTHENTICATED' });
         }
     }
 }
 ```
 
-The `verifyToken` function reads the `req` object (a typical express request object) and checks for an `authorization` header.
-If it's defined and equals to `super-secret`, the promise it returns completes. If not, it throw a RestError with the code `401` and some extra information.
+Okay, let's break this down to understand what it means:
+- All restgoose middlewares take two arguments : the Request object from express, and an entity. (Note: In a `preFetch` 
+  situation, the entity would be `null`, but that's okay).
+- If the middleware wants the flow to stop, it just needs to throw an error. Restgoose provides a `RestError` for
+  convenience, but any Exception will do.
+- The body of the middlewares checks that the `authorization` header is set and valid. 
+
+  If it is, the middleware returns the entity (`null` here). 
+  If not, it throws a RestError with status code `401`.
+  
+Now that our middleware is written, let's add it in our models:
 
 **src/movie.ts:**
 ```typescript
@@ -405,7 +429,7 @@ If it's defined and equals to `super-secret`, the promise it returns completes. 
 /*+*/         }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
@@ -462,14 +486,14 @@ Add the same lines in `src/actor.ts`
 ### Filtering properties
 For the `GET /movies` and `GET /actors` endpoints, we only need to return the `_id` and `name` properties.
 
-This time, we will use the `preSend` hook. Note that we can also use the `postFetch` hook as well in that case.
+This time, we will use the `preSend` middleware. Note that we can also use the `postFetch` middleware as well in that case.
 
 **src/keepfields.ts:**
 ```typescript
 import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 
-export function keepFields<T extends Typegoose>(...fieldNames: string[]) {
+export function keepFields<T extends RestgooseModel>(...fieldNames: string[]) {
     return async function(req: Request, entity: T) {
         const out = {};
         fieldNames.forEach(name => {
@@ -482,7 +506,7 @@ export function keepFields<T extends Typegoose>(...fieldNames: string[]) {
 Let's take a deeper look at this function.
 
 `keepFields` returns a function. 
-This is the generated hook built with the `fieldNames` argument.
+This is the generated middleware built with the `fieldNames` argument.
 
 The function takes the `req` argument from express and an `entity` argument which is the returned object from the database.
 It returns a filtered object that contains only the fields listed in `fieldNames`.
@@ -515,7 +539,7 @@ Let's use this function in our model:
               }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
@@ -572,7 +596,7 @@ do
 done
 ```
 
-This time, we will use the `preFetch` hook again.
+This time, we will use the `preFetch` middleware again.
 
 Restgoose adds a `restgoose` property in the `req` object: 
 ```js
@@ -585,7 +609,7 @@ Restgoose adds a `restgoose` property in the `req` object:
 }
 ```
 
-We will create a `preFetch` hook that will add a `skip` and `limit` options in the `restgoose` object.
+We will create a `preFetch` middleware that will add a `skip` and `limit` options in the `restgoose` object.
 
 **addpagination.ts:**
 ```typescript
@@ -634,7 +658,7 @@ And we add this in the model definition:
               }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
