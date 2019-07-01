@@ -48,12 +48,12 @@
     "chai-http": "^4.2.1",
     "chai-match-pattern": "^1.1.0",
     "codacy-coverage": "^3.4.0",
-    "codecov": "^3.2.0",
+    "codecov": "^3.5.0",
     "cors": "^2.8.4",
     "dirty-chai": "^2.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.5.1",
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.4",
     "mock-req": "^0.2.0",
     "moment": "^2.24.0",
     "mongoose": "^5.4.20",
@@ -65,7 +65,7 @@
     "sinon": "^7.3.0",
     "sinon-chai": "^3.3.0",
     "ts-node": "^8.0.3",
-    "tslint": "^5.14.0",
+    "tslint": "^5.18.0",
     "typescript": "^3.3.4000"
   },
   "dependencies": {
