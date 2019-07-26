@@ -100,31 +100,31 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
         Promise.resolve(newEntities);
 }
 
-export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, entity: InstanceType<T>):
+export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: InstanceType<T>):
     Promise<InstanceType<T>> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as Promise<InstanceType<T>> :
+        (methodConfig.persist as MiddlewarePersistSave<T>)(req, entity) as Promise<InstanceType<T>> :
         entity.save();
 }
 
 export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entities: InstanceType<T>[]):
+                                                                 req: RestRequest, entities: InstanceType<T>[]):
     Promise<boolean> {
 
     const out = entities.filter(e => !!e);
 
     return methodConfig.persist ?
-            (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(entities) :
+            (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(req, entities) :
             modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
 }
 
 export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<InstanceType<T>>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entity: InstanceType<T>):
+                                                                 req: RestRequest, entity: InstanceType<T>):
     Promise<boolean> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(entity) :
+        (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(req, entity) :
         modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 

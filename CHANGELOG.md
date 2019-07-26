@@ -1,3 +1,6 @@
+## 1.0.2 - 2019-07-01
+- `persist` hook now takes the request as argment, like the other hooks. 
+
 ## 1.0.1 - 2019-07-01
 This version only updates development tools. No need to update.
 - Updated dependencies : codecov, mocha & tslint.
