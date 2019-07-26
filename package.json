@@ -1,6 +1,6 @@
 {
   "name": "@xureilab/restgoose",
-  "version": "1.1.0-beta.1",
+  "version": "1.1.0-beta.2",
   "description": "Model-driven REST API framework",
   "homepage": "https://xurei.github.io/restgoose",
   "main": "lib/index.js",
