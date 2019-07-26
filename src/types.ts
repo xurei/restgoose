@@ -16,9 +16,9 @@ export type MiddlewarePreSave<T extends RestgooseModel> = (req: Request, entity:
 
 export type MiddlewareFetch<T extends RestgooseModel> = (req: Request, modelType?: Model<T & Document>) => Promise<T | T[]>;
 
-export type MiddlewarePersistDeleteAll<T extends RestgooseModel> = (entities: T[]) => Promise<boolean>;
-export type MiddlewarePersistDeleteOne<T extends RestgooseModel> = (entity: T) => Promise<boolean>;
-export type MiddlewarePersistSave<T extends RestgooseModel> = (entity: T) => Promise<T>;
+export type MiddlewarePersistDeleteAll<T extends RestgooseModel> = (req: Request, entities: T[]) => Promise<boolean>;
+export type MiddlewarePersistDeleteOne<T extends RestgooseModel> = (req: Request, entity: T) => Promise<boolean>;
+export type MiddlewarePersistSave<T extends RestgooseModel> = (req: Request, entity: T) => Promise<T>;
 export type MiddlewarePersist<T extends RestgooseModel> = MiddlewarePersistDeleteAll<T> | MiddlewarePersistDeleteOne<T> | MiddlewarePersistSave<T>;
 
 export type HttpMethod = 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT' | 'PATCH';

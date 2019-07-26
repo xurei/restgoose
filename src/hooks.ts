@@ -98,31 +98,31 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
         Promise.resolve(newEntities);
 }
 
-export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, entity: T & Document):
+export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T & Document):
     Promise<T & Document> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistSave<T>)(entity) as Promise<T & Document> :
+        (methodConfig.persist as MiddlewarePersistSave<T>)(req, entity) as Promise<T & Document> :
         entity.save();
 }
 
 export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entities: (T & Document)[]):
+                                                                 req: RestRequest, entities: (T & Document)[]):
     Promise<boolean> {
 
     const out = entities.filter(e => !!e);
 
     return methodConfig.persist ?
-            (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(entities) :
+            (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(req, entities) :
             modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
 }
 
 export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
-                                                                 entity: T & Document):
+                                                                 req: RestRequest, entity: T & Document):
     Promise<boolean> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(entity) :
+        (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(req, entity) :
         modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 
