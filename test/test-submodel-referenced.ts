@@ -16,7 +16,7 @@ async function verifyToken(req: Request) {
     if (header !== 'admin') {
         throw new RestError(401);
     }
-    return true;
+    return null;
 }
 
 @rest({

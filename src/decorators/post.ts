@@ -1,4 +1,4 @@
-import { MongooseDocument } from 'mongoose';
+import { Document } from 'mongoose';
 import { RestRegistry } from '../rest-registry';
 import { RestgooseModel } from '../restgoose-model';
 
@@ -8,18 +8,16 @@ type ModelMethod = 'insertMany';
 type ClassDecorator = (constructor: any) => void;
 type HookNextFn = (err?: Error) => void;
 
-type TypegooseDoc<T> = T & MongooseDocument;
-
-type DocumentPostFn<T> = (this: TypegooseDoc<T>, doc: TypegooseDoc<T>, next?: HookNextFn) => void;
+type DocumentPostFn<T> = (this: T & Document, doc: T & Document, next?: HookNextFn) => void;
 type ModelPostFn<T> = (result: any, next?: HookNextFn) => void;
 
 type PostNumberResponse<T> = (result: number, next?: HookNextFn) => void;
-type PostSingleResponse<T> = (result: TypegooseDoc<T>, next?: HookNextFn) => void;
-type PostMultipleResponse<T> = (result: TypegooseDoc<T>[], next?: HookNextFn) => void;
+type PostSingleResponse<T> = (result: T & Document, next?: HookNextFn) => void;
+type PostMultipleResponse<T> = (result: (T & Document)[], next?: HookNextFn) => void;
 
 type PostNumberWithError<T> = (error: Error, result: number, next: HookNextFn) => void;
-type PostSingleWithError<T> = (error: Error, result: TypegooseDoc<T>, next: HookNextFn) => void;
-type PostMultipleWithError<T> = (error: Error, result: TypegooseDoc<T>[], net: HookNextFn) => void;
+type PostSingleWithError<T> = (error: Error, result: T & Document, next: HookNextFn) => void;
+type PostMultipleWithError<T> = (error: Error, result: (T & Document)[], net: HookNextFn) => void;
 
 type NumberMethod = 'count';
 type SingleMethod = 'findOne' | 'findOneAndRemove' | 'findOneAndUpdate' | DocumentMethod;
