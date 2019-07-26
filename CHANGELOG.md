@@ -1,9 +1,6 @@
-## 1.1.1 - 2019-07-26
-- `persist` hook now takes the request as argment, like the other hooks. 
-
-## 1.1.0 - 2019-06-13
+## 1.1.0 - 2019-07-26
 **BREAKING CHANGE** 
-Unified middlewares `preFetch`, `postFetch`, `preSave`, `preSend`. 
+Unified middlewares `preFetch`, `postFetch`, `preSave`, `preSend`, `persist`. 
 Now, all middlewares can be written as `function <T extends RestgooseModel>(req: Request, entity: T): Promise<T>`.
 
 `preFetch` middlewares should now return `null` instead of `true`.
