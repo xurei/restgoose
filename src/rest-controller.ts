@@ -138,7 +138,7 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
-            const saveResult = await persistSave(methodConfig, req, preSaveResult);
+            const saveResult = await persistSave(methodConfig, preSaveResult);
 
             // preSend
             const preSendResult = await preSend(methodConfig, req, saveResult);
@@ -199,16 +199,16 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 const preSaveSubResult = await preSave(submethodConfig, req, prev, postFetchSubResult);
 
                 // save - sub
-                saveSubResult = await persistSave(submethodConfig, req, preSaveSubResult);
+                saveSubResult = await persistSave(submethodConfig, preSaveSubResult);
 
                 // save - parent
                 postFetchParentResult[propEntry.name].push(saveSubResult._id);
-                await persistSave(methodConfig, req, postFetchParentResult);
+                await persistSave(methodConfig, postFetchParentResult);
             }
             else {
                 // save - parent
                 postFetchParentResult[propEntry.name].push(req.body);
-                const parentSaveResult = await persistSave(methodConfig, req, postFetchParentResult);
+                const parentSaveResult = await persistSave(methodConfig, postFetchParentResult);
                 saveSubResult = parentSaveResult[propEntry.name][parentSaveResult[propEntry.name].length - 1];
             }
 
@@ -329,7 +329,7 @@ export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             await preSave(methodConfig, req, postFetchResult, null);
 
             // save
-            await persistDeleteOne(modelType, methodConfig, req, postFetchResult);
+            await persistDeleteOne(modelType, methodConfig, postFetchResult);
 
             return res.status(204).end();
         }
@@ -356,7 +356,7 @@ export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T
         await preSaveAll(methodConfig, req, postFetchResult, new Array(postFetchResult.length).fill(null));
 
         // save
-        await persistDeleteAll(modelType, methodConfig, req, postFetchResult);
+        await persistDeleteAll(modelType, methodConfig, postFetchResult);
 
         return res.status(204).end();
     });
@@ -395,7 +395,7 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
-            const saveResult = await persistSave(methodConfig, req, preSaveResult);
+            const saveResult = await persistSave(methodConfig, preSaveResult);
 
             // preSend
             const preSendResult = await preSend(methodConfig, req, saveResult);

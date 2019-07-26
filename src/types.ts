@@ -30,9 +30,9 @@ export interface MiddlewarePreSave<T extends RestgooseModel> extends Middleware 
     (req: Request, entity: Doc<T>, oldEntity?: Doc<T>): Promisable<Doc<T>>;
 }
 
-export type MiddlewarePersistDeleteAll<T extends RestgooseModel> = (req: Request, entities: Doc<T>[]) => Promise<boolean>;
-export type MiddlewarePersistDeleteOne<T extends RestgooseModel> = (req: Request, entity: Doc<T>) => Promise<boolean>;
-export type MiddlewarePersistSave<T extends RestgooseModel> = (req: Request, entity: Doc<T>) => Promise<Doc<T>>;
+export type MiddlewarePersistDeleteAll<T extends RestgooseModel> = (entities: Doc<T>[]) => Promise<boolean>;
+export type MiddlewarePersistDeleteOne<T extends RestgooseModel> = (entity: Doc<T>) => Promise<boolean>;
+export type MiddlewarePersistSave<T extends RestgooseModel> = (entity: Doc<T>) => Promise<Doc<T>>;
 export type MiddlewarePersist<T extends RestgooseModel> = MiddlewarePersistDeleteAll<T> | MiddlewarePersistDeleteOne<T> | MiddlewarePersistSave<T>;
 
 export interface MiddlewarePreSend<T extends RestgooseModel> extends Middleware {
