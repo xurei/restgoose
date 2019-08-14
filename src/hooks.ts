@@ -98,7 +98,8 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
         Promise.resolve(newEntities);
 }
 
-export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T & Document, entity: T & Document):
+export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,
+                                                            oldEntity: T & Document, entity: T & Document):
     Promise<T & Document> {
 
     return methodConfig.persist ?
@@ -126,7 +127,8 @@ export async function persistDeleteOne<T extends RestgooseModel>(modelType: Mode
         modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 
-export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntity: T & Document, entity: T & Document):
+export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,
+                                                        oldEntity: T & Document, entity: T & Document):
     Promise<T & Document> {
 
     const promise: Promise<any> = Promise.resolve(entity);
