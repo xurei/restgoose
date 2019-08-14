@@ -1,3 +1,6 @@
+## 1.1.1 - 2019-08-14
+Add support for access to the previous value in `preSend` and `save` middlewares (when available).
+
 ## 1.1.0 - 2019-07-26
 **BREAKING CHANGE** 
 Unified middlewares `preFetch`, `postFetch`, `preSave`, `preSend`, `persist`. 

@@ -138,10 +138,10 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
-            const saveResult = await persistSave(methodConfig, req, preSaveResult);
+            const saveResult = await persistSave(methodConfig, req, prev, preSaveResult);
 
             // preSend
-            const preSendResult = await preSend(methodConfig, req, saveResult);
+            const preSendResult = await preSend(methodConfig, req, prev, saveResult);
 
             res.status(201).json(preSendResult);
         }
@@ -174,6 +174,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
             const isReferenced = (propEntry.config as ArrayPropConfiguration<T, S>).ref;
             let saveSubResult;
             postFetchParentResult[propEntry.name] = postFetchParentResult[propEntry.name] || [];
+            let prev = null;
             if (isReferenced) {
                 // getModel - sub
                 const submodelEntry: RestModelEntry<S> = {
@@ -190,7 +191,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
 
                 // merge
                 const payload = buildPayload(req, submodelType);
-                const prev = postFetchSubResult.toObject();
+                prev = postFetchSubResult.toObject();
 
                 // updates initial sub doc
                 updateDocument(postFetchSubResult, payload);
@@ -199,21 +200,21 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 const preSaveSubResult = await preSave(submethodConfig, req, prev, postFetchSubResult);
 
                 // save - sub
-                saveSubResult = await persistSave(submethodConfig, req, preSaveSubResult);
+                saveSubResult = await persistSave(submethodConfig, req, prev, preSaveSubResult);
 
                 // save - parent
                 postFetchParentResult[propEntry.name].push(saveSubResult._id);
-                await persistSave(methodConfig, req, postFetchParentResult);
+                await persistSave(methodConfig, req, prev, postFetchParentResult);
             }
             else {
                 // save - parent
                 postFetchParentResult[propEntry.name].push(req.body);
-                const parentSaveResult = await persistSave(methodConfig, req, postFetchParentResult);
+                const parentSaveResult = await persistSave(methodConfig, req, postFetchParentResult, postFetchParentResult);
                 saveSubResult = parentSaveResult[propEntry.name][parentSaveResult[propEntry.name].length - 1];
             }
 
             // preSend - sub
-            const preSendSubResult = await preSend(submethodConfig, req, saveSubResult);
+            const preSendSubResult = await preSend(submethodConfig, req, prev, saveSubResult);
 
             return res.status(201).json(preSendSubResult);
         }
@@ -242,7 +243,7 @@ export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
         }
         else {
             // preSend
-            const preSendResult = await preSend(methodConfig, req, postFetchResult);
+            const preSendResult = await preSend(methodConfig, req, null, postFetchResult);
 
             return res.status(200).json(preSendResult);
         }
@@ -296,7 +297,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
                 const postFetchSubResult = await postFetch(submethodConfig, req, fetchSubResult);
 
                 // preSend - sub
-                const preSendSubResult = await preSend(submethodConfig, req, postFetchSubResult);
+                const preSendSubResult = await preSend(submethodConfig, req, null, postFetchSubResult);
 
                 return res.status(200).json(preSendSubResult);
             }
@@ -395,10 +396,10 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
 
             // save
-            const saveResult = await persistSave(methodConfig, req, preSaveResult);
+            const saveResult = await persistSave(methodConfig, req, prev, preSaveResult);
 
             // preSend
-            const preSendResult = await preSend(methodConfig, req, saveResult);
+            const preSendResult = await preSend(methodConfig, req, prev, saveResult);
 
             return res.status(200).json(preSendResult);
         }

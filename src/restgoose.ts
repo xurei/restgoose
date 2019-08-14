@@ -66,7 +66,7 @@ export class Restgoose {
             throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
         }
 
-        const preSendResult = await preSend(method, req, entity);
+        const preSendResult = await preSend(method, req, null, entity);
 
         res.status(status).json(preSendResult.toJSON());
     }
