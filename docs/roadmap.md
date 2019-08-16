@@ -15,3 +15,4 @@
 - Replace typegoose with some stack ? (Not confirmed)
 - Make restgoose compatible with ES6
 - Add support for other NoSQL databases ?
+- Add a virtual property

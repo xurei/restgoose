@@ -1,3 +1,6 @@
+## 1.1.2 - 2019-08-16
+Add onError() global handler.
+
 ## 1.1.1 - 2019-08-14
 Add support for access to the previous value in `preSend` and `save` middlewares (when available).
 

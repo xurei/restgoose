@@ -12,6 +12,7 @@ import {
 import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
 import { RestModelEntry, RestPropEntry } from './rest-registry';
+import { Restgoose } from './restgoose';
 import { RestgooseModel } from './restgoose-model';
 import { Constructor, Dic, RestRequest } from './types';
 
@@ -453,6 +454,9 @@ function wrapException(fn: (req: RestRequest, res: Response) => void): (req: Res
             }
             else {
                 debug(error);
+                if (Restgoose.onError) {
+                    Restgoose.onError(req, error);
+                }
                 return res.status(500).end();
             }
         }

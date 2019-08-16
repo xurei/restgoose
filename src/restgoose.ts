@@ -24,6 +24,7 @@ export class Restgoose {
         one: { httpMethod: 'get', path: '/', fn: oneWithin },
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
+    public static onError: (req: RestRequest, error: any) => void = null;
 
     public static initialize(modelTypes?: Constructor<RestgooseModel>[]) {
         const models = RestRegistry.listModels();
