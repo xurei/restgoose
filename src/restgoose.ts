@@ -50,7 +50,7 @@ export class Restgoose {
             throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
         }
 
-        const result = await fetchOne(await getModel(model, req), method, req);
+        const result = await fetchOne(await getModel(model, req), method, req, true);
         return postFetch(method, req, result);
     }
 

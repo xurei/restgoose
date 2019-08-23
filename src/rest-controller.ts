@@ -59,7 +59,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
         await preFetch(submethodConfig, req);
 
         // fetch - parent
-        const fetchParentResult = await fetchOne(modelType, methodConfig, req);
+        const fetchParentResult = await fetchOne(modelType, methodConfig, req, false);
 
         // postFetch - parent
         const postFetchParentResult = await postFetch(methodConfig, req, fetchParentResult);
@@ -160,7 +160,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
         await preFetch(submethodConfig, req);
 
         // fetch - parent
-        const fetchParentResult = await fetchOne(modelType, methodConfig, req);
+        const fetchParentResult = await fetchOne(modelType, methodConfig, req, false);
 
         // postFetch - parent
         const postFetchParentResult = await postFetch(methodConfig, req, fetchParentResult);
@@ -231,7 +231,7 @@ export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
         await preFetch(methodConfig, req);
 
         // fetch
-        const fetchResult = await fetchOne(modelType, methodConfig, req);
+        const fetchResult = await fetchOne(modelType, methodConfig, req, true);
 
         // postFetch
         const postFetchResult = await postFetch(methodConfig, req, fetchResult);
@@ -264,7 +264,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
         await preFetch(submethodConfig, req);
 
         // fetch - parent
-        const fetchParentResult = await fetchOne(modelType, methodConfig, req);
+        const fetchParentResult = await fetchOne(modelType, methodConfig, req, false);
 
         // postFetch - parent
         const postFetchParentResult = await postFetch(methodConfig, req, fetchParentResult);
@@ -315,7 +315,7 @@ export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
         await preFetch(methodConfig, req);
 
         // fetch
-        const fetchResult = await fetchOne(modelType, methodConfig, req);
+        const fetchResult = await fetchOne(modelType, methodConfig, req, true);
 
         // postFetch
         const postFetchResult = await postFetch(methodConfig, req, fetchResult);
@@ -373,7 +373,7 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
         await preFetch(methodConfig, req);
 
         // fetch
-        const fetchResult = await fetchOne(modelType, methodConfig, req);
+        const fetchResult = await fetchOne(modelType, methodConfig, req, true);
 
         // postFetch
         const postFetchResult = await postFetch(methodConfig, req, fetchResult);
