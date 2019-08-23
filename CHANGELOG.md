@@ -1,3 +1,6 @@
+## 1.1.3 - 2019-08-23
+Allow one() to use a filter (`GET ?q=...`), the same way all() does.
+
 ## 1.1.2 - 2019-08-16
 Add onError() global handler.
 

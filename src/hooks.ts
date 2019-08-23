@@ -51,9 +51,14 @@ export async function fetchCreate<T extends RestgooseModel>(modelType: Model<T &
 export async function fetchOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
     Promise<T & Document> {
 
+    const query = (req.restgoose || {}).query || {};
+
     return methodConfig.fetch ?
         methodConfig.fetch(req, modelType) as Promise<T & Document> :
-        modelType.findById(req.params.id);
+        modelType.findOne({ $and: [
+            { _id: req.params.id },
+            query,
+        ]});
 }
 
 export async function postFetch<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entity: T):
