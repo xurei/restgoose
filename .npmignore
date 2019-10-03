@@ -21,3 +21,6 @@ wercker.yml
 _site
 .sass-cache
 lab
+*.sh
+*.zip
+/scripts
