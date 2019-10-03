@@ -12,6 +12,7 @@ import {
     MiddlewarePreFetch,
     MiddlewarePreSave,
     RestMethodName,
+    RestRequest,
 } from '../types';
 
 export function rest<T extends RestgooseModel>(config: RestConfiguration<T>) {
@@ -76,6 +77,7 @@ export interface RestConfigurationMethod<T extends RestgooseModel> {
     preSave?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
     persist?: MiddlewarePersist<T>;
     preSend?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
+    onError?: (req: RestRequest, error: any) => Promise<any>;
 }
 
 export interface RestConfigurationMethodWithPath<T extends RestgooseModel> extends RestConfigurationMethod<T> {

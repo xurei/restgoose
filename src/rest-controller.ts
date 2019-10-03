@@ -24,7 +24,7 @@ export const ERROR_VALIDATION_NAME: string = 'ValidationError';
 export const ERROR_BAD_FORMAT_CODE: string = 'BAD_FORMAT';
 
 export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
         // getModel
@@ -49,7 +49,7 @@ export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
 export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
     modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
     propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
         // getModel - parent
@@ -108,7 +108,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
 }
 
 export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
 
@@ -152,7 +152,7 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
 export function createWithin<T extends RestgooseModel, S extends RestgooseModel>(
     modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
     propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel - parent
         const modelType = await getModel(modelEntry, req);
 
@@ -223,7 +223,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
 }
 
 export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
 
@@ -254,7 +254,7 @@ export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
 export function oneWithin<T extends RestgooseModel, S extends RestgooseModel>(
 modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>,
 propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
         // getModel - parent
@@ -307,7 +307,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
 }
 
 export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
 
@@ -339,7 +339,7 @@ export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
 }
 
 export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         req = parseQuery(req);
 
         // getModel
@@ -365,7 +365,7 @@ export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T
 }
 
 export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
-    return wrapException(async (req: RestRequest, res: Response) => {
+    return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
         const modelType = await getModel(modelEntry, req);
 
@@ -422,43 +422,58 @@ function updateDocument<T extends RestgooseModel>(entity: T & Document, payload:
 }
 
 // Centralize exception management
-function wrapException(fn: (req: RestRequest, res: Response) => void): (req: RestRequest, res: Response) => any {
+function wrapException<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, fn: (req: RestRequest, res: Response) => void): (req: RestRequest, res: Response) => any {
     return async (req: RestRequest, res: Response) => {
         try {
             return await fn.bind(this)(req, res);
         }
         catch (error) {
-            if (error instanceof RestError) {
-                const restError = error as RestError;
-                return res.status(restError.httpCode).send(restError.errorData);
-            }
-            else if (error instanceof CastError) {
-                error = error as CastError;
-                // tslint:disable-next-line:no-string-literal
-                if (error.path === '_id') {
-                    return res.status(404).json({
-                        code: ERROR_NOT_FOUND_CODE,
-                    });
-                }
-                else {
-                    debug(error);
-                    return res.status(400).json({
-                        code: ERROR_BAD_FORMAT_CODE,
-                        field: error.path,
-                    });
-                }
-            }
-            else if (error.name === ERROR_VALIDATION_NAME) {
-                debug(error);
-                return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });
-            }
-            else {
-                debug(error);
-                if (Restgoose.onError) {
-                    Restgoose.onError(req, error);
-                }
-                return res.status(500).end();
-            }
+            return handleException(methodConfig, req, res, error);
         }
     };
+}
+
+async function handleException<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, res: Response, error: any) {
+    if (error instanceof RestError) {
+        const restError = error as RestError;
+        return res.status(restError.httpCode).send(restError.errorData);
+    }
+    else if (error instanceof CastError) {
+        error = error as CastError;
+        // tslint:disable-next-line:no-string-literal
+        if (error.path === '_id') {
+            return res.status(404).json({
+                code: ERROR_NOT_FOUND_CODE,
+            });
+        }
+        else {
+            debug(error);
+            return res.status(400).json({
+                code: ERROR_BAD_FORMAT_CODE,
+                field: error.path,
+            });
+        }
+    }
+    else if (error.name === ERROR_VALIDATION_NAME) {
+        debug(error);
+        return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });
+    }
+    else {
+        debug(error);
+        let customError = null;
+        if (methodConfig.onError) {
+            customError = await methodConfig.onError(req, error);
+        }
+        if (!customError && Restgoose.onError) {
+            customError = await Restgoose.onError(req, error);
+        }
+
+        if (customError) {
+            const restError = customError as RestError;
+            return res.status(restError.httpCode).send(restError.errorData);
+        }
+        else {
+            return res.status(500).end();
+        }
+    }
 }

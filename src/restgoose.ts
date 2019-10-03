@@ -8,6 +8,7 @@ import { RestModelEntry, RestRegistry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
 import { Constructor, RestRequest } from './types';
+import { RestError } from './decorators/rest';
 
 export class Restgoose {
     private static ROUTES = {
@@ -24,7 +25,7 @@ export class Restgoose {
         one: { httpMethod: 'get', path: '/', fn: oneWithin },
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
-    public static onError: (req: RestRequest, error: any) => void = null;
+    public static onError: ((req: RestRequest, error: any) => Promise<RestError>) = null;
 
     public static initialize(modelTypes?: Constructor<RestgooseModel>[]) {
         const models = RestRegistry.listModels();

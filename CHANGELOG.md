@@ -1,3 +1,9 @@
+## 1.1.5 - 2019-10-03
+- `Restgoose.onError()`: changed API so it can return a `RestError` and be async. You can easily migrate by adding `async`
+  to your handler implementation and return null at the end. 
+- `@rest`: Add `onError()` in the decorator. It has precedence over `Restgoose.onError()`: if it is set and returns something but `null`,
+  `Restgoose.onError()` won't be called. 
+
 ## 1.1.4 - 2019-08-23
 Allow one() to use a filter (`GET ?q=...`), the same way all() does.
 
@@ -5,7 +11,10 @@ Allow one() to use a filter (`GET ?q=...`), the same way all() does.
 Broken, use 1.1.4
 
 ## 1.1.2 - 2019-08-16
-Add onError() global handler.
+Add `onError()` global handler. 
+
+This will be trigerred if an unknown error is thrown, i.e. not a `RestError`, nor a `ValidationError`. 
+Basically when the server would return 500 by default.
 
 ## 1.1.1 - 2019-08-14
 Add support for access to the previous value in `preSend` and `save` middlewares (when available).
