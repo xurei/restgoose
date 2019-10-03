@@ -1,6 +1,7 @@
 import { Response, Router } from 'express';
 import { Document } from 'mongoose';
 import { debug } from './debug';
+import { RestError } from './decorators/rest';
 import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './hooks';
 import { parseQuery } from './parse-query';
 import { all, allWithin, create, createWithin, one, oneWithin, remove, removeAll, update } from './rest-controller';
@@ -8,7 +9,6 @@ import { RestModelEntry, RestRegistry } from './rest-registry';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
 import { Constructor, RestRequest } from './types';
-import { RestError } from './decorators/rest';
 
 export class Restgoose {
     private static ROUTES = {

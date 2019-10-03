@@ -422,7 +422,8 @@ function updateDocument<T extends RestgooseModel>(entity: T & Document, payload:
 }
 
 // Centralize exception management
-function wrapException<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, fn: (req: RestRequest, res: Response) => void): (req: RestRequest, res: Response) => any {
+function wrapException<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, fn: (req: RestRequest, res: Response) => void):
+    (req: RestRequest, res: Response) => any {
     return async (req: RestRequest, res: Response) => {
         try {
             return await fn.bind(this)(req, res);
