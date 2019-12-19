@@ -1,3 +1,7 @@
+## 1.1.6 - 2019-12-19
+- Bugfix : in some cases, the mongoose `save()` was not awaited, hense leading to errors if you updated the entity 
+  in `preSend`. You should update to this version as soone as possible.
+    
 ## 1.1.5 - 2019-10-03
 - `Restgoose.onError()`: changed API so it can return a `RestError` and be async. You can easily migrate by adding `async`
   to your handler implementation and return null at the end. 
