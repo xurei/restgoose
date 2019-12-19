@@ -20,11 +20,11 @@ export async function getModel<T extends RestgooseModel>(modelEntry: RestModelEn
 }
 
 export async function preFetch<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest):
-    Promise<boolean> {
+    Promise<any> {
 
     return methodConfig.preFetch ?
-        methodConfig.preFetch(req, null) :
-        Promise.resolve(null);
+        await methodConfig.preFetch(req, null) :
+        null;
 }
 
 export async function fetchAll<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest):
@@ -44,8 +44,8 @@ export async function fetchCreate<T extends RestgooseModel>(modelType: Model<T &
     Promise<T & Document> {
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req, modelType) as Promise<T & Document> :
-        Promise.resolve(new modelType({}));
+        await methodConfig.fetch(req, modelType) as T & Document :
+        await Promise.resolve(new modelType({}));
 }
 
 export async function fetchOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>, req: RestRequest,
@@ -53,8 +53,8 @@ export async function fetchOne<T extends RestgooseModel>(modelType: Model<T & Do
     const query = useFilter ? (req.restgoose || {}).query || {} : {};
 
     return methodConfig.fetch ?
-        methodConfig.fetch(req, modelType) as Promise<T & Document> :
-        modelType.findOne({ $and: [
+        await methodConfig.fetch(req, modelType) as T & Document :
+        await modelType.findOne({ $and: [
             { _id: req.params.id },
             query,
         ]});
@@ -66,8 +66,8 @@ export async function postFetch<T extends RestgooseModel>(methodConfig: RestConf
     const promise: Promise<any> = Promise.resolve(entity);
 
     return methodConfig.postFetch ?
-        promise.then(entity => entity && methodConfig.postFetch(req, entity)) :
-        promise;
+        await promise.then(entity => entity && methodConfig.postFetch(req, entity)) :
+        await promise;
 }
 
 export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: (T & Document)[]):
@@ -78,7 +78,7 @@ export async function postFetchAll<T extends RestgooseModel>(methodConfig: RestC
         return out.filter(e => !!e);
     }
     else {
-        return Promise.resolve(entities);
+        return entities;
     }
 }
 
@@ -89,8 +89,8 @@ export async function preSave<T extends RestgooseModel>(methodConfig: RestConfig
     const promise: Promise<any> = Promise.resolve(newEntity);
 
     return methodConfig.preSave ?
-        promise.then(entity => entity && methodConfig.preSave(req, newEntity, oldEntity)) :
-        promise;
+        await promise.then(entity => entity && methodConfig.preSave(req, newEntity, oldEntity)) :
+        await promise;
 }
 
 export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, oldEntities: (T & Document)[],
@@ -98,8 +98,8 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
     Promise<(T & Document)[]> {
 
     return methodConfig.preSave ?
-        Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, newEntity, oldEntities[index]) as Promise<T & Document>)) :
-        Promise.resolve(newEntities);
+        await Promise.all(newEntities.map(async (newEntity, index) => methodConfig.preSave(req, newEntity, oldEntities[index]) as Promise<T & Document>)) :
+        newEntities;
 }
 
 export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,
@@ -107,8 +107,8 @@ export async function persistSave<T extends RestgooseModel>(methodConfig: RestCo
     Promise<T & Document> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistSave<T>)(req, entity, oldEntity) as Promise<T & Document> :
-        entity.save();
+        await (methodConfig.persist as MiddlewarePersistSave<T>)(req, entity, oldEntity) as T & Document :
+        await entity.save();
 }
 
 export async function persistDeleteAll<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
@@ -118,8 +118,8 @@ export async function persistDeleteAll<T extends RestgooseModel>(modelType: Mode
     const out = entities.filter(e => !!e);
 
     return methodConfig.persist ?
-            (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(req, entities) :
-            modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
+        await (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(req, entities) :
+        await modelType.deleteMany({ _id: { $in: out.map(e => e._id) }}).then(() => true);
 }
 
 export async function persistDeleteOne<T extends RestgooseModel>(modelType: Model<T & Document>, methodConfig: RestConfigurationMethod<T>,
@@ -127,8 +127,8 @@ export async function persistDeleteOne<T extends RestgooseModel>(modelType: Mode
     Promise<boolean> {
 
     return methodConfig.persist ?
-        (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(req, entity) :
-        modelType.deleteOne({ _id: entity._id }).then(() => true);
+        await (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(req, entity) :
+        await modelType.deleteOne({ _id: entity._id }).then(() => true);
 }
 
 export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,
@@ -138,14 +138,14 @@ export async function preSend<T extends RestgooseModel>(methodConfig: RestConfig
     const promise: Promise<any> = Promise.resolve(entity);
 
     return methodConfig.preSend ?
-        promise.then(entity => entity && methodConfig.preSend(req, entity, oldEntity)) :
-        promise;
+        await promise.then(entity => entity && methodConfig.preSend(req, entity, oldEntity)) :
+        await promise;
 }
 
 export async function preSendAll<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest, entities: (T & Document)[]):
     Promise<(T & Document)[]> {
 
     return methodConfig.preSend ?
-        Promise.all(entities.map(async entity => methodConfig.preSend(req, entity) as Promise<T & Document>)) :
-        Promise.resolve(entities);
+        await Promise.all(entities.map(async entity => methodConfig.preSend(req, entity) as Promise<T & Document>)) :
+        entities;
 }
