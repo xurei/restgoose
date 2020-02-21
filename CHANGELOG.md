@@ -1,3 +1,6 @@
+## 1.1.7 - 2020-02-21
+- Security update: mongoose dependency
+
 ## 1.1.6 - 2019-12-19
 - Bugfix : in some cases, the mongoose `save()` was not awaited, hense leading to errors if you updated the entity 
   in `preSend`. You should update to this version as soone as possible.
