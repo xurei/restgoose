@@ -1,3 +1,6 @@
+## 1.1.8 - 2020-10-09
+- Moved `@types/mongoose` as a dependency instead of devDependency
+
 ## 1.1.7 - 2020-02-21
 - Security update: mongoose dependency
 
