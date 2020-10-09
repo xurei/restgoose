@@ -49,7 +49,7 @@
     "chai-http": "^4.2.1",
     "chai-match-pattern": "^1.1.0",
     "codacy-coverage": "^3.4.0",
-    "codecov": "^3.5.0",
+    "codecov": "^3.8.0",
     "cors": "^2.8.4",
     "dirty-chai": "^2.0.1",
     "express": "^4.16.3",
