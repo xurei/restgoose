@@ -14,13 +14,16 @@ We assume that you are already familiar with those concepts and technologies:
 - Node.js
 - Express
 - Typescript
-- [Typegoose](https://github.com/szokodiakos/typegoose)
-- MongoDB
 - How RESTful APIs work, specifically how HTTP methods should be used  
+
+You will also need a local MongoDB server. You can spawn one by using this command (Docker required):
+```bash
+docker run --name mongo -p 27017:27017 mongo:3.7.2
+``` 
 
 ------
 
-## 1. Define the API requirements
+## 1. Define the API specs
 In this tutorial, we will create an IMDB-like REST API listing movies and actors.
 It will be possible for authorized users to add/update/delete actors or movies.
 
@@ -45,9 +48,18 @@ First we need to setup a working server. Let's start a new typescript project.
 mkdir restgoose-getting-started
 cd restgoose-getting-started
 npm init -y
-npm install typescript express typegoose mongoose body-parser @xureilab/restgoose reflect-metadata
-npm install --save --dev @types/node @types/express @types/mongoose
+npm install express body-parser @xureilab/restgoose reflect-metadata
+npm install --save --dev typescript @types/node @types/express @types/mongoose
 ```
+
+In this example, we will using a MongoDB database. We will use the `mongoose` to simplify the setup. 
+Notice that, in theory, you can use any database you like by extending the @prop.fetch option. 
+More on that below.
+
+For now, let's just install mongoose.
+```bash 
+npm install mongoose
+```  
 
 Add the `build` and `start` scripts.
  
@@ -83,12 +95,11 @@ Add the `build` and `start` scripts.
 Notice the presence of `experimentalDecorators` and `emitDecoratorMetadata`. 
 Those are important for restgoose to work.
 
-For the main file, business as usual: we setup express, connect to the database and listen on port 3000. 
+For the main file, business as usual: we setup express, connect to the database and listen on port 3000.
 
 **src/server.ts:**
 ```typescript
 import * as express from 'express';
-import { prop, Typegoose } from 'typegoose';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
 
@@ -135,32 +146,32 @@ Our API will contain two models: Movie and Actor.
 
 **src/movie.ts:**
 ```typescript
-import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
 import { Actor } from './actor';
 
-export class Movie extends Typegoose {
+export class Movie extends RestgooseModel {
     @prop({required: true})
     name: string;
     
     @prop({required: true})
     description: string;
     
-    @arrayProp({itemsRef: {name: Actor}})
-    actors?: Ref<Actor>[];
+    @arrayProp({items: Actor})
+    actors?: ObjectId[];
 }
 ```
 
 **src/actor.ts:**
 ```typescript
-import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
 import { Movie } from './movie';
 
-export class Actor extends Typegoose {
+export class Actor extends RestgooseModel {
     @prop({required: true})
     name: string;
     
-    @arrayProp({itemsRef: {name: Movie}})
-    movies?: Ref<Movie>[];
+    @arrayProp({items: Movie})
+    movies?: ObjectId[];
 }
 ```
 
@@ -174,7 +185,7 @@ We will take care of that in the next step.
 ## 4. Decorate the models with the `@rest()` decorator
 Restgoose is Model-driven. 
 It means that the endpoints and their behavior are defined by the models and their decorators. 
-A pure restgoose server can live without any controller or router. 
+A pure restgoose server can live without any implementation of controllers or routers. 
 In fact, restgoose will create them for you.
 
 The main decorator of restgoose is `@rest()`. 
@@ -194,7 +205,7 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 
 **src/movie.ts:**
 ```typescript
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Actor } from './actor';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
         
@@ -208,21 +219,21 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 /*+*/         remove(), //DElETE /movies/:id
 /*+*/     ],
 /*+*/ })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
           @prop({required: true})
           description: string;
           
-          @arrayProp({itemsRef: {name: Actor}})
-          actors?: Ref<Actor>[];
+          @arrayProp({items: Actor})
+          actors?: ObjectId[];
       }
 ```
 
 **src/actor.ts:**
-```typescript        
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+```typescript
+      import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Movie } from './movie';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
 
@@ -236,12 +247,12 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 /*+*/         remove(), //DElETE /actors/:id
 /*+*/     ],
 /*+*/ })
-      export class Actor extends Typegoose {
+      export class Actor extends RestgooseModel {
           @prop({required: true})
           name: string;
           
-          @arrayProp({itemsRef: {name: Movie}})
-          movies?: Ref<Movie>[];
+          @arrayProp({items: Movie})
+          movies?: ObjectId[];
       }
 ```
 
@@ -384,7 +395,7 @@ If it's defined and equals to `super-secret`, the promise it returns completes. 
 
 **src/movie.ts:**
 ```typescript
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
+      import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Actor } from './actor';
       import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
 /*+*/ import { verifyToken } from './verifytoken';
@@ -405,15 +416,15 @@ If it's defined and equals to `super-secret`, the promise it returns completes. 
 /*+*/         }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
           @prop({required: true})
           description: string;
           
-          @arrayProp({itemsRef: {name: Actor}})
-          actors?: Ref<Actor>[];
+          @arrayProp({items: Actor})
+          actors?: ObjectId[];
       }
 ```  
 
@@ -469,7 +480,7 @@ This time, we will use the `preSend` hook. Note that we can also use the `postFe
 import { Request } from 'express';
 import { Typegoose } from 'typegoose';
 
-export function keepFields<T extends Typegoose>(...fieldNames: string[]) {
+export function keepFields<T extends RestgooseModel>(...fieldNames: string[]) {
     return async function(req: Request, entity: T) {
         const out = {};
         fieldNames.forEach(name => {
@@ -515,15 +526,15 @@ Let's use this function in our model:
               }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
           @prop({required: true})
           description: string;
           
-          @arrayProp({itemsRef: {name: Actor}})
-          actors?: Ref<Actor>[];
+          @arrayProp({items: Actor})
+          actors?: ObjectId[];
       }
 ```  
 
@@ -634,15 +645,15 @@ And we add this in the model definition:
               }), 
           ],
       })
-      export class Movie extends Typegoose {
+      export class Movie extends RestgooseModel {
           @prop({required: true})
           name: string;
           
           @prop({required: true})
           description: string;
           
-          @arrayProp({itemsRef: {name: Actor}})
-          actors?: Ref<Actor>[];
+          @arrayProp({items: Actor})
+          actors?: ObjectId[];
       }
 ```  
 

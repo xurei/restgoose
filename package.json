@@ -13,6 +13,7 @@
     "prepublishOnly": "npm run build",
     "tslint": "node_modules/.bin/tslint -p .",
     "tslint:fix": "tslint -p tsconfig.json --fix",
+    "mongoserver": "docker run --name mongo -p 27017:27017 mongo:3.7.2",
     "test": "node_modules/.bin/nyc mocha --opts ./mocha.opts test/*.ts",
     "coverage": "node_modules/.bin/nyc report --reporter=json --reporter=lcov",
     "coverage:codecov": "node_modules/.bin/codecov -f coverage/*.json",
@@ -32,9 +33,13 @@
   },
   "author": "Olivier Bourdoux",
   "license": "MIT",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "@types/mongoose": "~5.2.15"
+  },
   "peerDependencies": {
-    "express": "^4.0.0",
-    "mongoose": "^5.7.7"
+    "express": ">=4.0.0",
+    "typescript": ">=3.3.4000"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -68,9 +73,5 @@
     "ts-node": "^8.0.3",
     "tslint": "^5.18.0",
     "typescript": "^3.3.4000"
-  },
-  "dependencies": {
-    "debug": "^4.1.1",
-    "@types/mongoose": "~5.2.15"
   }
 }
