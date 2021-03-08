@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { RestgooseModel } from './restgoose-model';
 import { MiddlewarePostFetch, MiddlewarePreFetch, MiddlewarePreSave  } from './types';
 
-type MiddlewarePrePost<T extends RestgooseModel> = MiddlewarePreFetch | MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
+type MiddlewarePrePost<T extends RestgooseModel> = MiddlewarePreFetch<T> | MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
 
 /**
  * Compose several middlewares with a logical OR operation.

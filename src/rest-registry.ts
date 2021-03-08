@@ -89,6 +89,10 @@ const RestRegistry = {
         return models.get(modelType.name);
     },
 
+    getPropertyOf<T extends RestgooseModel>(modelType: Constructor<T>, name: string): RestPropEntry<any> {
+        return properties.get(modelType.name).get(name);
+    },
+
     listModels(): Iterable<RestModelEntry<RestgooseModel>> {
         return models.values();
     },

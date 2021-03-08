@@ -6,14 +6,14 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "node_modules/.bin/rimraf lib && npm run tslint && npm run build-ts",
+    "build": "node_modules/.bin/rimraf lib/* && npm run tslint && npm run build-ts",
     "build-ts": "node_modules/.bin/tsc -p .",
     "build-examples": "node_modules/.bin/tsc -p examples",
     "serve-doc": "sh scripts/serve-doc.sh",
     "prepublishOnly": "npm run build",
     "tslint": "node_modules/.bin/tslint -p .",
     "tslint:fix": "tslint -p tsconfig.json --fix",
-    "mongoserver": "docker run --name mongo -p 27017:27017 mongo:3.7.2",
+    "mongoserver": "docker run --rm --name mongo -p 27017:27017 mongo:4.4.4",
     "test": "node_modules/.bin/nyc mocha --opts ./mocha.opts test/*.ts",
     "coverage": "node_modules/.bin/nyc report --reporter=json --reporter=lcov",
     "coverage:codecov": "node_modules/.bin/codecov -f coverage/*.json",
@@ -34,8 +34,7 @@
   "author": "Olivier Bourdoux",
   "license": "MIT",
   "dependencies": {
-    "debug": "^4.1.1",
-    "@types/mongoose": "~5.2.15"
+    "debug": "^4.1.1"
   },
   "peerDependencies": {
     "express": ">=4.0.0",
@@ -44,13 +43,11 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/chai-http": "^3.0.5",
-    "@types/es6-promise": "^3.3.0",
-    "@types/express": "^4.16.1",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^8.10.44",
     "@types/sinon": "^7.0.10",
     "@types/sinon-chai": "^3.2.2",
-    "chai": "^4.1.2",
+    "@xureilab/restgoose-mongodb-connector": "file:../restgoose-mongodb-connector",
+    "chai": "^4.1.7",
     "chai-http": "^4.2.1",
     "chai-match-pattern": "^1.1.0",
     "codacy-coverage": "^3.4.0",
@@ -62,7 +59,7 @@
     "mocha": "^6.1.4",
     "mock-req": "^0.2.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.10.9",
+    "mongoose": "^5.11.19",
     "nyc": "^13.3.0",
     "promise": "^8.0.3",
     "reflect-metadata": "^0.1.13",
@@ -72,6 +69,6 @@
     "sinon-chai": "^3.3.0",
     "ts-node": "^8.0.3",
     "tslint": "^5.18.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^4.2.3"
   }
 }

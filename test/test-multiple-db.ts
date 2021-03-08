@@ -16,11 +16,11 @@ const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-
     /*getModel: async (req: express.Request, model: Constructor<Item>) => {
         return model.prototype.getModelForClass({ existingConnection: connectionA });
     },*/
-    getConnection: async(req: express.Request) => {
+    /*getConnection: async(req: express.Request) => {
         const clientName = req.baseUrl.split('/')[1];
         //console.log(clientName);
         return clientName === 'dba' ? connectionA : connectionB;
-    },
+    },*/
     route: '/items',
     methods: [
         all(), // GET /todos

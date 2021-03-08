@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "esnext",
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
@@ -8,6 +8,9 @@
     "outDir": "lib",
     "sourceMap": true
   },
+  "lib": [
+    "esnext.bigint"
+  ],
   "include": [
     "src/**/*.ts"
   ],

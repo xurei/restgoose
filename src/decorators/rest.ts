@@ -1,6 +1,4 @@
 import { Request } from 'express';
-import { Connection } from 'mongoose';
-import { SchemaOptions } from 'mongoose';
 import { RestRegistry } from '../rest-registry';
 import { RestgooseModel } from '../restgoose-model';
 import {
@@ -65,16 +63,14 @@ export function custom<T extends RestgooseModel>(httpMethod: string, path: HttpM
 
 export interface RestConfiguration<T extends RestgooseModel> {
     route: string;
-    schemaOptions?: SchemaOptions;
-    getConnection?: (req: Request) => Promise<Connection>;
     methods?: RestConfigurationMethodWithPath<T>[];
 }
 
 export interface RestConfigurationMethod<T extends RestgooseModel> {
-    preFetch?: MiddlewarePreFetch | MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
+    preFetch?: MiddlewarePreFetch<T>;
     fetch?: MiddlewareFetch<T>;
-    postFetch?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
-    preSave?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
+    postFetch?: MiddlewarePostFetch<T>;
+    preSave?: MiddlewarePreSave<T>;
     persist?: MiddlewarePersist<T>;
     preSend?: MiddlewarePostFetch<T> | MiddlewarePreSave<T>;
     onError?: (req: RestRequest, error: any) => Promise<any>;

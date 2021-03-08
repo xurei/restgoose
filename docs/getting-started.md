@@ -146,6 +146,7 @@ Our API will contain two models: Movie and Actor.
 
 **src/movie.ts:**
 ```typescript
+import { ObjectId } from 'mongoose';
 import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
 import { Actor } from './actor';
 
@@ -163,6 +164,7 @@ export class Movie extends RestgooseModel {
 
 **src/actor.ts:**
 ```typescript
+import { ObjectId } from 'mongoose';
 import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
 import { Movie } from './movie';
 
@@ -205,6 +207,7 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 
 **src/movie.ts:**
 ```typescript
+      import { ObjectId } from 'mongoose';
       import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Actor } from './actor';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
@@ -233,6 +236,7 @@ To add the REST endpoints, we just need to add this decorator on top of the mode
 
 **src/actor.ts:**
 ```typescript
+      import { ObjectId } from 'mongoose';
       import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Movie } from './movie';
 /*+*/ import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
@@ -375,13 +379,13 @@ We should stop the execution as soon as possible if the user does not have acces
 import { Request } from 'express';
 import { RestError } from '@xureilab/restgoose';
 
-export async function verifyToken(req: Request): Promise<boolean> {
+export async function verifyToken(req: Request): Promise<any> {
     if (!(req.headers && req.headers['authorization'])) {
         throw new RestError(401, { code: 'UNAUTHENTICATED' });
     }
     else {
         if (req.headers['authorization'] === 'super-secret') {
-            return true;
+            return null; //Returning null does not break the flow. Only exceptions do.
         }
         else {
             throw new RestError(401, { code: 'UNAUTHENTICATED' });
@@ -395,6 +399,7 @@ If it's defined and equals to `super-secret`, the promise it returns completes. 
 
 **src/movie.ts:**
 ```typescript
+      import { ObjectId } from 'mongoose';
       import { RestgooseModel, prop, arrayProp } from '@xureilab/restgoose';
       import { Actor } from './actor';
       import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
@@ -602,7 +607,7 @@ We will create a `preFetch` hook that will add a `skip` and `limit` options in t
 ```typescript
 import { RestRequest } from '@xureilab/restgoose';
 
-export async function addPagination(req: RestRequest): Promise<boolean> {
+export async function addPagination(req: RestRequest): Promise<any> {
     const query = req.query || {};
     const skip = query.page * 20;
 
@@ -610,7 +615,7 @@ export async function addPagination(req: RestRequest): Promise<boolean> {
         skip: skip,
         limit: 20
     });
-    return true;
+    return null; //Reminder: returning null does not break the flow. Only exceptions do.
 }
 ```
 
@@ -619,9 +624,9 @@ This function limits the database requests to 20 objects, and uses the `page` qu
 And we add this in the model definition:
 **src/movie.ts:**
 ```typescript
-      import { Typegoose, prop, arrayProp, Ref } from 'typegoose';
       import { Actor } from './actor';
-      import { all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
+      import { ObjectId } from 'mongoose';
+      import { RestgooseModel, all, and, asFilter, create, one, remove, rest, RestError, update } from '@xureilab/restgoose';
       import { verifyToken } from './verifytoken';
       import { keepFields } from './keepfields';
 /*+*/ import { addPagination } from './addpagination';

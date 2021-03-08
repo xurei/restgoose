@@ -197,66 +197,6 @@ describe('Minimal TODO API', function() {
             });
         });
 
-        describe('getAll()', function() {
-            it('should contain the same data as all()', function() {
-                let fromAll = null;
-                let fromGetAll = null;
-
-                return Promise.resolve()
-                .then(() => restTester.get('/todos')) // all()
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(200);
-                    fromAll = body;
-                    return Restgoose.getAll(Todo, new MockReq());
-                })
-                .then((data) => {
-                    fromGetAll = data.map(item => JSON.parse(JSON.stringify(item)));
-                    expect(fromGetAll).to.deep.eq(fromAll);
-                    return true;
-                })
-            });
-
-            //TODO check all() defined
-        });
-
-        describe('getOne()', function() {
-            it('should contain the same data as one()', function() {
-                let fromOne = null;
-                let fromGetOne = null;
-                let newId = null;
-
-                return Promise.resolve()
-                .then(() => restTester.post('/todos', {
-                    title: 'blah'
-                }))
-                .then(res => {
-                    const body = res.body as any;
-                    newId = body._id;
-                })
-                .then(() => restTester.get('/todos/'+newId)) // one()
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(200);
-                    fromOne = body;
-                    const req = new MockReq();
-                    req.params = {
-                        id: `${newId}`
-                    };
-                    return Restgoose.getOne(Todo, req);
-                })
-                .then((item) => {
-                    fromGetOne = JSON.parse(JSON.stringify(item));
-                    expect(fromGetOne).to.deep.eq(fromOne);
-                    return true;
-                })
-            });
-
-            //TODO check one() defined
-        });
-
         describe('all() with filter', function() {
             it('should filter the returned documents', function () {
                 return Promise.resolve()

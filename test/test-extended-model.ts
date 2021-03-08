@@ -21,9 +21,6 @@ class ParentItem extends RestgooseModel {
 }
 
 @rest({
-    getConnection: async(req: express.Request) => {
-        return connectionA;
-    },
     route: '/items',
     methods: [
         all(), // GET /todos

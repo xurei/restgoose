@@ -1,19 +1,19 @@
 import { Response } from 'express';
-import { CastError, Document, Types } from 'mongoose';
 import { debug } from './debug';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
 import {
-    fetchAll, fetchCreate, fetchOne, getModel,
+    fetchAll, fetchCreate, fetchOne,
     persistDeleteAll, persistDeleteOne,
     persistSave, postFetch, postFetchAll, preFetch, preSave,
     preSaveAll, preSend, preSendAll,
 } from './hooks';
 import { parseQuery } from './parse-query';
 import { buildPayload } from './request-util';
-import { RestModelEntry, RestPropEntry } from './rest-registry';
+import { RestModelEntry, RestPropEntry, RestRegistry } from './rest-registry';
 import { Restgoose } from './restgoose';
 import { RestgooseModel } from './restgoose-model';
+import { isPrimitive } from './type-checks';
 import { Constructor, Dic, RestRequest } from './types';
 
 export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
@@ -28,7 +28,7 @@ export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, met
         req = parseQuery(req);
 
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -53,7 +53,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
         req = parseQuery(req);
 
         // getModel - parent
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch - parent
         await preFetch(submethodConfig, req);
@@ -87,7 +87,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
                     type: propEntry.type[0] as Constructor<S>,
                     restConfig: propEntry.restConfig,
                 };
-                const submodelType = await getModel(submodelEntry, req);
+                const submodelType = submodelEntry.type;
 
                 // fetch - sub
                 fetchSubResult = await fetchAll(submodelType, submethodConfig, req);
@@ -110,7 +110,7 @@ export function allWithin<T extends RestgooseModel, S extends RestgooseModel>(
 export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -130,10 +130,10 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
         else {
             // merge
             const payload = buildPayload(req, modelType);
-            const prev = postFetchResult.toObject();
+            const prev = {...postFetchResult} as T;
 
             // updates initial doc
-            updateDocument(postFetchResult, payload);
+            //updateDocument(postFetchResult, payload);
 
             // preSave
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
@@ -154,7 +154,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
     propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel - parent
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch - parent
         await preFetch(submethodConfig, req);
@@ -182,7 +182,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                     type: propEntry.type[0] as Constructor<S>,
                     restConfig: propEntry.restConfig,
                 };
-                const submodelType = await getModel(submodelEntry, req);
+                const submodelType = submodelEntry.type;
 
                 // fetch - sub
                 const fetchSubResult = await fetchCreate(submodelType, submethodConfig, req);
@@ -192,7 +192,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
 
                 // merge
                 const payload = buildPayload(req, submodelType);
-                prev = postFetchSubResult.toObject();
+                prev = { ...postFetchSubResult };
 
                 // updates initial sub doc
                 updateDocument(postFetchSubResult, payload);
@@ -225,7 +225,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
 export function one<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -258,7 +258,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
         req = parseQuery(req);
 
         // getModel - parent
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch - parent
         await preFetch(submethodConfig, req);
@@ -309,7 +309,7 @@ propEntry: RestPropEntry<S>, submethodConfig: RestConfigurationMethod<S>) {
 export function remove<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -343,7 +343,7 @@ export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T
         req = parseQuery(req);
 
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -367,7 +367,7 @@ export function removeAll<T extends RestgooseModel>(modelEntry: RestModelEntry<T
 export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
         // getModel
-        const modelType = await getModel(modelEntry, req);
+        const modelType = modelEntry.type;
 
         // preFetch
         await preFetch(methodConfig, req);
@@ -387,7 +387,7 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
         else {
             // merge
             const payload = buildPayload(req, modelType);
-            const prev = postFetchResult.toObject();
+            const prev = { ...postFetchResult };
             //const mergeResult = Object.assign({}, postFetchResult, payload);
 
             // updates doc
@@ -410,15 +410,18 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
 /**
  * Deeply updates a mongoose document with a JSON object
  */
-function updateDocument<T extends RestgooseModel>(entity: T & Document, payload: Dic) {
-    for (const key in payload) {
-        if (entity[key] instanceof Types.Subdocument) {
-            updateDocument(entity[key], payload[key]);
+function updateDocument<T extends RestgooseModel>(entity: T, payload: Dic) {
+    const properties = RestRegistry.listPropertiesOf(entity.constructor as Constructor<T>) as any;
+    properties.forEach(prop => {
+        if (payload[prop.name]) {
+            if (isPrimitive(prop.type[0])) {
+                updateDocument(entity[prop.name], payload[prop.name]);
+            }
+            else {
+                entity[prop.name] = payload[prop.name];
+            }
         }
-        else {
-            entity[key] = payload[key];
-        }
-    }
+    });
 }
 
 // Centralize exception management
@@ -439,7 +442,7 @@ async function handleException<T extends RestgooseModel>(methodConfig: RestConfi
         const restError = error as RestError;
         return res.status(restError.httpCode).send(restError.errorData);
     }
-    else if (error instanceof CastError) {
+    /*else if (error instanceof CastError) {
         error = error as CastError;
         // tslint:disable-next-line:no-string-literal
         if (error.path === '_id') {
@@ -454,7 +457,7 @@ async function handleException<T extends RestgooseModel>(methodConfig: RestConfi
                 field: error.path,
             });
         }
-    }
+    }*/
     else if (error.name === ERROR_VALIDATION_NAME) {
         debug(error);
         return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });

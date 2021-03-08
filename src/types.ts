@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import { Document, Model } from 'mongoose';
 import { RestgooseModel } from './restgoose-model';
 
 export type Constructor<T> = new(...args: any[]) => T;
@@ -8,13 +7,11 @@ export interface Dic {
 }
 export type CallbackFn = (err?: Error) => void;
 
-export type RestgooseDocument<T extends RestgooseModel> = T & Document;
+export type MiddlewarePreSave<T extends RestgooseModel> = (req: Request, entity: T, oldEntity?: T) => Promise<T>;
+export type MiddlewarePostFetch<T extends RestgooseModel> = MiddlewarePreSave<T> | ((req: Request, entity: T) => Promise<T>);
+export type MiddlewarePreFetch<T extends RestgooseModel> = MiddlewarePostFetch<T> | ((req: Request) => Promise<RestgooseModel>);
 
-export type MiddlewarePreFetch = (req: Request) => Promise<RestgooseModel> | RestgooseModel;
-export type MiddlewarePostFetch<T extends RestgooseModel> = (req: Request, entity: T) => Promise<T> | T;
-export type MiddlewarePreSave<T extends RestgooseModel> = (req: Request, entity: T, oldEntity?: T) => Promise<T> | T;
-
-export type MiddlewareFetch<T extends RestgooseModel> = (req: Request, modelType?: Model<T & Document>) => Promise<T | T[]>;
+export type MiddlewareFetch<T extends RestgooseModel> = (req: Request, modelType: Constructor<T>, useFilter: boolean) => Promise<T | T[]>;
 
 export type MiddlewarePersistDeleteAll<T extends RestgooseModel> = (req: Request, entities: T[]) => Promise<boolean>;
 export type MiddlewarePersistDeleteOne<T extends RestgooseModel> = (req: Request, entity: T) => Promise<boolean>;

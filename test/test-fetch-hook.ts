@@ -5,11 +5,11 @@ import { RestTester } from './util/rest-tester';
 
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
-import { Restgoose, RestgooseModel, prop, all, create, one, removeAll, rest, getModel } from '../lib';
+import { Restgoose, RestgooseModel, prop, all, create, one, removeAll, rest } from '../lib';
 import { Constructor } from '../lib/types';
 import { openDatabase } from './util/open-database';
 const sinon = require('sinon');
-
+/*
 const app = simpleServer();
 
 async function otherItemFetchAll(req: Request) {
@@ -180,3 +180,4 @@ describe('Fetch hook', function() {
 
     //TODO test an aggregate fetch (needs to add code in the example)
 });
+*/

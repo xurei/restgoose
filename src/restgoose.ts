@@ -1,11 +1,9 @@
-import { Response, Router } from 'express';
-import { Document } from 'mongoose';
+import { Router } from 'express';
 import { debug } from './debug';
 import { RestError } from './decorators/rest';
-import { fetchAll, fetchOne, getModel, postFetch, postFetchAll, preSend } from './hooks';
-import { parseQuery } from './parse-query';
 import { all, allWithin, create, createWithin, one, oneWithin, remove, removeAll, update } from './rest-controller';
 import { RestModelEntry, RestRegistry } from './rest-registry';
+import { RestgooseConnector } from './restgoose-connector';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
 import { Constructor, RestRequest } from './types';
@@ -26,6 +24,15 @@ export class Restgoose {
         create: { httpMethod: 'post', path: '/', fn: createWithin },
     };
     public static onError: ((req: RestRequest, error: any) => Promise<RestError>) = null;
+    private static connectorP;
+    public static get connector(): RestgooseConnector {
+        return Restgoose.connectorP;
+    }
+
+    public static setConnector(restgooseConnector?: RestgooseConnector) {
+        Restgoose.connectorP = restgooseConnector;
+
+    }
 
     public static initialize(modelTypes?: Constructor<RestgooseModel>[]) {
         const models = RestRegistry.listModels();
@@ -36,62 +43,6 @@ export class Restgoose {
             }
         }
         return router as any;
-    }
-
-    /**
-     * Simulates a REST call on the method one() and passes the result through the
-     * postFetch middlewares.
-     * NOTE : preFetch middlewares are NOT called
-     */
-    public static async getOne<T extends RestgooseModel>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
-        const model = RestRegistry.getModel(modelType);
-        const methods = model.restConfig.methods || [];
-        const method = methods.find(m => m.method === 'one');
-        if (!method) {
-            throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
-        }
-
-        const result = await fetchOne(await getModel(model, req), method, req, true);
-        return postFetch(method, req, result);
-    }
-
-    /**
-     * Passes the entity through the preSend of its one() primivite
-     */
-    public static async sendOne<T extends RestgooseModel>(
-        modelType: Constructor<T>, entity: T & Document, req: RestRequest,
-        res: Response, status: number = 200): Promise<any> /* TODO change any if possible */ {
-        const model = RestRegistry.getModel(modelType);
-        const methods = model.restConfig.methods || [];
-        const method = methods.find(m => m.method === 'one');
-        if (!method) {
-            throw new Error(`On model ${modelType.name}: primivite one() is not specified. Cannot use getOne()`);
-        }
-
-        const preSendResult = await preSend(method, req, null, entity);
-
-        res.status(status).json(preSendResult.toJSON());
-    }
-
-    /**
-     * Simulates a REST call on the method all() and passes the result through the
-     * postFetch middlewares.
-     * NOTE : preFetch middlewares are NOT called
-     */
-    public static async getAll<T extends RestgooseModel>(modelType: Constructor<T>, req: RestRequest): Promise<any> /* todo any */ {
-        if (!req.restgoose) {
-            req = parseQuery(req);
-        }
-
-        const model = RestRegistry.getModel(modelType);
-        const methods = model.restConfig.methods || [];
-        const method = methods.find(m => m.method === 'all');
-        if (!method) {
-            throw new Error(`On model ${modelType.name}: method all() is not specified. Cannot use getAll()`);
-        }
-
-        const result = await fetchAll(await getModel(model, req), method, req);
-        return postFetchAll(method, req, result);
     }
 
     private static createRestRoot<T extends RestgooseModel>(model: RestModelEntry<T>): Router {
@@ -110,7 +61,7 @@ export class Restgoose {
 
         const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
         const submodels = RestRegistry.listSubrestsOf(model.type);
-        const schema = model.type.prototype.buildSchema(model.restConfig.schemaOptions);
+        const schema = model.type.prototype.buildSchema();
         for (let submodel of submodels) {
             if (!methodOne) {
                 // TODO create a specific error class for Restgoose init errors
