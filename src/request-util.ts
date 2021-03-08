@@ -9,8 +9,8 @@ export function buildPayload<T extends RestgooseModel>(req: RestRequest, modelTy
     if (properties) {
         for (const prop of properties) {
             // TODO: search for RestgooseModel annotations and process them?
-            if (typeof(req.body[prop]) !== 'undefined') {
-                payload[prop] = req.body[prop];
+            if (typeof(req.body[prop.name]) !== 'undefined') {
+                payload[prop.name] = req.body[prop.name];
             }
         }
     }
