@@ -3,6 +3,8 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 
+import * as MockReq from 'mock-req';
+
 import { simpleServer } from './util/simple-server';
 import { Restgoose, RestgooseModel, prop, all, create, one, remove, removeAll, rest, update } from '../lib';
 import { openDatabase } from './util/open-database';
@@ -18,7 +20,7 @@ const app = simpleServer();
     ],
 })
 export class ArrayField extends RestgooseModel {
-    @prop({required: true})
+    @prop({/*required: true*/})
     data: string[];
 }
 

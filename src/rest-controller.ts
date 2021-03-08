@@ -133,7 +133,7 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const prev = {...postFetchResult} as T;
 
             // updates initial doc
-            //updateDocument(postFetchResult, payload);
+            updateDocument(postFetchResult, payload);
 
             // preSave
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);

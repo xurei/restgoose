@@ -1,7 +1,7 @@
 //import { Document, Model } from 'mongoose';
 import { RestConfigurationMethod } from './decorators/rest';
 import { RestModelEntry } from './rest-registry';
-import { Restgoose } from './restgoose';
+import { Restgoose, restgooseConnector } from './restgoose';
 import { RestgooseModel } from './restgoose-model';
 import {
     Constructor,
@@ -32,10 +32,12 @@ Promise<(T)[]> {
 }
 
 export async function fetchCreate<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>, req: RestRequest): Promise<T> {
-    return methodConfig.fetch ?
-        await methodConfig.fetch(req, modelType, true) as T :
-        await Restgoose.connector.create(modelType, req);
-        //Promise.resolve(new modelType({}));
+    if (methodConfig.fetch) {
+        return methodConfig.fetch(req, modelType, true) as Promise<T>;
+    }
+    else {
+        return restgooseConnector.create(modelType, req);
+    }
 }
 
 export async function fetchOne<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>, req: RestRequest,
