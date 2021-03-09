@@ -75,7 +75,7 @@ describe('Submodel - referenced', function() {
 
     let itemIds = null;
     before(function() {
-        return openDatabase('restgoose-test-submodel-referenced')
+        return openDatabase('restgoose-test')
         // deletes everything
         .then(() => restTester.delete('/items'))
         .then(res => {

@@ -41,7 +41,7 @@ describe('Field: Array', function() {
 
     before(function () {
         return (
-            openDatabase('restgoose-test-array-field')
+            openDatabase('restgoose-test')
             .then(() => restTester.delete('/items'))
             .then(res => {
                 expect(res.status).to.eq(204);

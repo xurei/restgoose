@@ -8,3 +8,4 @@ export * from './restgoose-connector';
 export * from './rest-registry';
 export * from './middleware-composers';
 export { RestRequest } from './types';
+export * from './constants';

@@ -1,98 +1,11 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
-import { convertOid, convertDate, convertFields } from '../lib/convert-fields';
-import { ObjectId } from 'bson';
+import { convertDate, convertFields } from '../lib/convert-fields';
 
 chai.use(dirtyChai);
 
 const expect = chai.expect;
-
-describe('convertOid', () => {
-    it('simple', () => {
-        const out = convertOid({author: {$oid: '000000000000000000000001'}});
-        expect(out).to.deep.eq({
-            author: new ObjectId('000000000000000000000001'),
-        })
-    });
-    it('with $ne', () => {
-        const out = convertOid({author: {$ne: {$oid: '000000000000000000000001'}}});
-        expect(out).to.deep.eq({
-            author: {$ne: new ObjectId('000000000000000000000001')},
-        })
-    });
-    it('with $and/$or', () => {
-        const out = convertOid({
-            $and: [
-                {
-                    $or: [
-                        { author: { $oid: '000000000000000000000001' } },
-                        { author: { $oid: '000000000000000000000002' } },
-                    ],
-                },
-                {
-                    $or: [
-                        { a: { $oid: '000000000000000000000003' } },
-                        { b: { $oid: '000000000000000000000004' } },
-                        { $or: [
-                                { c: { $oid: '000000000000000000000005' } },
-                                { d: { $oid: '000000000000000000000006' } },
-                            ]},
-                        true
-                    ],
-                }
-            ],
-        });
-        expect(out).to.deep.eq({
-            $and: [
-                {
-                    $or: [
-                        { author: new ObjectId('000000000000000000000001') },
-                        { author: new ObjectId('000000000000000000000002') },
-                    ],
-                },
-                {
-                    $or: [
-                        { a: new ObjectId('000000000000000000000003') },
-                        { b: new ObjectId('000000000000000000000004') },
-                        { $or: [
-                                { c: new ObjectId('000000000000000000000005') },
-                                { d: new ObjectId('000000000000000000000006') },
-                            ]},
-                        true
-                    ],
-                }
-            ],
-        })
-    });
-    it('with $in', () => {
-        const out = convertOid({
-            _id: {
-                $in: [
-                    { $oid: '000000000000000000000001' },
-                    { $oid: '000000000000000000000002' },
-                    new ObjectId('000000000000000000000003'),
-                    'not_an_id',
-                ]
-            },
-        });
-        expect(out).to.deep.eq({
-            _id: {
-                $in: [
-                    new ObjectId('000000000000000000000001'),
-                    new ObjectId('000000000000000000000002'),
-                    new ObjectId('000000000000000000000003'),
-                    'not_an_id',
-                ]
-            },
-        });
-    });
-
-    it('Nothing', () => {
-        const out = convertOid({"user":null,"begin":"2018-06-20T11:38:35.619Z","end":"2018-09-20T11:38:35.620Z"});
-        expect(out).to.deep.eq({"user":null,"begin":"2018-06-20T11:38:35.619Z","end":"2018-09-20T11:38:35.620Z"});
-    });
-});
 
 describe('convertDate', () => {
     it('simple', () => {
@@ -173,27 +86,5 @@ describe('convertDate', () => {
     it('Nothing', () => {
         const out = convertDate({"user":null,"begin":"2018-06-20T11:38:35.619Z","end":"2018-09-20T11:38:35.620Z"});
         expect(out).to.deep.eq({"user":null,"begin":"2018-06-20T11:38:35.619Z","end":"2018-09-20T11:38:35.620Z"});
-    });
-});
-
-describe('convertFields', () => {
-    it('Should go through all the convertion functions at once', () => {
-        const input = {
-            _id: {
-                $in: [
-                    { $oid: '000000000000000000000001' },
-                    { $oid: '000000000000000000000002' },
-                    new ObjectId('000000000000000000000003'),
-                    'not_an_id',
-                ]
-            },
-
-            date: { $date: '2019-01-30' },
-        };
-
-        const out = convertFields(input);
-        const expected = convertDate(convertOid(input));
-
-        expect(out).to.deep.eq(expected);
     });
 });

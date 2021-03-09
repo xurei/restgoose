@@ -21,7 +21,7 @@ class RestgooseFieldSubmodel extends RestgooseModel {
 }
 
 @rest({
-    route: '/items',
+    route: '/restgooseFields',
     methods: [
         one(), // GET /todos/:id
         create(), // POST /todos
@@ -51,12 +51,12 @@ describe('Field: RestgooseModel', function() {
 
     before(function () {
         return openDatabase('restgoose-test-restgoose-field')
-        .then(() => restTester.delete('/items'))
+        .then(() => restTester.delete('/restgooseFields'))
         .then(res => {
             expect(res.status).to.eq(204);
             return true;
         })
-        .then(() => restTester.post('/items', {
+        .then(() => restTester.post('/restgooseFields', {
             data: {
                 _id: '5c08177b9b90160e6697ed3f',
                 frequencyValue: 1,
@@ -76,7 +76,7 @@ describe('Field: RestgooseModel', function() {
         });
     });
 
-    describe('/items', function() {
+    describe('/restgooseFields', function() {
         describe('create()', function () {
             // TODO
         });
@@ -92,7 +92,7 @@ describe('Field: RestgooseModel', function() {
                 minute: null
             };
             before(function () {
-                fetch = restTester.patch(`/items/${id}`, {
+                fetch = restTester.patch(`/restgooseFields/${id}`, {
                     data: payload,
                 });
                 fetch.then(res => console.log(res.status, res.body));

@@ -91,7 +91,7 @@ describe('Submodel - embedded', function() {
     let item2Id;
     before(() => {
         return (
-            openDatabase('restgoose-test-submodel-embedded')
+            openDatabase('restgoose-test')
             .then(() => restTester.delete('/items'))
             .then(res => {
                 expect(res).to.have.status(204);

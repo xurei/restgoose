@@ -15,13 +15,7 @@ import { Restgoose } from './restgoose';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
 import { Constructor, Dic, RestRequest } from './types';
-
-export const ERROR_FORBIDDEN_CODE: string = 'FORBIDDEN';
-export const ERROR_NOT_FOUND_CODE: string = 'NOT_FOUND';
-export const ERROR_READONLY_CODE: string = 'READ_ONLY';
-export const ERROR_VALIDATION_CODE: string = 'BAD_DATA';
-export const ERROR_VALIDATION_NAME: string = 'ValidationError';
-export const ERROR_BAD_FORMAT_CODE: string = 'BAD_FORMAT';
+import { ERROR_NOT_FOUND_CODE } from './constants';
 
 export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
@@ -133,7 +127,7 @@ export function create<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             const prev = {...postFetchResult} as T;
 
             // updates initial doc
-            updateDocument(postFetchResult, payload);
+            updateDocument(modelType, postFetchResult, payload);
 
             // preSave
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
@@ -195,7 +189,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 prev = { ...postFetchSubResult };
 
                 // updates initial sub doc
-                updateDocument(postFetchSubResult, payload);
+                updateDocument(modelType, postFetchSubResult as any, payload);
 
                 // preSave
                 const preSaveSubResult = await preSave(submethodConfig, req, prev, postFetchSubResult);
@@ -391,7 +385,7 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
             //const mergeResult = Object.assign({}, postFetchResult, payload);
 
             // updates doc
-            updateDocument(postFetchResult, payload);
+            updateDocument(modelType, postFetchResult, payload);
 
             // preSave
             const preSaveResult = await preSave(methodConfig, req, prev, postFetchResult);
@@ -410,18 +404,18 @@ export function update<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, 
 /**
  * Deeply updates a mongoose document with a JSON object
  */
-function updateDocument<T extends RestgooseModel>(entity: T, payload: Dic) {
-    const properties = RestRegistry.listPropertiesOf(entity.constructor as Constructor<T>) as any;
-    properties.forEach(prop => {
+function updateDocument<T extends RestgooseModel>(entityType: Constructor<T>, entity: T, payload: Dic) {
+    const properties = RestRegistry.listPropertiesOf(entityType);
+    for (const prop of properties) {
         if (payload[prop.name]) {
             if (isPrimitive(prop.type[0])) {
-                updateDocument(entity[prop.name], payload[prop.name]);
+                updateDocument(entityType, entity[prop.name], payload[prop.name]);
             }
             else {
                 entity[prop.name] = payload[prop.name];
             }
         }
-    });
+    }
 }
 
 // Centralize exception management
@@ -441,26 +435,6 @@ async function handleException<T extends RestgooseModel>(methodConfig: RestConfi
     if (error instanceof RestError) {
         const restError = error as RestError;
         return res.status(restError.httpCode).send(restError.errorData);
-    }
-    /*else if (error instanceof CastError) {
-        error = error as CastError;
-        // tslint:disable-next-line:no-string-literal
-        if (error.path === '_id') {
-            return res.status(404).json({
-                code: ERROR_NOT_FOUND_CODE,
-            });
-        }
-        else {
-            debug(error);
-            return res.status(400).json({
-                code: ERROR_BAD_FORMAT_CODE,
-                field: error.path,
-            });
-        }
-    }*/
-    else if (error.name === ERROR_VALIDATION_NAME) {
-        debug(error);
-        return res.status(400).json({ code: ERROR_VALIDATION_CODE, errors: error.errors });
     }
     else {
         debug(error);

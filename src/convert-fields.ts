@@ -1,5 +1,3 @@
-import { ObjectId } from 'bson';
-
 interface Dic {[key: string]: any; }
 
 /**
@@ -15,18 +13,12 @@ interface Dic {[key: string]: any; }
  */
 export function convertFields(data: Dic) {
     let out: Dic = data;
-    out = convertOid(out);
     out = convertDate(out);
     return out;
 }
 
 export function convertDate(data: Dic) {
     return convertField(data, '$date', field => new Date(field));
-}
-
-export function convertOid(data: {[key: string]: any}) {
-    //return convertField(data, '$oid', field => ([new ObjectId(field), field]));
-    return convertField(data, '$oid', field => new ObjectId(field));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

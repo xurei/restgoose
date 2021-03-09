@@ -41,7 +41,18 @@ describe('Minimal TODO API', function() {
     this.timeout(20000); //20s timeout
 
     before(() => {
-        return openDatabase('restgoose-test-minimal-todo');
+        return openDatabase('restgoose-test');
+    });
+
+    beforeEach(function () {
+        return (
+            Promise.resolve()
+            .then(() => restTester.delete('/todos'))
+            .then(res => {
+                expect(res.status).to.eq(204);
+                return true;
+            })
+        );
     });
 
     describe('/todos', function() {
@@ -200,6 +211,9 @@ describe('Minimal TODO API', function() {
         describe('all() with filter', function() {
             it('should filter the returned documents', function () {
                 return Promise.resolve()
+                .then(() => restTester.post('/todos', {
+                    title: 'blah'
+                }))
                 .then(() => restTester.get('/todos?q='+JSON.stringify({title:"blah"})))
                 .then(res => {
                     const body = res.body as any;

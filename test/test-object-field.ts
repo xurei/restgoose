@@ -43,7 +43,7 @@ describe('Field: Object', function() {
     let id = null;
 
     before(function () {
-        return openDatabase('restgoose-test-object-field')
+        return openDatabase('restgoose-test')
         .then(() => restTester.delete('/items'))
         .then(res => {
             expect(res.status).to.eq(204);

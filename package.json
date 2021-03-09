@@ -59,7 +59,6 @@
     "mocha": "^6.1.4",
     "mock-req": "^0.2.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.11.19",
     "nyc": "^13.3.0",
     "promise": "^8.0.3",
     "reflect-metadata": "^0.1.13",

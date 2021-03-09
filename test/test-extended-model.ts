@@ -1,14 +1,11 @@
 import * as express from 'express';
-import * as mongoose from 'mongoose';
 import { Restgoose, RestgooseModel, all, create, one, remove, removeAll, rest, update, prop } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
-
-const mongoUri = (process.env.MONGO_URI || 'mongodb://localhost/') + 'restgoose-test-extended-model';
-const connectionA = mongoose.createConnection(mongoUri);
+import { openDatabase } from './util/open-database';
 
 class InnerItem extends RestgooseModel {
     @prop({required: true})
@@ -21,7 +18,7 @@ class ParentItem extends RestgooseModel {
 }
 
 @rest({
-    route: '/items',
+    route: '/extended-model__items',
     methods: [
         all(), // GET /todos
         one(), // GET /todos/:id
@@ -45,7 +42,7 @@ export class ExtendedModel extends ParentItem {
 // Create the minimal express with CORS and bodyParser.json
 const app = simpleServer();
 
-app.use('/dba', Restgoose.initialize([ExtendedModel]));
+app.use('/', Restgoose.initialize([ExtendedModel]));
 //----------------------------------------------------------------------------------------------------------------------
 
 chai.use(dirtyChai);
@@ -60,11 +57,11 @@ describe('Extended model', function() {
     before(() => {
         return Promise.resolve()
         // deletes everything
-        .then(() => restTester.delete('/dba/items'))
-        .then(() => restTester.post('/dba/items', { title: 'Item 0 from DB A', subtitle: 'this is a subtitle', inner: {innerTitle: 'my inner title'} }))
+        .then(() => openDatabase('restgoose-test'))
+        .then(() => restTester.delete('/extended-model__items'))
+        .then(() => restTester.post('/extended-model__items', { title: 'Item 0 from DB A', subtitle: 'this is a subtitle', inner: {innerTitle: 'my inner title'} }))
         .then(({ status, body, headers }) => {
-            //console.log(code);
-            //console.log(body);
+            expect(status).to.eq(201);
         });
     });
 
@@ -72,7 +69,7 @@ describe('Extended model', function() {
         describe('with a faulty filter', () => {
             let fetch;
             before(() => {
-                fetch = restTester.get(`/dba/items?q=${encodeURIComponent(JSON.stringify({someDate:{$gt:{$faulty:'2018-01-01'}}}))}`);
+                fetch = restTester.get(`/extended-model__items?q=${encodeURIComponent(JSON.stringify({someDate:{$gt:{$faulty:'2018-01-01'}}}))}`);
             });
             it('should return an error', function () {
                 return fetch
@@ -93,7 +90,7 @@ describe('Extended model', function() {
 
         it('should only return items from DB', function() {
             return Promise.resolve()
-            .then(() => restTester.get('/dba/items'))
+            .then(() => restTester.get('/extended-model__items'))
             .then(res => {
                 const body = res.body as any;
                 const status = res.status as number;

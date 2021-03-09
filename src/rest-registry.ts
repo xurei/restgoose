@@ -103,12 +103,18 @@ const RestRegistry = {
     },
 
     listPropertiesOf<T extends RestgooseModel>(modelType: Constructor<T>): Iterable<RestPropEntry<RestgooseModel>> {
+        let parentProperties = [];
+        const parentCtor = Object.getPrototypeOf(modelType);
+        if (parentCtor && parentCtor.name !== 'RestgooseModel' && parentCtor.name !== 'Object') {
+            parentProperties = this.listPropertiesOf(parentCtor);
+        }
+
         const map = properties.get(modelType.name);
         if (map) {
-            return map.values();
+            return [...parentProperties, ...map.values()];
         }
         else {
-            return [];
+            return parentProperties;
         }
     },
 

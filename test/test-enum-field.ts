@@ -49,7 +49,7 @@ describe('Field: enum', function() {
     let id = null;
 
     before(function () {
-        return openDatabase('restgoose-test-enum-fields')
+        return openDatabase('restgoose-test')
         .then(() => restTester.delete('/items'))
         .then(res => {
             expect(res.status).to.eq(204);
