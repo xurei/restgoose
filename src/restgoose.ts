@@ -63,7 +63,7 @@ export class Restgoose {
         const methodOne = methods.find(m => m.method.toLowerCase() === 'one');
         const submodels = RestRegistry.listSubrestsOf(model.type);
         //const schema = model.type.prototype.buildSchema();
-        for (let submodel of submodels) {
+        for (const submodel of submodels) {
             if (!methodOne) {
                 // TODO create a specific error class for Restgoose init errors
                 throw new Error(`In model '${model.type.name}' : a nested REST route cannot be defined without a root 'one' route`);

@@ -11,6 +11,7 @@
     "build-examples": "node_modules/.bin/tsc -p examples",
     "serve-doc": "sh scripts/serve-doc.sh",
     "prepublishOnly": "npm run build",
+    "lint": "npm run tslint",
     "tslint": "node_modules/.bin/tslint -p .",
     "tslint:fix": "tslint -p tsconfig.json --fix",
     "mongoserver": "docker run --rm --name mongo -p 27017:27017 mongo:4.4.4",

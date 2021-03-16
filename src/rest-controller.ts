@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { ERROR_NOT_FOUND_CODE } from './constants';
 import { debug } from './debug';
 import { ArrayPropConfiguration } from './decorators/array-prop';
 import { RestConfigurationMethod, RestError } from './decorators/rest';
@@ -15,7 +16,6 @@ import { Restgoose } from './restgoose';
 import { RestgooseModel } from './restgoose-model';
 import { isPrimitive } from './type-checks';
 import { Constructor, Dic, RestRequest } from './types';
-import { ERROR_NOT_FOUND_CODE } from './constants';
 
 export function all<T extends RestgooseModel>(modelEntry: RestModelEntry<T>, methodConfig: RestConfigurationMethod<T>) {
     return wrapException(methodConfig, async (req: RestRequest, res: Response) => {
