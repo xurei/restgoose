@@ -189,7 +189,7 @@ export function createWithin<T extends RestgooseModel, S extends RestgooseModel>
                 prev = { ...postFetchSubResult };
 
                 // updates initial sub doc
-                updateDocument(modelType, postFetchSubResult as any, payload);
+                updateDocument(submodelType, postFetchSubResult as any, payload);
 
                 // preSave
                 const preSaveSubResult = await preSave(submethodConfig, req, prev, postFetchSubResult);

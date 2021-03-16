@@ -67,7 +67,7 @@ describe('Field: Object', function() {
     describe('/items', function() {
         describe('create()', function () {
             describe.skip('with an invalid data value', function () {
-                // TODO Restgoose cannot validate data inside object litterals. It's probably impossible to change, but worth investigation
+                // FIXME Restgoose cannot validate data inside object litterals. It's probably impossible to change, but worth investigation
                 it('should reject', function () {
                     return restTester.post('/items', {
                         data: {
