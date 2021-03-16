@@ -7,8 +7,8 @@ import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
 import { Restgoose, RestgooseModel, prop, all, create, one, removeAll, rest } from '../lib';
 import { Constructor } from '../lib/types';
-import { openDatabase } from './util/open-database';
 const sinon = require('sinon');
+const openDatabase = (global as any).openDatabase;
 /*
 const app = simpleServer();
 

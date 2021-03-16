@@ -4,7 +4,6 @@ import 'mocha';
 const sinon = require('sinon');
 import * as sinonChai from 'sinon-chai';
 import { and, or, asFilter, RestError, RestgooseModel } from '../lib';
-import { Document } from 'mongoose';
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -159,7 +158,7 @@ describe('or()', function() {
 describe('asFilter()', function() {
     describe('with middleware success', () => {
         it('should return the same value', function () {
-            const entity = ({ plop: 'plup' } as any) as RestgooseModel & Document;
+            const entity = ({ plop: 'plup' } as any) as RestgooseModel;
             const spy1 = spy(postSuccess);
             return postSuccess(null, entity)
             .then(expected => {
@@ -174,7 +173,7 @@ describe('asFilter()', function() {
 
     describe('with middleware failure', () => {
         it('should return null', function () {
-            const entity = ({ plop: 'plup' } as any) as RestgooseModel & Document;
+            const entity = ({ plop: 'plup' } as any) as RestgooseModel;
             const spy1 = spy(postFail);
             return Promise.resolve(asFilter(spy1)(null, entity))
             .then(returned => {

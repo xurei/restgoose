@@ -5,9 +5,8 @@ import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 import { Request } from 'express';
 import { Restgoose, RestgooseModel, prop, arrayProp, all, create, one, remove, removeAll, rest, update, and, RestError } from '../lib';
-import { openDatabase } from './util/open-database';
-import { ObjectId } from 'bson';
 
+const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 async function verifyToken(req: Request) {
@@ -56,7 +55,7 @@ export class SubmodelReferenced extends RestgooseModel {
         ],
     })
     @arrayProp({items: SubItemReferenced, ref: true})
-    subItems: ObjectId[];
+    subItems: any[];
 }
 
 app.use(Restgoose.initialize([SubItemReferenced, SubmodelReferenced]));

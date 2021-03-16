@@ -5,8 +5,8 @@ import { RestTester } from './util/rest-tester';
 
 import { simpleServer } from './util/simple-server';
 import { Restgoose, RestgooseModel, prop, create, one, removeAll, rest, update } from '../lib';
-import { openDatabase } from './util/open-database';
 
+const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 class RestgooseFieldSubmodel extends RestgooseModel {

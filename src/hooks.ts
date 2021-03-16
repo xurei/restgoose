@@ -85,24 +85,24 @@ export async function preSaveAll<T extends RestgooseModel>(methodConfig: RestCon
         newEntities;
 }
 
-export async function persistSave<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,
+export async function persistSave<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>, req: RestRequest,
                                                             oldEntity: T, entity: T):
     Promise<T> {
 
     return methodConfig.persist ?
         await (methodConfig.persist as MiddlewarePersistSave<T>)(req, entity, oldEntity) as T :
-        await Restgoose.connector.save(entity);
+        await Restgoose.connector.save(modelType, entity);
 }
 
 export async function persistDeleteAll<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>,
                                                                  req: RestRequest, entities: (T)[]):
     Promise<boolean> {
 
-    const out = entities.filter(e => !!e);
+    entities = entities.filter(e => !!e);
 
     return methodConfig.persist ?
         await (methodConfig.persist as MiddlewarePersistDeleteAll<T>)(req, entities) :
-        await Restgoose.connector.delete(modelType, req);
+        await Restgoose.connector.delete(modelType, entities);
 }
 
 export async function persistDeleteOne<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>,
@@ -111,7 +111,7 @@ export async function persistDeleteOne<T extends RestgooseModel>(modelType: Cons
 
     return methodConfig.persist ?
         await (methodConfig.persist as MiddlewarePersistDeleteOne<T>)(req, entity) :
-        await Restgoose.connector.deleteOne(modelType, req);
+        await Restgoose.connector.deleteOne(modelType, entity);
 }
 
 export async function preSend<T extends RestgooseModel>(methodConfig: RestConfigurationMethod<T>, req: RestRequest,

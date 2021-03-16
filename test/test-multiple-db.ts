@@ -1,5 +1,3 @@
-import * as express from 'express';
-import * as mongoose from 'mongoose';
 import { Restgoose, RestgooseModel, prop, all, create, one, remove, removeAll, rest, update } from '../lib';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
@@ -8,9 +6,6 @@ import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
 
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/';
-
-const connectionA = mongoose.createConnection(mongoUri+'restgoose-test-multiple-db-a');
-const connectionB = mongoose.createConnection(mongoUri+'restgoose-test-multiple-db-b');
 
 @rest({
     /*getModel: async (req: express.Request, model: Constructor<Item>) => {
@@ -51,7 +46,7 @@ const restTester = new RestTester({
     app: app
 });
 
-describe('Multiple DB', function() {
+describe.skip('Multiple DB', function() {
     it('prepare', function() {
         return Promise.resolve()
         // deletes everything

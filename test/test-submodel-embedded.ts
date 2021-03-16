@@ -3,10 +3,10 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
-import { openDatabase } from './util/open-database';
 
 import { Restgoose, RestgooseModel, prop, arrayProp, all, create, update, one, rest, removeAll } from '../lib';
 
+const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 class SubItem extends RestgooseModel {

@@ -1,5 +1,4 @@
 --require ts-node/register
---require test/before-all.ts
 --watch-extensions tsx,ts
 --exit
 --lib dom

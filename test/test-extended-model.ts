@@ -5,8 +5,8 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
-import { openDatabase } from './util/open-database';
 
+const openDatabase = (global as any).openDatabase;
 class InnerItem extends RestgooseModel {
     @prop({required: true})
     innerTitle: string;

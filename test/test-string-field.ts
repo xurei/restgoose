@@ -10,19 +10,19 @@ const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 @rest({
-    route: '/array-field__items',
+    route: '/string-field__items',
     methods: [
         one(), // GET /todos/:id
         create(), // POST /todos
         removeAll(), // DELETE /todos
     ],
 })
-export class ArrayField extends RestgooseModel {
+export class StringField extends RestgooseModel {
     @prop({/*required: true*/})
-    data: string[];
+    data: string;
 }
 
-app.use(Restgoose.initialize([ArrayField]));
+app.use(Restgoose.initialize([StringField]));
 // ---------------------------------------------------------------------------------------------------------------------
 chai.use(dirtyChai);
 
@@ -32,7 +32,7 @@ const restTester = new RestTester({
     app: app
 });
 
-describe('Field: Array', function() {
+describe('Field: String', function() {
     this.timeout(20000); //20s timeout
 
     let id = null;
@@ -40,21 +40,21 @@ describe('Field: Array', function() {
     before(function () {
         return (
             openDatabase('restgoose-test')
-            .then(() => restTester.delete('/array-field__items'))
+            .then(() => restTester.delete('/string-field__items'))
             .then(res => {
                 expect(res.status).to.eq(204);
                 return true;
             })
-            // .then(() => restTester.post('/array-field__items', {
-            //     data: ['a', 'b', 'c']
-            // }))
-            // .then(res => {
-            //     console.log(res.body);
-            //     const status = res.status as number;
-            //     expect(status).to.eq(201);
-            //     id = res.body['_id'];
-            //     return true;
-            // })
+            .then(() => restTester.post('/string-field__items', {
+                data: ['a', 'b', 'c']
+            }))
+            .then(res => {
+                console.log(res.body);
+                const status = res.status as number;
+                expect(status).to.eq(201);
+                id = res.body['_id'];
+                return true;
+            })
             .catch (e => {
                 console.log(e);
             })
@@ -64,24 +64,24 @@ describe('Field: Array', function() {
     describe('create()', function () {
         it('works', function () {
             let newId = null;
-            return restTester.post('/array-field__items', {
-                data: ['a', 'b', 'c']
+            return restTester.post('/string-field__items', {
+                data: 'hello world'
             })
             .then(res => {
                 const body = res.body as any;
                 const status = res.status as number;
                 expect(status).to.eq(201);
                 expect(body).to.not.eq(null);
-                expect(body.data).to.deep.eq(['a', 'b', 'c']);
+                expect(body.data).to.deep.eq('hello world');
                 newId = body._id;
                 return true;
             })
-            .then(() => restTester.get('/array-field__items/' + newId))
+            .then(() => restTester.get('/string-field__items/' + newId))
             .then(res => {
                 const body = res.body as any;
                 const status = res.status as number;
                 expect(status).to.eq(200);
-                expect(body.data).to.deep.eq(['a', 'b', 'c']);
+                expect(body.data).to.deep.eq('hello world');
                 return true;
             });
         });

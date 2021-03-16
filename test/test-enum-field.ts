@@ -7,8 +7,8 @@ import * as MockReq from 'mock-req';
 
 import { simpleServer } from './util/simple-server';
 import { Restgoose, RestgooseModel, prop, all, create, one, remove, removeAll, rest, update } from '../lib';
-import { openDatabase } from './util/open-database';
 
+const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 enum FieldValues {
