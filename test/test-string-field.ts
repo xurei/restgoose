@@ -46,13 +46,13 @@ describe('Field: String', function() {
                 return true;
             })
             .then(() => restTester.post('/string-field__items', {
-                data: ['a', 'b', 'c']
+                data: 'hello world'
             }))
             .then(res => {
                 console.log(res.body);
                 const status = res.status as number;
                 expect(status).to.eq(201);
-                id = res.body['_id'];
+                id = res.body['_id'] || res.body['id'];
                 return true;
             })
             .catch (e => {
@@ -73,7 +73,7 @@ describe('Field: String', function() {
                 expect(status).to.eq(201);
                 expect(body).to.not.eq(null);
                 expect(body.data).to.deep.eq('hello world');
-                newId = body._id;
+                newId = body._id || body.id;
                 return true;
             })
             .then(() => restTester.get('/string-field__items/' + newId))

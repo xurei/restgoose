@@ -91,30 +91,33 @@ describe('Minimal TODO API', function() {
                 });
             });
 
-            it('works', function () {
-                let newId = null;
-                return restTester.post('/todos', {
-                    title: 'First todo'
-                })
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(201);
-                    newId = body._id;
-                    delete body._id;
-                    delete body.__v;
-                    expect(body).to.deep.eq({
+            describe('then one()', function() {
+                it('works', function () {
+                    let newId = null;
+                    return restTester.post('/todos', {
                         title: 'First todo'
+                    })
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(201);
+                        newId = body._id || body.id;
+                        delete body._id;
+                        delete body.id;
+                        delete body.__v;
+                        expect(body).to.deep.eq({
+                            title: 'First todo'
+                        });
+                        return true;
+                    })
+                    .then(() => restTester.get('/todos/' + newId))
+                    .then(res => {
+                        const body = res.body as any;
+                        const status = res.status as number;
+                        expect(status).to.eq(200);
+                        expect(body.title).to.eq('First todo');
+                        return true;
                     });
-                    return true;
-                })
-                .then(() => restTester.get('/todos/' + newId))
-                .then(res => {
-                    const body = res.body as any;
-                    const status = res.status as number;
-                    expect(status).to.eq(200);
-                    expect(body.title).to.eq('First todo');
-                    return true;
                 });
             });
         });
@@ -133,7 +136,7 @@ describe('Minimal TODO API', function() {
             });
             it('non-existing entity', function () {
                 return Promise.resolve()
-                .then(() => restTester.get('/todos/000000000000000000000000'))
+                .then(() => restTester.get('/todos/900000000000000000000000'))
 
                 .then(res => {
                     const body = res.body as any;
@@ -157,7 +160,7 @@ describe('Minimal TODO API', function() {
                     const body = res.body as any;
                     const status = res.status as number;
                     expect(status).to.eq(201);
-                    newId = body._id;
+                    newId = body._id || body.id;
                     return true;
                 })
                 .then(() => restTester.delete('/todos/'+newId))
@@ -192,7 +195,7 @@ describe('Minimal TODO API', function() {
                     const body = res.body as any;
                     const status = res.status as number;
                     expect(status).to.eq(201);
-                    newId = body._id;
+                    newId = body._id || body.id;
                     return true;
                 })
                 .then(() => restTester.patch('/todos/'+newId, {

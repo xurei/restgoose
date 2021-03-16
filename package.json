@@ -54,6 +54,7 @@
     "chai": "^4.1.7",
     "chai-http": "^4.2.1",
     "chai-match-pattern": "^1.1.0",
+    "chai-subset": "^1.6.0",
     "codacy-coverage": "^3.4.0",
     "codecov": "^3.8.0",
     "cors": "^2.8.4",

@@ -18,7 +18,7 @@ enum FieldValues {
 }
 
 @rest({
-    route: '/items',
+    route: '/enum-field__items',
     methods: [
         one(), // GET /todos/:id
         create(), // POST /todos
@@ -50,72 +50,70 @@ describe('Field: enum', function() {
 
     before(function () {
         return openDatabase('restgoose-test')
-        .then(() => restTester.delete('/items'))
+        .then(() => restTester.delete('/enum-field__items'))
         .then(res => {
             expect(res.status).to.eq(204);
             return true;
         })
-        .then(() => restTester.post('/items', {
+        .then(() => restTester.post('/enum-field__items', {
             title: 'a', title2: 'a'
         }))
         .then(res => {
             const status = res.status as number;
             expect(status).to.eq(201);
-            id = res.body['_id'];
+            id = res.body['_id'] || res.body['id'];
             return true;
         });
     });
 
-    describe('/items', function() {
-        describe('create()', function () {
-            describe('with an invalid enum value', function () {
-                it('should reject', function () {
-                    return restTester.post('/items', {
-                        title: 'wrong', title2: 'b'
-                    })
-                    .then(res => {
-                        const body = res.body as any;
-                        const status = res.status as number;
-                        expect(status).to.eq(400);
-                        return true;
-                    })
-                });
-            });
-            describe('with an invalid enum value (2)', function () {
-                it('should reject', function () {
-                    return restTester.post('/items', {
-                        title: 'a', title2: 'wrong'
-                    })
-                    .then(res => {
-                        console.log(res.body);
-                        const body = res.body as any;
-                        const status = res.status as number;
-                        expect(status).to.eq(400);
-                        return true;
-                    })
-                });
-            });
-            it('works', function () {
-                let newId = null;
-                return restTester.post('/items', {
-                    title: 'b', title2: 'c'
+    describe('create()', function () {
+        describe('with an invalid enum value', function () {
+            it('should reject', function () {
+                return restTester.post('/enum-field__items', {
+                    title: 'wrong', title2: 'b'
                 })
                 .then(res => {
                     const body = res.body as any;
                     const status = res.status as number;
-                    expect(status).to.eq(201);
-                    expect(body.title).to.eq('b');
-                    newId = body._id;
+                    expect(status).to.eq(400);
                     return true;
                 })
-                .then(() => restTester.get('/items/' + newId))
+            });
+        });
+        describe('with an invalid enum value (2)', function () {
+            it('should reject', function () {
+                return restTester.post('/enum-field__items', {
+                    title: 'a', title2: 'wrong'
+                })
                 .then(res => {
+                    console.log(res.body);
                     const body = res.body as any;
                     const status = res.status as number;
-                    expect(status).to.eq(200);
-                    expect(body.title).to.eq('b');
+                    expect(status).to.eq(400);
                     return true;
-                });
+                })
+            });
+        });
+        it('works', function () {
+            let newId = null;
+            return restTester.post('/enum-field__items', {
+                title: 'b', title2: 'c'
+            })
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(201);
+                expect(body.title).to.eq('b');
+                newId = body._id || body.id;
+                return true;
+            })
+            .then(() => restTester.get('/enum-field__items/' + newId))
+            .then(res => {
+                const body = res.body as any;
+                const status = res.status as number;
+                expect(status).to.eq(200);
+                expect(body.title).to.eq('b');
+                return true;
             });
         });
     });

@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
+import * as chaiSubset from 'chai-subset';
 import 'mocha';
 import { RestTester } from './util/rest-tester';
 import { simpleServer } from './util/simple-server';
@@ -26,7 +27,7 @@ class TrickySubItem extends RestgooseModel {
 }
 
 @rest({
-    route: '/items',
+    route: '/submodel-embedded__items',
     methods: [
         all(),
         one(),
@@ -77,6 +78,7 @@ class SubmodelEmbedded extends RestgooseModel {
 app.use(Restgoose.initialize([SubmodelEmbedded]));
 // ---------------------------------------------------------------------------------------------------------------------
 chai.use(dirtyChai);
+chai.use(chaiSubset);
 
 const expect = chai.expect;
 
@@ -92,33 +94,39 @@ describe('Submodel - embedded', function() {
     before(() => {
         return (
             openDatabase('restgoose-test')
-            .then(() => restTester.delete('/items'))
+            .then(() => restTester.delete('/submodel-embedded__items'))
             .then(res => {
                 expect(res).to.have.status(204);
                 return true;
             })
-            .then(() => restTester.post('/items', {
+            .then(() => restTester.post('/submodel-embedded__items', {
                 title: 'item1',
-                subint: [23, 42, 69],
+                subints: [23, 42, 69],
                 subitems:[{ subtitle: 'subitem1' }],
                 trickysubitems:[{ ref: 'this-is-tricky' }],
             }))
             .then(res => {
                 expect(res).to.have.status(201);
-                item1Id = res.body['_id'];
+                item1Id = res.body['_id'] || res.body['id'];
+                (expect(res.body).to as any).containSubset({
+                    title: 'item1',
+                    subints: [23, 42, 69],
+                    subitems:[{ subtitle: 'subitem1' }],
+                    trickysubitems:[{ ref: 'this-is-tricky' }],
+                });
             })
-            .then(() => restTester.post('/items', {
+            .then(() => restTester.post('/submodel-embedded__items', {
                 title: 'item2',
-                subint: [15, 94, 2016.12],
+                subints: [15, 94, 2016.12],
                 subitems:[{ subtitle: 'subitem2' }],
                 trickysubitems:[{ ref: 'this-one-also' }],
             }))
             .then(res => {
                 expect(res).to.have.status(201);
-                item2Id = res.body['_id'];
+                item2Id = res.body['_id'] || res.body['id'];
                 return true;
             })
-            .then(() => restTester.get(`/items/${item1Id}`))
+            .then(() => restTester.get(`/submodel-embedded__items/${item1Id}`))
             .then(res => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an('object');
@@ -130,10 +138,10 @@ describe('Submodel - embedded', function() {
         );
     });
 
-    describe('GET /items/:id/subitems', () => {
+    describe('GET /submodel-embedded__items/:id/subitems', () => {
         it('should return the subitems', () => {
             return (
-                restTester.get(`/items/${item1Id}/subitems`)
+                restTester.get(`/submodel-embedded__items/${item1Id}/subitems`)
                 .then(res => {
                     expect(res).to.have.status(200);
                     expect(res.body).to.be.an('array');
@@ -145,14 +153,29 @@ describe('Submodel - embedded', function() {
         });
     });
 
-    describe('GET /items/:id/trickysubitems', () => {
-        it('should return the subitems', () => {
+    describe('GET /submodel-embedded__items/:id/subints', () => {
+        it('should return the subints', () => {
             return (
-                restTester.get(`/items/${item1Id}/trickysubitems`)
+                restTester.get(`/submodel-embedded__items/${item1Id}/subints`)
                 .then(res => {
                     expect(res).to.have.status(200);
                     expect(res.body).to.be.an('array');
                     const body = (res.body as any).map(i => { delete i._id; return i; });
+                    expect(body).to.deep.eq([23, 42, 69]);
+                    //item1Id = res.body._id;
+                })
+            );
+        });
+    });
+
+    describe('GET /submodel-embedded__items/:id/trickysubitems', () => {
+        it('should return the subitems', () => {
+            return (
+                restTester.get(`/submodel-embedded__items/${item1Id}/trickysubitems`)
+                .then(res => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    const body = (res.body as any).map(i => { delete i._id; delete i.id; return i; });
                     expect(body).to.deep.eq([{ ref: 'this-is-tricky' }]);
                     //item1Id = res.body._id;
                 })
@@ -160,11 +183,11 @@ describe('Submodel - embedded', function() {
         });
     });
 
-    describe('POST /items/:id/subitems', () => {
+    describe('POST /submodel-embedded__items/:id/subitems', () => {
         describe('with invalid payload', () => {
             it('should return 400', () => {
                 return (
-                    restTester.post(`/items/${item1Id}/subitems`, {
+                    restTester.post(`/submodel-embedded__items/${item1Id}/subitems`, {
                         wrong: 'data',
                     })
                     .then(res => {
@@ -178,7 +201,7 @@ describe('Submodel - embedded', function() {
         describe('with valid payload', () => {
             it('should return 201 and save the new data', () => {
                 return (
-                    restTester.post(`/items/${item1Id}/subitems`, {
+                    restTester.post(`/submodel-embedded__items/${item1Id}/subitems`, {
                         subtitle: 'new item!',
                         notmapped: 'field',
                     })
@@ -190,11 +213,11 @@ describe('Submodel - embedded', function() {
                         expect(body.subtitle).to.eq('new item!');
                         return true;
                     })
-                    .then(() => restTester.get(`/items/${item1Id}/subitems`))
+                    .then(() => restTester.get(`/submodel-embedded__items/${item1Id}/subitems`))
                     .then(res => {
                         expect(res).to.have.status(200);
                         expect(res.body).to.be.an('array');
-                        const body = (res.body as any).map(i => { delete i._id; return i; });
+                        const body = (res.body as any).map(i => { delete i._id; delete i.id; return i; });
                         expect(body).to.deep.eq([{ subtitle: 'subitem1' }, { subtitle: 'new item!' }]);
                         //item1Id = res.body._id;
                     })
@@ -203,11 +226,11 @@ describe('Submodel - embedded', function() {
         });
     });
 
-    describe('POST /items/:id/trickysubitems', () => {
+    describe('POST /submodel-embedded__items/:id/trickysubitems', () => {
         describe('with invalid payload', () => {
             it('should return 400', () => {
                 return (
-                    restTester.post(`/items/${item1Id}/trickysubitems`, {
+                    restTester.post(`/submodel-embedded__items/${item1Id}/trickysubitems`, {
                         wrong: 'data',
                     })
                     .then(res => {
@@ -220,7 +243,7 @@ describe('Submodel - embedded', function() {
         describe('with valid payload', () => {
             it('should return 201 and save the new data', () => {
                 return (
-                    restTester.post(`/items/${item2Id}/trickysubitems`, {
+                    restTester.post(`/submodel-embedded__items/${item2Id}/trickysubitems`, {
                         ref: 'new item!',
                         notmapped: 'field',
                     })
@@ -229,14 +252,15 @@ describe('Submodel - embedded', function() {
                         expect(res.body).to.be.an('object');
                         const body = Object.assign({}, res.body);
                         delete body['_id'];
+                        delete body['id'];
                         expect(body).to.deep.eq({ ref: 'new item!' });
                         return true;
                     })
-                    .then(() => restTester.get(`/items/${item2Id}/trickysubitems`))
+                    .then(() => restTester.get(`/submodel-embedded__items/${item2Id}/trickysubitems`))
                     .then(res => {
                         expect(res).to.have.status(200);
                         expect(res.body).to.be.an('array');
-                        const body = (res.body as any).map(i => { delete i._id; return i; });
+                        const body = (res.body as any).map(i => { delete i._id; delete i.id; return i; });
                         expect(body).to.deep.eq([{ ref: 'this-one-also' }, { ref: 'new item!' }]);
                         //item1Id = res.body._id;
                     })
@@ -245,10 +269,10 @@ describe('Submodel - embedded', function() {
         });
     });
 
-    describe('PATCH /items/:id', () => {
+    describe('PATCH /submodel-embedded__items/:id', () => {
         it('should update the subitems', () => {
             return (
-                restTester.patch(`/items/${item1Id}`, {
+                restTester.patch(`/submodel-embedded__items/${item1Id}`, {
                     subitems: [
                         {
                             subtitle: 'first!',
@@ -264,8 +288,8 @@ describe('Submodel - embedded', function() {
                     expect(res).to.have.status(200);
                     const body = res.body as any;
                     expect(body.subitems).to.be.an('array');
-                    const subitems = body.subitems.map(i => { delete i._id; return i; });
-                    expect(subitems).to.deep.eq([
+                    const subitems = body.subitems.map(i => { delete i._id; delete i.id; return i; });
+                    (expect(subitems).to as any).containSubset([
                         {
                             subtitle: 'first!',
                             type: { name: 'range', options: ['oui', 'non'] },

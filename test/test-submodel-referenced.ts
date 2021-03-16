@@ -19,9 +19,9 @@ async function verifyToken(req: Request) {
 }
 
 @rest({
-    route: '/subitems',
+    route: '/submodel-referenced__subitems',
     methods: [
-        one({ preFetch: and(verifyToken) }), // GET /subitems/:id
+        one({ preFetch: and(verifyToken) }), // GET /submodel-referenced__subitems/:id
     ],
 })
 export class SubItemReferenced extends RestgooseModel {
@@ -33,7 +33,7 @@ export class SubItemReferenced extends RestgooseModel {
 }
 
 @rest({
-    route: '/items',
+    route: '/submodel-referenced__items',
     methods: [
         all(),
         one(),
@@ -48,7 +48,7 @@ export class SubmodelReferenced extends RestgooseModel {
     title: string;
 
     @rest({
-        route: '/subitems',
+        route: '/submodel-referenced__subitems',
         methods: [
             all({ preFetch: verifyToken }),
             create({ preFetch: verifyToken }),
@@ -76,14 +76,14 @@ describe('Submodel - referenced', function() {
     before(function() {
         return openDatabase('restgoose-test')
         // deletes everything
-        .then(() => restTester.delete('/items'))
+        .then(() => restTester.delete('/submodel-referenced__items'))
         .then(res => {
             const body = res.body as any;
             const status = res.status as number;
             expect(status).to.eq(204);
             return true;
         })
-        .then(() => restTester.get('/items'))
+        .then(() => restTester.get('/submodel-referenced__items'))
         .then(res => {
             const body = res.body as any;
             const status = res.status as number;
@@ -94,21 +94,21 @@ describe('Submodel - referenced', function() {
 
         // populates items
         .then(() => Promise.all([
-            restTester.post('/items', { title: 'item1' }),
-            restTester.post('/items', { title: 'item2', subItems: ['000000000000000000000001'] }),
-            restTester.post('/items', { title: 'item3' }),
-            restTester.post('/items', { title: 'item4' }),
-            restTester.post('/items', { title: 'item5' }),
-            restTester.post('/items', { title: 'item6' })
+            restTester.post('/submodel-referenced__items', { title: 'item1' }),
+            restTester.post('/submodel-referenced__items', { title: 'item2', subItems: ['000000000000000000000001'] }),
+            restTester.post('/submodel-referenced__items', { title: 'item3' }),
+            restTester.post('/submodel-referenced__items', { title: 'item4' }),
+            restTester.post('/submodel-referenced__items', { title: 'item5' }),
+            restTester.post('/submodel-referenced__items', { title: 'item6' })
         ]))
         .then((items) => {
             itemIds = items.map(i => {
                 console.log(i.body);
-                return (i.body as any)._id;
+                return (i.body as any)._id || (i.body as any).id;
             });
             return true;
         })
-        .then(() => restTester.get('/items'))
+        .then(() => restTester.get('/submodel-referenced__items'))
         .then(res => {
             const body = res.body as any;
             const status = res.status as number;
@@ -118,11 +118,11 @@ describe('Submodel - referenced', function() {
         });
     });
 
-    describe('/items', function() {
+    describe('/submodel-referenced__items', function() {
         describe('with invalid parent id', function() {
             it('GET should return 404', function() {
                 return Promise.resolve()
-                .then(() => restTester.as('admin').get('/items/000000000000000000000000/subitems'))
+                .then(() => restTester.as('admin').get('/submodel-referenced__items/000000000000000000000000/submodel-referenced__subitems'))
                 .then(res => {
                     const status = res.status as number;
                     expect(status).to.eq(404);
@@ -131,7 +131,7 @@ describe('Submodel - referenced', function() {
             });
             it('POST should return 404', function() {
                 return Promise.resolve()
-                .then(() => restTester.as('admin').post('/items/000000000000000000000000/subitems', {
+                .then(() => restTester.as('admin').post('/submodel-referenced__items/000000000000000000000000/submodel-referenced__subitems', {
                     never: 'mind'
                 }))
                 .then(res => {
@@ -146,7 +146,7 @@ describe('Submodel - referenced', function() {
             describe('without Autorization', function() {
                 it('401', function () {
                     return Promise.resolve()
-                    .then(() => restTester.post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
+                    .then(() => restTester.post('/submodel-referenced__items/'+itemIds[0]+'/submodel-referenced__subitems', { name: 'val1', value: 1 }))
                     .then(res => {
                         const body = res.body as any;
                         const status = res.status as number;
@@ -159,14 +159,14 @@ describe('Submodel - referenced', function() {
                 it('201', function () {
                     let subItemId = null;
                     return Promise.resolve()
-                    .then(() => restTester.as('admin').post('/items/'+itemIds[0]+'/subitems', { name: 'val1', value: 1 }))
+                    .then(() => restTester.as('admin').post('/submodel-referenced__items/'+itemIds[0]+'/submodel-referenced__subitems', { name: 'val1', value: 1 }))
                     .then(res => {
                         const body = res.body as any;
                         console.log(body);
                         const status = res.status as number;
                         expect(status).to.eq(201);
                     })
-                    .then(() => restTester.as('admin').get('/items/'+itemIds[0]))
+                    .then(() => restTester.as('admin').get('/submodel-referenced__items/'+itemIds[0]))
                     .then(res => {
                         const body = res.body as any;
                         const status = res.status as number;
@@ -174,7 +174,7 @@ describe('Submodel - referenced', function() {
                         expect(body.subItems).to.have.length(1);
                         subItemId = body.subItems[0];
                     })
-                    .then(() => restTester.as('admin').get('/items/'+itemIds[0]+'/subitems'))
+                    .then(() => restTester.as('admin').get('/submodel-referenced__items/'+itemIds[0]+'/submodel-referenced__subitems'))
                     .then(res => {
                         const body = res.body as any;
                         const status = res.status as number;
@@ -185,7 +185,7 @@ describe('Submodel - referenced', function() {
                         expect(body[0].value).to.eq(1);
                         return true;
                     })
-                    .then(() => restTester.as('admin').get('/subitems/'+subItemId))
+                    .then(() => restTester.as('admin').get('/submodel-referenced__subitems/'+subItemId))
                     .then(res => {
                         const body = res.body as any;
                         const status = res.status as number;

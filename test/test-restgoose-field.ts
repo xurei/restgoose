@@ -62,16 +62,14 @@ describe('Field: RestgooseModel', function() {
                 frequencyValue: 1,
                 frequencyUnit: 'week',
                 dayOfWeek: 1,
-                date: '1970-01-01T17:05:00.000Z',
-                hour: null,
-                minute: null
+                date: '1970-01-01T17:05:00.000Z'
             }
         }))
         .then(res => {
             console.log(res.body);
             const status = res.status as number;
             expect(status).to.eq(201);
-            id = res.body['_id'];
+            id = res.body['_id'] || res.body['id'];
             return true;
         });
     });
@@ -87,9 +85,7 @@ describe('Field: RestgooseModel', function() {
                 frequencyValue: 2,
                 frequencyUnit: 'month',
                 dayOfWeek: 2,
-                date: '1970-01-01T19:42:00.000Z',
-                hour: null,
-                minute: null
+                date: '1970-01-01T19:42:00.000Z'
             };
             before(function () {
                 fetch = restTester.patch(`/restgooseFields/${id}`, {
@@ -110,6 +106,7 @@ describe('Field: RestgooseModel', function() {
                     const body = res.body as any;
                     expect(body.data).to.be.an('object');
                     delete body.data._id;
+                    delete body.data.id;
                     expect(body.data).to.deep.eq({
                         frequencyValue: 2,
                         frequencyUnit: 'month',

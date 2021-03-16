@@ -42,8 +42,6 @@ export async function fetchCreate<T extends RestgooseModel>(modelType: Construct
 
 export async function fetchOne<T extends RestgooseModel>(modelType: Constructor<T>, methodConfig: RestConfigurationMethod<T>, req: RestRequest,
                                                          useFilter: boolean): Promise<T> {
-    const query = useFilter ? (req.restgoose || {}).query || {} : {};
-
     return methodConfig.fetch ?
         await methodConfig.fetch(req, modelType, useFilter) as T :
         await Restgoose.connector.findOne(modelType, req, useFilter);

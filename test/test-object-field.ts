@@ -12,7 +12,7 @@ const openDatabase = (global as any).openDatabase;
 const app = simpleServer();
 
 @rest({
-    route: '/items',
+    route: '/object-field__items',
     methods: [
         one(), // GET /todos/:id
         create(), // POST /todos
@@ -44,12 +44,12 @@ describe('Field: Object', function() {
 
     before(function () {
         return openDatabase('restgoose-test')
-        .then(() => restTester.delete('/items'))
+        .then(() => restTester.delete('/object-field__items'))
         .then(res => {
             expect(res.status).to.eq(204);
             return true;
         })
-        .then(() => restTester.post('/items', {
+        .then(() => restTester.post('/object-field__items', {
             data: {
                 name: 'plop',
                 value: 'plup'
@@ -59,34 +59,34 @@ describe('Field: Object', function() {
             console.log(res.body);
             const status = res.status as number;
             expect(status).to.eq(201);
-            id = res.body['_id'];
+            id = res.body['_id'] || res.body['id'];
             return true;
         });
     });
 
-    describe('/items', function() {
-        describe('create()', function () {
-            describe.skip('with an invalid data value', function () {
-                // FIXME Restgoose cannot validate data inside object litterals. It's probably impossible to change, but worth investigation
-                it('should reject', function () {
-                    return restTester.post('/items', {
-                        data: {
-                            missing: 'fields',
-                        }
-                    })
-                    .then(res => {
-                        console.log(res.body);
-                        const status = res.status as number;
-                        expect(status).to.eq(400);
-                        return true;
-                    })
-                });
+    describe('create()', function () {
+        describe.skip('with an invalid data value', function () {
+            // Restgoose cannot validate data inside object litterals due to limitations of Typescript/Javascript. It's probably impossible to change, but worth investigation
+            it('should reject', function () {
+                return restTester.post('/object-field__items', {
+                    data: {
+                        missing: 'fields',
+                    }
+                })
+                .then(res => {
+                    console.log(res.body);
+                    const status = res.status as number;
+                    expect(status).to.eq(400);
+                    return true;
+                })
             });
+        });
 
+        describe('then one()', function() {
             describe('with a valid data value', function () {
                 it('works', function () {
                     let newId = null;
-                    return restTester.post('/items', {
+                    return restTester.post('/object-field__items', {
                         data: {
                             name: 'hello',
                             value: 'world'
@@ -100,10 +100,10 @@ describe('Field: Object', function() {
                             name: 'hello',
                             value: 'world'
                         });
-                        newId = body._id;
+                        newId = body._id || body.id;
                         return true;
                     })
-                    .then(() => restTester.get('/items/' + newId))
+                    .then(() => restTester.get('/object-field__items/' + newId))
                     .then(res => {
                         const body = res.body as any;
                         const status = res.status as number;

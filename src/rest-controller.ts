@@ -408,12 +408,7 @@ function updateDocument<T extends RestgooseModel>(entityType: Constructor<T>, en
     const properties = RestRegistry.listPropertiesOf(entityType);
     for (const prop of properties) {
         if (payload[prop.name]) {
-            if (isPrimitive(prop.type[0])) {
-                updateDocument(entityType, entity[prop.name], payload[prop.name]);
-            }
-            else {
-                entity[prop.name] = payload[prop.name];
-            }
+            entity[prop.name] = payload[prop.name];
         }
     }
 }

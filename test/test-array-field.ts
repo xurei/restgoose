@@ -52,7 +52,7 @@ describe('Field: Array', function() {
             //     console.log(res.body);
             //     const status = res.status as number;
             //     expect(status).to.eq(201);
-            //     id = res.body['_id'];
+            //     id = res.body['_id'] || res.body['id'];
             //     return true;
             // })
             .catch (e => {
@@ -73,7 +73,7 @@ describe('Field: Array', function() {
                 expect(status).to.eq(201);
                 expect(body).to.not.eq(null);
                 expect(body.data).to.deep.eq(['a', 'b', 'c']);
-                newId = body._id;
+                newId = body._id || body.id;
                 return true;
             })
             .then(() => restTester.get('/array-field__items/' + newId))
