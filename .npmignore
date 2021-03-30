@@ -8,7 +8,6 @@ examples-build
 docs
 coverage
 .nyc_output
-src
 test
 Gemfile
 Gemfile.lock
