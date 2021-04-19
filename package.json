@@ -64,7 +64,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.10.9",
     "nyc": "^13.3.0",
-    "promise": "^8.0.3",
+    "promise": "^8.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^2.6.3",
     "run-middleware": "^0.9.10",
