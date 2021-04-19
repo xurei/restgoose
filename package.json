@@ -59,7 +59,7 @@
     "dirty-chai": "^2.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.5.1",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.2",
     "mock-req": "^0.2.0",
     "moment": "^2.24.0",
     "mongoose": "^5.10.9",
