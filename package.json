@@ -35,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^4.1.1",
-    "@types/mongoose": "~5.2.15"
+    "@types/mongoose": "~5.11.0"
   },
   "peerDependencies": {
     "express": ">=4.0.0",
