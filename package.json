@@ -65,7 +65,7 @@
     "mongoose": "^5.10.9",
     "nyc": "^13.3.0",
     "promise": "^8.0.3",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.0",
     "rimraf": "^2.6.3",
     "run-middleware": "^0.9.10",
     "sinon": "^7.3.0",
